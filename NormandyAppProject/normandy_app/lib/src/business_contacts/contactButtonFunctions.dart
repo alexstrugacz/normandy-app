@@ -9,3 +9,20 @@ handlePhoneCall(String phoneNumber) async {
   }
 }
 
+handleMessage(String phoneNumber) async {
+  var url = Uri.parse("sms:${phoneNumber}");
+  if(await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw "Failed to open sms app";
+  }
+}
+
+handleEmail(String email) async {
+  var url = Uri.parse("mailto:${email}");
+  if(await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw "Failed to open email";
+  }
+}

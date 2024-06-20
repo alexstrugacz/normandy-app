@@ -56,13 +56,13 @@ class ContactDetailView extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.message),
                   onPressed: () {
-                    // Message functionality
+                    handleMessage(contact.businessPhone);
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.email),
                   onPressed: () {
-                    // Email functionality
+                    handleEmail(contact.emailAddress);
                   },
                 ),
                 IconButton(
