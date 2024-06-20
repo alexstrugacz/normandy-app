@@ -23,6 +23,13 @@ class HomePage extends StatelessWidget {
               },
               child: Text('Go to Page 2'),
             ),
+            
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/quick-links');
+              },
+              child: Text('Go to Quick Links'),
+            ),
           ],
         ),
       ),

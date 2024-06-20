@@ -14,6 +14,10 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  http: ^0.13.4
+  shared_preferences: ^2.0.7
+  font_awesome_flutter: ^10.1.0
+  url_launcher: ^6.0.20
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +34,14 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/images/logo.png
+    - assets/images/oneDrive.png
+    - assets/images/homeDepot.png
+    - assets/images/googleTranslate.png
+    - assets/images/hines.png
+    - assets/images/menards.png
+    - assets/images/outlook.png
+    - assets/images/teams.png
+    - assets/images/mileage.png
+    - assets/images/timeSquared.png
+
