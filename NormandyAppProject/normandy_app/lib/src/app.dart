@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
         title: 'Demo Login App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          fontFamily: 'Roboto',
         ),
         home: LoginPage(),
         routes: {
