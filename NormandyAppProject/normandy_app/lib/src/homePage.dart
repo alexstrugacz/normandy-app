@@ -24,10 +24,11 @@ class HomePage extends StatelessWidget {
               child: Text('Go to Page 2'),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-              child: Text('My Profile'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: Text('My Profile')
+                ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/quick-links');
