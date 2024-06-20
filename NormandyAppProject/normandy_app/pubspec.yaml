@@ -2,20 +2,23 @@ name: normandy_app
 description: "A new Flutter project."
 
 # Prevent accidental publishing to pub.dev.
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  url_launcher: ^6.1.5
-
+  flutter_svg: ^2.0.10+1
+  font_awesome_flutter: 10.7.0
+  http: ^1.0.0
+  shared_preferences: ^2.0.7
+  url_launcher: ^6.0.20
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -24,10 +27,28 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto-Italic.ttf
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
   # Enable generation of localized Strings from arb files.
   generate: true
 
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/icon.svg
+    - assets/images/logo.png
+    - assets/images/oneDrive.png
+    - assets/images/homeDepot.png
+    - assets/images/googleTranslate.png
+    - assets/images/hines.png
+    - assets/images/menards.png
+    - assets/images/outlook.png
+    - assets/images/teams.png
+    - assets/images/mileage.png
+    - assets/images/timeSquared.png
+
