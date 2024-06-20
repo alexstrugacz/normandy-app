@@ -54,6 +54,12 @@ class HomePage extends StatelessWidget {
               },
               child: Text('Go to Quick Links'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/business-contacts-list');
+              },
+              child: Text('Business Contacts'),
+            ),
             // Grid of buttons
             Expanded(
                 child: Padding(
