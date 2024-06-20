@@ -75,9 +75,21 @@ class HomePage extends StatelessWidget {
                 }),
               ),
             ),
-          ),
-        ],
-      ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: Text('My Profile')
+                ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/quick-links');
+              },
+              child: Text('Go to Quick Links'),
+            ),
+          ],
+        )
+      )
     );
   }
 }
