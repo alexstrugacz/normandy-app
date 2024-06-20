@@ -21,18 +21,9 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: SvgPicture.asset(
                 'assets/icon.svg',
-                height: 100,
-                width: 100,
+                height: 80,
+                width: 80,
               ),
-            ),
-            // Icon above the header
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              // child: Icon(
-              //   Icons.dashboard,
-              //   size: 100,
-              //   color: Colors.blue,
-              // ),
             ),
             // Header
             const Text(
@@ -43,23 +34,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
-                },
-                child: Text('My Profile')),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/quick-links');
-              },
-              child: Text('Go to Quick Links'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/business-contacts-list');
-              },
-              child: Text('Business Contacts'),
-            ),
             // Grid of buttons
             Expanded(
                 child: Padding(
