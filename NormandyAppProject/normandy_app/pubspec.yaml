@@ -2,12 +2,12 @@ name: normandy_app
 description: "A new Flutter project."
 
 # Prevent accidental publishing to pub.dev.
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
   flutter:
@@ -23,7 +23,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto-Italic.ttf
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
   # Enable generation of localized Strings from arb files.
   generate: true
 
