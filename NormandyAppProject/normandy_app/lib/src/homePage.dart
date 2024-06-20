@@ -21,18 +21,9 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: SvgPicture.asset(
               'assets/icon.svg',
-              height: 100,
-              width: 100,
+              height: 80,
+              width: 80,
             ),
-          ),
-          // Icon above the header
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            // child: Icon(
-            //   Icons.dashboard,
-            //   size: 100,
-            //   color: Colors.blue,
-            // ),
           ),
           // Header
           const Text(
