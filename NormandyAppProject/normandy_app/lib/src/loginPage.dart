@@ -56,10 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         print(data);
 
         final String jwt = data['token'];
-
-        if (_prefs != null) {
-          await _prefs!.setString('jwt', jwt);
-        }
+        
 
         Navigator.pushReplacementNamed(context, '/home');
       } else {
