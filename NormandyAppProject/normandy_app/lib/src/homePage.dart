@@ -12,40 +12,51 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('HomePage'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SvgPicture.asset(
-              'assets/icon.svg',
-              height: 100,
-              width: 100,
+        appBar: AppBar(
+          title: Text('HomePage'),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SvgPicture.asset(
+                'assets/icon.svg',
+                height: 100,
+                width: 100,
+              ),
             ),
-          ),
-          // Icon above the header
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            // child: Icon(
-            //   Icons.dashboard,
-            //   size: 100,
-            //   color: Colors.blue,
-            // ),
-          ),
-          // Header
-          const Text(
-            'Mon. Aug 17',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
+            // Icon above the header
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              // child: Icon(
+              //   Icons.dashboard,
+              //   size: 100,
+              //   color: Colors.blue,
+              // ),
             ),
-          ),
-          SizedBox(height: 16),
-          // Grid of buttons
-          Expanded(
-            child: Padding(
+            // Header
+            const Text(
+              'Mon. Aug 17',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: Text('My Profile')),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/quick-links');
+              },
+              child: Text('Go to Quick Links'),
+            ),
+            // Grid of buttons
+            Expanded(
+                child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
                 crossAxisCount: 2,
@@ -74,22 +85,8 @@ class HomePage extends StatelessWidget {
                   );
                 }),
               ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
-                },
-                child: Text('My Profile')
-                ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/quick-links');
-              },
-              child: Text('Go to Quick Links'),
-            ),
+            )),
           ],
-        )
-      )
-    );
+        ));
   }
 }
