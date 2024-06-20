@@ -1,27 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatelessWidget {
+  final List<String> buttonNames = [
+    'Contacts',
+    'Expense Reports',
+    'Quick Links',
+    'Projects Dashboard',
+    'My Profile',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Homepage'),
+        title: Text('HomePage'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/demo-page-1');
-              },
-              child: Text('Go to Page 1'),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SvgPicture.asset(
+              'assets/icon.svg',
+              height: 100,
+              width: 100,
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/demo-page-2');
-              },
-              child: Text('Go to Page 2'),
+          ),
+          // Icon above the header
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            // child: Icon(
+            //   Icons.dashboard,
+            //   size: 100,
+            //   color: Colors.blue,
+            // ),
+          ),
+          // Header
+          const Text(
+            'Mon. Aug 17',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 16),
+          // Grid of buttons
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16.0,
+                crossAxisSpacing: 16.0,
+                children: List.generate(buttonNames.length, (index) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      //Route to the corresponding page
+
+                      print('Pressed ${buttonNames[index]}');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      // Align text to top-left of button
+                      alignment: Alignment.topLeft,
+                      // Add padding for better alignment
+                      padding: EdgeInsets.all(16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: Text(
+                      buttonNames[index],
+                      style: TextStyle(fontWeight: FontWeight.normal),
+                    ), // Display actual name
+                  );
+                }),
+              ),
             ),
             ElevatedButton(
                 onPressed: () {
@@ -36,8 +88,8 @@ class HomePage extends StatelessWidget {
               child: Text('Go to Quick Links'),
             ),
           ],
-        ),
-      ),
+        )
+      )
     );
   }
 }
