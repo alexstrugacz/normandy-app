@@ -4,9 +4,6 @@
 
 import FlutterMacOS
 import Foundation
-import url_launcher_macos
-
-func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
 
 import shared_preferences_foundation
 import url_launcher_macos
