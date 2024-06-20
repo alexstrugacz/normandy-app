@@ -14,6 +14,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  http: ^0.13.4
+  shared_preferences: ^2.0.7
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +32,4 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/images/logo.png
