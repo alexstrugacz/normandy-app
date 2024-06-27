@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
     'Contacts',
+    'Active Trade'
     'Expense Reports',
     'Quick Links',
     'Projects Dashboard',
@@ -59,6 +60,18 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(context, '/business-contacts-list');
               },
               child: Text('Business Contacts'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/select-category-page');
+              },
+              child: Text('Active Trades'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/employee-list');
+              },
+              child: Text('Employee List'),
             ),
             // Grid of buttons
             Expanded(
