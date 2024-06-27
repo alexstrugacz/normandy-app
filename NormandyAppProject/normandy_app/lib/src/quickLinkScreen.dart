@@ -6,7 +6,7 @@ class QuickLinksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Quick Links')),
+      appBar: AppBar(title: const Text('Quick Links')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(

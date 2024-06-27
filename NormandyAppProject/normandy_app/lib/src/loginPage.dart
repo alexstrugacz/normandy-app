@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         print(data);
 
         final String jwt = data['token'];
+        _prefs?.setString("jwt", jwt);
 
         Navigator.pushReplacementNamed(context, '/home');
       } else {
@@ -98,22 +99,22 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset('assets/images/logo.png', height: 100),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Normandy App',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Welcome to the Normandy App.',
                   style: TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   'Use your MS 365 Login.',
                   style: TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   validator: _validateEmail,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
@@ -132,13 +133,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   validator: _validatePassword,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 if (_errorMessage.isNotEmpty)
                   Text(
                     _errorMessage,
                     style: TextStyle(color: Colors.red, fontSize: 14),
                   ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 SizedBox(
                     width: double.infinity,
                     height: 50,

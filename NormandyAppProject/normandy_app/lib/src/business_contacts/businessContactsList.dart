@@ -1,73 +1,96 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/business_contacts/contactListTile.dart';
 import 'package:normandy_app/src/business_contacts/contactsClass.dart';
+import 'package:normandy_app/src/api/getJwt.dart';
+import 'package:http/http.dart' as http;
 
-var sampleContacts = [
-  Contact(
-    anniversary: '2023-05-15',
-    birthday: '1990-10-25',
-    businessCity: 'New York',
-    businessCountryRegion: 'USA',
-    businessPhone: '+1-123-456-7890',
-    businessPostalCode: '10001',
-    businessState: 'NY',
-    businessStreet: '123 Business St',
-    company: 'ABC Inc.',
-    emailAddress: 'john.doe@example.com',
-    emailDisplayName: 'John Doe',
-    emailType: 'Work',
-    firstName: 'John',
-    gender: 'Male',
-    initials: 'JD',
-    jobTitle: 'Software Engineer',
-    lastName: 'Doe',
-    notes: 'Some notes about John Doe',
-    priority: 'High',
-    private: 'Some private data',
-    sensitivity: 'Confidential',
-    categories: 'Category1, Category2',
-    activeTrade: true,
-    active: true,
-    id: '1',
-  ),
-  Contact(
-    anniversary: '2024-02-28',
-    birthday: '1985-07-12',
-    businessCity: 'San Francisco',
-    businessCountryRegion: 'USA',
-    businessPhone: '+1-987-654-3210',
-    businessPostalCode: '94105',
-    businessState: 'CA',
-    businessStreet: '456 Tech Ave',
-    company: 'XYZ Corp.',
-    emailAddress: 'jane.smith@example.com',
-    emailDisplayName: 'Jane Smith',
-    emailType: 'Work',
-    firstName: 'Jane',
-    gender: 'Female',
-    initials: 'JS',
-    jobTitle: 'Product Manager',
-    lastName: 'Smith',
-    notes: 'Some notes about Jane Smith',
-    priority: 'Medium',
-    private: 'Some private details',
-    sensitivity: 'Internal',
-    categories: 'Category2, Category3',
-    activeTrade: false,
-    active: true,
-    id: '2',
-  ),
-];
+class BusinessContactsList extends StatefulWidget {
+  @override
+  _BusinessContactsListState createState() => _BusinessContactsListState();
+}
 
-class BusinessContactsList extends StatelessWidget {
+class _BusinessContactsListState extends State<BusinessContactsList> {
+  String? jwt;
+  String _errorMessage = '';
+  List<Contact> _contacts = [];
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContactsData();
+  }
+
+  Future<void> _loadContactsData() async {
+    setState(() {
+      _errorMessage = '';
+    });
+    jwt = await getJwt();
+    if (jwt == null) {
+      // Redirect to the login page
+      Navigator.pushNamed(context, '/');
+    }
+
+  
+    setState(() {
+      _loading = true;
+    });
+
+    final response = await http.get(
+        Uri.parse('http://192.168.1.242:5000/api/rolodex'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "Authorization": "Bearer $jwt"
+        });
+
+    if (response.statusCode == 201) {
+      List<dynamic> data = json.decode(response.body)['rolodex'];
+      setState(() {
+        _contacts =
+            data.map((item) => Contact.fromJson(Map.castFrom(item))).toList();
+      _loading = false;
+      });
+    } else {
+      setState(() {
+        _errorMessage = 'Failed to load contacts data. Please try again later.';
+      _loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: sampleContacts.length,
-        itemBuilder: (context, index) {
-          return ContactTile(contact: sampleContacts[index], index: index);
-        })
-    );
+        appBar: AppBar(
+          title: const Text('Business Contacts'),
+        ),
+        body: Column(children: <Widget>[
+          if (_errorMessage.isNotEmpty)
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red, fontSize: 14),
+                ))
+          else if (_loading)
+            const Center(child: CircularProgressIndicator())
+          else
+            Column(
+              children: [
+                SizedBox(
+                  height: (MediaQuery.of(context).size.height) -
+                      56, // Appbar is 56 logical pixels tall
+                  child: ListView.builder(
+                    itemCount: _contacts.length,
+                    itemBuilder: (context, index) {
+                      return ContactTile(
+                          contact: _contacts[index], index: index);
+                    },
+                  ),
+                ),
+              ],
+            )
+        ]));
   }
 }
