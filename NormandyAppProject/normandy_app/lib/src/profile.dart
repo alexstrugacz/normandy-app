@@ -19,14 +19,18 @@ class Profile extends StatelessWidget {
           childAspectRatio: 1.75,
           children: <Widget>[
             InkWell(
-              onTap: () {
-                // TODO clear favorites in backend/local store?
+              onTap: () async {
+                // assume we are storing in SharedPreferences for now
+                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                // await prefs.setStringList('favorites', <String>[/* favorite id's */]);
+                await prefs.remove('favorites');
               },
               child: GridCard(text: "Clear Favorites", icon: FontAwesomeIcons.star),
             ),
             InkWell(
               onTap: () async {
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
+                // await prefs.setString('authtoken', '<jwt>');
                 await prefs.remove('authtoken');
                 Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
               },
