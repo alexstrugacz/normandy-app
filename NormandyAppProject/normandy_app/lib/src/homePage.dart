@@ -12,6 +12,7 @@ class HomePage extends StatelessWidget {
 
   final Map<String, String> buttonRoutes = {
     'My Profile': '/profile',
+    'Expense Reports': '/expense-report-selection',
     'Quick Links': '/quick-links',
     'Contacts': '/business-contacts-list'
   };
