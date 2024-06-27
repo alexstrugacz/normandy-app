@@ -13,18 +13,39 @@ class ContactTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        child: Text(contact.initials),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 6, right: 4),
+          child: FittedBox(
+            child: Text(contact.initials),
+          ),
+        )
       ),
-      title: Text('${contact.firstName} ${contact.lastName}'),
+      title: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '${contact.firstName} ',
+              style: DefaultTextStyle.of(context).style,
+            ),
+            TextSpan(
+              text: contact.lastName,
+              style: DefaultTextStyle.of(context)
+                  .style
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
       subtitle: Text(contact.jobTitle),
       trailing: Icon(Icons.chevron_right),
       onTap: () {
         Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContactDetailView(contact: sampleContacts[index]),
-              ),
-            );
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ContactDetailView(contact: this.contact),
+          ),
+        );
       },
     );
   }
