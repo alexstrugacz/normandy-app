@@ -12,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  camera: ^0.9.4+5
+  permission_handler: ^10.2.0
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.0.10+1
@@ -22,9 +24,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  camera: ^0.9.4+5
-  permission_handler: ^10.2.0
-
   flutter_lints: ^3.0.0
 
 flutter:
