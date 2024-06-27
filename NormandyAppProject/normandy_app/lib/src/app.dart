@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/DemoPage1.dart';
 import 'package:normandy_app/src/DemoPage2.dart';
 import 'package:normandy_app/src/business_contacts/businessContactsList.dart';
+import 'package:normandy_app/src/chooseImage.dart';
 import 'package:normandy_app/src/homePage.dart';
 import 'package:normandy_app/src/loginPage.dart';
 import 'package:normandy_app/src/expenseReports.dart';
@@ -35,6 +36,8 @@ class MyApp extends StatelessWidget {
               TakeAPhoto(header: 'Take a Photo'),
           '/expense-report-currently-stored': (context) =>
               CurrentlyStored(header: 'Currently Stored'),
+          '/expense-report-choose-image': (context) =>
+              ChooseImage(header: 'Choose Image'),
         });
   }
 }
