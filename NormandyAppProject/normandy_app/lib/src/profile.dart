@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/GridCard.dart';
-
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Profile extends StatelessWidget {
   Profile({super.key});
@@ -18,29 +17,35 @@ class Profile extends StatelessWidget {
           crossAxisCount: 2,
           childAspectRatio: 1.75,
           children: <Widget>[
-            InkWell(
+            GridCard(
+              icon: FontAwesomeIcons.star,
+              text: "Clear Favorites",
               onTap: () async {
                 // assume we are storing in SharedPreferences for now
-                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
                 // await prefs.setStringList('favorites', <String>[/* favorite id's */]);
                 await prefs.remove('favorites');
               },
-              child: GridCard(text: "Clear Favorites", icon: FontAwesomeIcons.star),
             ),
-            InkWell(
+            GridCard(
+              icon: FontAwesomeIcons.user,
+              text: "Logout",
               onTap: () async {
-                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
                 // await prefs.setString('authtoken', '<jwt>');
                 await prefs.remove('authtoken');
                 Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
               },
-              child: GridCard(text: "Logout", icon: FontAwesomeIcons.user),
             ),
-            InkWell(
+            GridCard(
+              icon: FontAwesomeIcons.file,
+              text: "Clear OneDrive Cache",
               onTap: () {
-                // TODO ms graph api calls?
+                // The Cache is local? Because of App sandboxing, I am not sure if we can do this directly.
+                // TODO link to the appropriate page in the Settings app, so users can clear it there.
               },
-              child: GridCard(text: "Clear OneDrive Cache", icon: FontAwesomeIcons.file),
             ),
           ]),
     );
