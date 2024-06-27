@@ -28,6 +28,7 @@ class Profile extends StatelessWidget {
               onTap: () async {
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.remove('authtoken');
+                Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
               },
               child: GridCard(text: "Logout", icon: FontAwesomeIcons.user),
             ),
