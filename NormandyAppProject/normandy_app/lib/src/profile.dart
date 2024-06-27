@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/GridCard.dart';
 
@@ -18,15 +19,22 @@ class Profile extends StatelessWidget {
           childAspectRatio: 1.75,
           children: <Widget>[
             InkWell(
-              onTap: () {},
+              onTap: () {
+                // TODO clear favorites in backend/local store?
+              },
               child: GridCard(text: "Clear Favorites", icon: FontAwesomeIcons.star),
             ),
             InkWell(
-              onTap: () {},
+              onTap: () async {
+                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.remove('authtoken');
+              },
               child: GridCard(text: "Logout", icon: FontAwesomeIcons.user),
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                // TODO ms graph api calls?
+              },
               child: GridCard(text: "Clear OneDrive Cache", icon: FontAwesomeIcons.file),
             ),
           ]),
