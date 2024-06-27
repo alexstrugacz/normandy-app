@@ -34,6 +34,24 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
+
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: Text('My Profile')),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/quick-links');
+              },
+              child: Text('Go to Quick Links'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/business-contacts-list');
+              },
+              child: Text('Business Contacts'),
+            ),
             // Grid of buttons
             Expanded(
                 child: Padding(
