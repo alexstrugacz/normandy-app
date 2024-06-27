@@ -4,7 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
     'Contacts',
-    'Active Trade'
+    'Active Trade',
+    'Employees',
     'Expense Reports',
     'Quick Links',
     'Projects Dashboard',
@@ -15,7 +16,9 @@ class HomePage extends StatelessWidget {
     'My Profile': '/profile',
     'Expense Reports': '/expense-report-selection',
     'Quick Links': '/quick-links',
-    'Contacts': '/business-contacts-list'
+    'Contacts': '/business-contacts-list',
+    'Active Trade': '/select-category-page',
+    'Employees': '/employee-list'
   };
 
   @override
