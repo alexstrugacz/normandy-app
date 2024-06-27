@@ -10,72 +10,43 @@ class HomePage extends StatelessWidget {
     'Projects Dashboard',
     'My Profile',
   ];
+
+  final Map<String, String> buttonRoutes = {
+    'My Profile': '/profile',
+    'Expense Reports': '/expense-report-selection',
+    'Quick Links': '/quick-links',
+    'Contacts': '/business-contacts-list'
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('HomePage'),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SvgPicture.asset(
-                'assets/icon.svg',
-                height: 100,
-                width: 100,
-              ),
+      appBar: AppBar(
+        title: Text('HomePage'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SvgPicture.asset(
+              'assets/icon.svg',
+              height: 80,
+              width: 80,
             ),
-            // Icon above the header
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              // child: Icon(
-              //   Icons.dashboard,
-              //   size: 100,
-              //   color: Colors.blue,
-              // ),
+          ),
+          // Header
+          const Text(
+            'Mon. Aug 17',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
-            // Header
-            const Text(
-              'Mon. Aug 17',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
-                },
-                child: Text('My Profile')),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/quick-links');
-              },
-              child: Text('Go to Quick Links'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/business-contacts-list');
-              },
-              child: Text('Business Contacts'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/select-category-page');
-              },
-              child: Text('Active Trades'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/employee-list');
-              },
-              child: Text('Employee List'),
-            ),
-            // Grid of buttons
-            Expanded(
-                child: Padding(
+          ),
+          SizedBox(height: 16),
+
+          // Grid of buttons
+          Expanded(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
                 crossAxisCount: 2,
@@ -84,14 +55,18 @@ class HomePage extends StatelessWidget {
                 children: List.generate(buttonNames.length, (index) {
                   return ElevatedButton(
                     onPressed: () {
-                      //Route to the corresponding page
-
+                      // Route to the corresponding page if the route exists
+                      if (buttonRoutes.containsKey(buttonNames[index])) {
+                        Navigator.pushNamed(
+                            context, buttonRoutes[buttonNames[index]]!);
+                      } else {
+                        // Handle case where the route is not defined
+                        print('No route defined for ${buttonNames[index]}');
+                      }
                       print('Pressed ${buttonNames[index]}');
                     },
                     style: ElevatedButton.styleFrom(
-                      // Align text to top-left of button
                       alignment: Alignment.topLeft,
-                      // Add padding for better alignment
                       padding: EdgeInsets.all(16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -100,12 +75,14 @@ class HomePage extends StatelessWidget {
                     child: Text(
                       buttonNames[index],
                       style: TextStyle(fontWeight: FontWeight.normal),
-                    ), // Display actual name
+                    ),
                   );
                 }),
               ),
-            )),
-          ],
-        ));
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

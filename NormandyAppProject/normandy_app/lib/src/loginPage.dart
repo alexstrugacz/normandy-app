@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
       "https://normandy-backend.azurewebsites.net/api/auth/login";
 
   SharedPreferences? _prefs;
-  
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +56,6 @@ class _LoginPageState extends State<LoginPage> {
         print(data);
 
         final String jwt = data['token'];
-        
 
         Navigator.pushReplacementNamed(context, '/home');
       } else {
