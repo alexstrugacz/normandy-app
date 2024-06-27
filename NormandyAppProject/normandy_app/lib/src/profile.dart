@@ -36,7 +36,7 @@ class Profile extends StatelessWidget {
                     await SharedPreferences.getInstance();
                 // await prefs.setString('authtoken', '<jwt>');
                 await prefs.remove('authtoken');
-                Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+                if (context.mounted) Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
               },
             ),
             GridCard(
