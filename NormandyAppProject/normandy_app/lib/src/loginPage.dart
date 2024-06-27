@@ -56,8 +56,10 @@ class _LoginPageState extends State<LoginPage> {
         print(data);
 
         final String jwt = data['token'];
-
-        Navigator.pushReplacementNamed(context, '/home');
+        if (_prefs != null) {
+          await _prefs?.setString("jwt", jwt);
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } else {
         setState(() {
           _errorMessage = 'Login failed. Please check your email and password.';

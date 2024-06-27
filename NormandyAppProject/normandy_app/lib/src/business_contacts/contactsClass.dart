@@ -52,4 +52,34 @@ class Contact {
     required this.active,
     required this.id,
   });
+
+  factory Contact.fromJson(Map<String, dynamic> json) {
+    return Contact(
+      anniversary: json['Anniversary'] ?? '',
+      birthday: json['Birthday'] ?? '',
+      businessCity: json['BusinessCity'] ?? '',
+      businessCountryRegion: json['BusinessCountryRegion'] ?? '',
+      businessPhone: json['BusinessPhone'] ?? '',
+      businessPostalCode: json['BusinessPostalCode'] ?? '',
+      businessState: json['BusinessState'] ?? '',
+      businessStreet: json['BusinessStreet'] ?? '',
+      company: json['Company'] ?? '',
+      emailAddress: json['EmailAddress'] ?? '',
+      emailDisplayName: json['EmailDisplayName'] ?? '',
+      emailType: json['EmailType'] ?? '',
+      firstName: json['FirstName'] ?? '',
+      gender: json['Gender'] ?? '',
+      initials: json['Initials'] ?? '',
+      jobTitle: json['JobTitle'] ?? '',
+      lastName: json['LastName'] ?? '',
+      notes: json['Notes'] ?? '',
+      priority: json['Priority'] ?? '',
+      private: json['Private'] ?? '',
+      sensitivity: json['Sensitivity'] ?? '',
+      categories: json['Categories'] ?? '',
+      activeTrade: json['ActiveTrade'] ?? false,
+      active: json['Active'] ?? false,
+      id: json['id'] ?? '',
+    );
+  }
 }

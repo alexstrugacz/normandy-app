@@ -29,3 +29,49 @@ class ContactTile extends StatelessWidget {
     );
   }
 }
+
+
+
+
+  // void initState() {
+  //   super.initState();
+  //   _loadContactsData();
+  // }
+
+  // void _showErrorDialog(String message) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (ctx) => AlertDialog(
+  //       title: Text('Error'),
+  //       content: Text(message),
+  //       actions: <Widget>[
+  //         TextButton(
+  //           child: Text('Okay'),
+  //           onPressed: () {
+  //             Navigator.of(ctx).pop();
+  //           },
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Future<void> _loadContactsData() async {
+  //   print("Load contacts data.");
+  //   _jwt = await getJwt();
+  //   if (_jwt != null) {
+  //     apiService = ApiService(
+  //       baseUrl: 'https://normandy-backend.azurewebsites.net/api/rolodex',
+  //       authToken: _jwt ?? ""
+  //     );
+  //     try {
+  //       futureContacts = apiService.fetchContacts(); 
+  //     } catch (error) {
+  //       _showErrorDialog('Failed to load contacts: $error');
+
+  //     }
+  //   } else {
+  //       _showErrorDialog('User not authenticated.');
+  //   }
+   
+  // }
