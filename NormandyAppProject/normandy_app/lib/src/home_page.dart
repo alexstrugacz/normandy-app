@@ -21,11 +21,13 @@ class HomePage extends StatelessWidget {
     'Employees': '/employee-list'
   };
 
+  HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('HomePage'),
+        title: const Text('HomePage'),
       ),
       body: Column(
         children: [
@@ -45,7 +47,7 @@ class HomePage extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Grid of buttons
           Expanded(
@@ -62,22 +64,18 @@ class HomePage extends StatelessWidget {
                       if (buttonRoutes.containsKey(buttonNames[index])) {
                         Navigator.pushNamed(
                             context, buttonRoutes[buttonNames[index]]!);
-                      } else {
-                        // Handle case where the route is not defined
-                        print('No route defined for ${buttonNames[index]}');
                       }
-                      print('Pressed ${buttonNames[index]}');
                     },
                     style: ElevatedButton.styleFrom(
                       alignment: Alignment.topLeft,
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     child: Text(
                       buttonNames[index],
-                      style: TextStyle(fontWeight: FontWeight.normal),
+                      style: const TextStyle(fontWeight: FontWeight.normal),
                     ),
                   );
                 }),

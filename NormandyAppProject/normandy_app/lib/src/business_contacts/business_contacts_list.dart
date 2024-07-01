@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/business_contacts/contactListTile.dart';
-import 'package:normandy_app/src/business_contacts/contactsClass.dart';
-import 'package:normandy_app/src/api/getJwt.dart';
+import 'package:normandy_app/src/business_contacts/contact_list_tile.dart';
+import 'package:normandy_app/src/business_contacts/contacts_class.dart';
+import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 
 class BusinessContactsList extends StatefulWidget {
+  const BusinessContactsList({super.key});
+
   @override
   _BusinessContactsListState createState() => _BusinessContactsListState();
 }

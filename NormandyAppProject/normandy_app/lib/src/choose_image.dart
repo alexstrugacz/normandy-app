@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
 
-class CurrentlyStored extends StatelessWidget {
+class ChooseImage extends StatelessWidget {
   final String header;
-  CurrentlyStored({required this.header});
+
+  const ChooseImage({super.key, required this.header});
 
   @override
   Widget build(BuildContext context) {

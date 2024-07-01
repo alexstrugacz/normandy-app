@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/business_contacts/contactButtonFunctions.dart';
-import 'package:normandy_app/src/business_contacts/contactsClass.dart';
+import 'package:normandy_app/src/business_contacts/contact_button_functions.dart';
+import 'package:normandy_app/src/business_contacts/contacts_class.dart';
 
 class ContactDetailView extends StatelessWidget {
   final Contact contact;
 
-  ContactDetailView({required this.contact});
+  const ContactDetailView({super.key, required this.contact});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class ContactDetailView extends StatelessWidget {
       appBar: AppBar(
         title: Text("${contact.lastName}, ${contact.firstName}"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -27,61 +27,61 @@ class ContactDetailView extends StatelessWidget {
               radius: 40,
               child: Text(
                 contact.initials,
-                style: TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 24),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               "${contact.firstName} ${contact.lastName}",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
               contact.jobTitle,
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
             Text(
               contact.company,
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  icon: Icon(Icons.call),
+                  icon: const Icon(Icons.call),
                   onPressed: () {
                     handlePhoneCall(contact.businessPhone);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.message),
+                  icon: const Icon(Icons.message),
                   onPressed: () {
                     handleMessage(contact.businessPhone);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.email),
+                  icon: const Icon(Icons.email),
                   onPressed: () {
                     handleEmail(contact.emailAddress);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.star),
+                  icon: const Icon(Icons.star),
                   onPressed: () {
                     // Favorite functionality
                   },
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Phone',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -89,15 +89,15 @@ class ContactDetailView extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Email',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -105,15 +105,15 @@ class ContactDetailView extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Company',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),

@@ -5,7 +5,7 @@ class GridCard extends StatelessWidget {
   final String text;
   final IconData icon;
   final Function()? onTap;
-  GridCard({super.key, required this.text, required this.icon, this.onTap});
+  const GridCard({super.key, required this.text, required this.icon, this.onTap});
   @override
   Widget build(BuildContext context) {
     return InkWell(

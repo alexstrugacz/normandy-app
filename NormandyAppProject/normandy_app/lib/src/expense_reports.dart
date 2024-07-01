@@ -13,10 +13,11 @@ class ExpenseReports extends StatelessWidget {
     'Take Photo': '/expense-report-take-a-photo',
   };
 
-  ExpenseReports({required this.header});
+  ExpenseReports({super.key, required this.header});
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Fix warning below
     return WillPopScope(
       onWillPop: () async {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
@@ -26,7 +27,7 @@ class ExpenseReports extends StatelessWidget {
         appBar: AppBar(
           title: Text(header),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
                   context, '/home', (route) => false);
@@ -55,14 +56,14 @@ class ExpenseReports extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         alignment: Alignment.topLeft,
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
                       child: Text(
                         buttonNames[index],
-                        style: TextStyle(fontWeight: FontWeight.normal),
+                        style: const TextStyle(fontWeight: FontWeight.normal),
                       ),
                     );
                   }),
