@@ -9,10 +9,10 @@ class BusinessContactsList extends StatefulWidget {
   const BusinessContactsList({super.key});
 
   @override
-  _BusinessContactsListState createState() => _BusinessContactsListState();
+  BusinessContactsListState createState() => BusinessContactsListState();
 }
 
-class _BusinessContactsListState extends State<BusinessContactsList> {
+class BusinessContactsListState extends State<BusinessContactsList> {
   String? jwt;
   String _errorMessage = '';
   List<Contact> _contacts = [];
@@ -31,6 +31,7 @@ class _BusinessContactsListState extends State<BusinessContactsList> {
     jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
+      if (!mounted) return;
       Navigator.pushNamed(context, '/');
     }
 
