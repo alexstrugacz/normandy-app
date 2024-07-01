@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "package:normandy_app/src/employee-list/employeeClass.dart";
-import "package:normandy_app/src/employee-list/employeeListTile.dart";
+import "package:normandy_app/src/employee-list/employee_class.dart";
+import "package:normandy_app/src/employee-list/employee_list_tile.dart";
 
   // Sample data for the Person class
   List<Person> people = [
@@ -46,6 +46,8 @@ import "package:normandy_app/src/employee-list/employeeListTile.dart";
   ];
 
 class EmployeeList extends StatelessWidget {
+  const EmployeeList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

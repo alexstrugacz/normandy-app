@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/quickLinkButton.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:normandy_app/src/quick_link_button.dart';
 
 class QuickLinksScreen extends StatelessWidget {
+  const QuickLinksScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +12,7 @@ class QuickLinksScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
-          children: [
+          children: const [
             QuickLinkButton(
               label: 'Teams',
               imagePath: 'assets/images/teams.png',

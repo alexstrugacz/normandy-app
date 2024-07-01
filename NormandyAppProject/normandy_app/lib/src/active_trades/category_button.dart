@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
-import "package:normandy_app/src/active_trades/categoryPage.dart";
+import "package:normandy_app/src/active_trades/category_page.dart";
 
 class CategoryButton extends StatelessWidget {
   final String label;
 
-  CategoryButton(this.label);
+  const CategoryButton(this.label, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class CategoryButton extends StatelessWidget {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
       ),
     );

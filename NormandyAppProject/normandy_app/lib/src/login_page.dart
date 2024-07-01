@@ -4,11 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _usernameController = TextEditingController();
@@ -49,15 +51,10 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 201) {
-        print(response.statusCode);
         final Map<String, dynamic> data = jsonDecode(response.body);
-
-        print("Data");
-        print(data);
-
         final String jwt = data['token'];
         _prefs?.setString("jwt", jwt);
-
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() {
@@ -117,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _usernameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                   ),
@@ -127,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                   ),
@@ -137,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (_errorMessage.isNotEmpty)
                   Text(
                     _errorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 14),
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
                   ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -148,9 +145,9 @@ class _LoginPageState extends State<LoginPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, // Background color
                         foregroundColor: Colors.white, // Text color
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                             horizontal: 32, vertical: 0), // Padding
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold), // Text style
                         shape: RoundedRectangleBorder(
@@ -158,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                               BorderRadius.circular(8), // Reduced border radius
                         ),
                       ),
-                      child: Text('Log In'),
+                      child: const Text('Log In'),
                     ))
               ],
             ))),

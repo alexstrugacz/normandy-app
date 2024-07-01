@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/active_trades/categoryButton.dart';
+import 'package:normandy_app/src/active_trades/category_button.dart';
 
 class SelectCategoryPage extends StatelessWidget {
+  const SelectCategoryPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Active Trades'),
+        title: const Text('Active Trades'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushNamed(context, '/home');
           },
@@ -19,20 +21,20 @@ class SelectCategoryPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Select Category',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                children: [
+                children: const [
                   CategoryButton('Demolition'),
                   CategoryButton('Plumbing'),
                   CategoryButton('Electrical'),

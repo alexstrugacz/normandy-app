@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/business_contacts/businessContactDetails.dart';
-import 'package:normandy_app/src/business_contacts/businessContactsList.dart';
-import 'package:normandy_app/src/business_contacts/contactsClass.dart';
+import 'package:normandy_app/src/business_contacts/business_contact_details.dart';
+import 'package:normandy_app/src/business_contacts/contacts_class.dart';
 
 class ContactTile extends StatelessWidget {
   final Contact contact;
   final int index;
 
-  ContactTile({required this.contact, required this.index});
+  const ContactTile({super.key, required this.contact, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +36,13 @@ class ContactTile extends StatelessWidget {
         ),
       ),
       subtitle: Text(contact.jobTitle),
-      trailing: Icon(Icons.chevron_right),
+      trailing: const Icon(Icons.chevron_right),
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) =>
-                ContactDetailView(contact: this.contact),
+                ContactDetailView(contact: contact),
           ),
         );
       },

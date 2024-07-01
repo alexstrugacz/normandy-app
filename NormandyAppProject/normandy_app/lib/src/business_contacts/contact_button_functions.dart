@@ -1,7 +1,7 @@
 import 'package:url_launcher/url_launcher.dart';
 
 handlePhoneCall(String phoneNumber) async {
-  var url = Uri.parse("tel:${phoneNumber}");
+  var url = Uri.parse("tel:$phoneNumber");
   if(await canLaunchUrl(url)) {
     await launchUrl(url);
   } else {
@@ -10,7 +10,7 @@ handlePhoneCall(String phoneNumber) async {
 }
 
 handleMessage(String phoneNumber) async {
-  var url = Uri.parse("sms:${phoneNumber}");
+  var url = Uri.parse("sms:$phoneNumber");
   if(await canLaunchUrl(url)) {
     await launchUrl(url);
   } else {
@@ -19,7 +19,7 @@ handleMessage(String phoneNumber) async {
 }
 
 handleEmail(String email) async {
-  var url = Uri.parse("mailto:${email}");
+  var url = Uri.parse("mailto:$email");
   if(await canLaunchUrl(url)) {
     await launchUrl(url);
   } else {

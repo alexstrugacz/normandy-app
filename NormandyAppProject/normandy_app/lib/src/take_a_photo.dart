@@ -5,13 +5,13 @@ import 'package:permission_handler/permission_handler.dart';
 class TakeAPhoto extends StatefulWidget {
   final String header;
 
-  const TakeAPhoto({required this.header, Key? key}) : super(key: key);
+  const TakeAPhoto({required this.header, super.key});
 
   @override
-  _TakeAPhotoState createState() => _TakeAPhotoState();
+  TakeAPhotoState createState() => TakeAPhotoState();
 }
 
-class _TakeAPhotoState extends State<TakeAPhoto> {
+class TakeAPhotoState extends State<TakeAPhoto> {
   CameraController? _controller;
   List<CameraDescription>? cameras;
   bool isCameraInitialized = false;
@@ -35,8 +35,9 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         });
       }
     } else {
+        if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('Camera permission is required to take photos.')),
       );
     }
@@ -56,7 +57,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       ),
       body: isCameraInitialized
           ? CameraPreview(_controller!)
-          : Center(
+          : const Center(
               child: Text('Initializing Camera...'),
             ),
     );

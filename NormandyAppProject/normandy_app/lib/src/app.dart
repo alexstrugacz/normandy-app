@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/DemoPage1.dart';
-import 'package:normandy_app/src/DemoPage2.dart';
-import 'package:normandy_app/src/active_trades/activeTradesCategories.dart';
-import 'package:normandy_app/src/business_contacts/businessContactsList.dart';
-import 'package:normandy_app/src/employee-list/employeeList.dart';
-import 'package:normandy_app/src/chooseImage.dart';
-import 'package:normandy_app/src/homePage.dart';
-import 'package:normandy_app/src/loginPage.dart';
-import 'package:normandy_app/src/expenseReports.dart';
-import 'package:normandy_app/src/takeAPhoto.dart';
-import 'package:normandy_app/src/currentlyStored.dart';
+import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
+import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
+import 'package:normandy_app/src/employee-list/employee_list.dart';
+import 'package:normandy_app/src/choose_image.dart';
+import 'package:normandy_app/src/home_page.dart';
+import 'package:normandy_app/src/login_page.dart';
+import 'package:normandy_app/src/expense_reports.dart';
+import 'package:normandy_app/src/take_a_photo.dart';
+import 'package:normandy_app/src/currently_stored.dart';
 import 'profile.dart';
-import 'package:normandy_app/src/quickLinkScreen.dart';
+import 'package:normandy_app/src/quick_link_screen.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,25 +23,23 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Roboto',
         ),
-        home: LoginPage(),
+        home: const LoginPage(),
         routes: {
           "/home": (context) => HomePage(),
-          "/business-contacts-list": (context) => BusinessContactsList(),
-          "/profile": (context) => Profile(),
-          "/demo-page-1": (context) => DemoPage1(),
-          "/demo-page-2": (context) => DemoPage2(),
-          "/quick-links": (context) => QuickLinksScreen(),
-          "/select-category-page": (context) => SelectCategoryPage(),
-          "/employee-list": (context) => EmployeeList(),
-          "/projects-dashboard": (context) => DemoPage1(),
+          "/business-contacts-list": (context) => const BusinessContactsList(),
+          "/profile": (context) => const Profile(),
+          "/quick-links": (context) => const QuickLinksScreen(),
+          "/select-category-page": (context) => const SelectCategoryPage(),
+          "/employee-list": (context) => const EmployeeList(),
+          "/projects-dashboard": (context) => const Text("Coming soon..."),
           '/expense-report-selection': (context) =>
               ExpenseReports(header: 'Expense Reports'),
           '/expense-report-take-a-photo': (context) =>
-              TakeAPhoto(header: 'Take a Photo'),
+              const TakeAPhoto(header: 'Take a Photo'),
           '/expense-report-currently-stored': (context) =>
-              CurrentlyStored(header: 'Currently Stored'),
+              const CurrentlyStored(header: 'Currently Stored'),
           '/expense-report-choose-image': (context) =>
-              ChooseImage(header: 'Choose Image'),
+              const ChooseImage(header: 'Choose Image'),
         });
   }
 }

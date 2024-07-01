@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 class CategoryPage extends StatelessWidget {
   final String category;
 
-  CategoryPage(this.category);
+  const CategoryPage(this.category, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class CategoryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(category),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -20,7 +20,7 @@ class CategoryPage extends StatelessWidget {
       body: Center(
         child: Text(
           '$category page',
-          style: TextStyle(fontSize: 24),
+          style: const TextStyle(fontSize: 24),
         ),
       ),
     );

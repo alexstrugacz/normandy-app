@@ -6,8 +6,8 @@ class QuickLinkButton extends StatelessWidget {
   final String imagePath;
   final String url;
 
-  QuickLinkButton(
-      {required this.label, required this.imagePath, required this.url});
+  const QuickLinkButton(
+      {super.key, required this.label, required this.imagePath, required this.url});
 
   Future<void> _launchURL() async {
     if (!await launchUrl(Uri.parse(url))) {
@@ -20,8 +20,8 @@ class QuickLinkButton extends StatelessWidget {
     return GestureDetector(
       onTap: _launchURL,
       child: Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           border: Border.all(color: Colors.grey[400]!),
@@ -32,10 +32,10 @@ class QuickLinkButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(imagePath, height: 70, width: 70),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(
               label,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),

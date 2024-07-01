@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/business_contacts/contactButtonFunctions.dart';
-import 'package:normandy_app/src/employee-list/employeeClass.dart';
-import 'package:normandy_app/src/employee-list/launchTeams.dart';
+import 'package:normandy_app/src/business_contacts/contact_button_functions.dart';
+import 'package:normandy_app/src/employee-list/employee_class.dart';
+import 'package:normandy_app/src/employee-list/launch_teams.dart';
 
 class EmployeeItemDetails extends StatelessWidget {
   final Person person;
 
-  EmployeeItemDetails({required this.person});
+  const EmployeeItemDetails({super.key, required this.person});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class EmployeeItemDetails extends StatelessWidget {
       appBar: AppBar(
         title: Text("${person.lastName}, ${person.firstName}"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -24,63 +24,63 @@ class EmployeeItemDetails extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 40,
               child: Text(
                 'NA',
                 style: TextStyle(fontSize: 24),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               "${person.firstName} ${person.lastName}",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
               '${person.jobTitle} - ${person.department}',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
-            Text(
+            const Text(
               'Normandy Remodeling',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  icon: Icon(Icons.call),
+                  icon: const Icon(Icons.call),
                   onPressed: () {
                     handlePhoneCall(person.cellPhone);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.message),
+                  icon: const Icon(Icons.message),
                   onPressed: () {
                     handleMessage(person.cellPhone);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.email),
+                  icon: const Icon(Icons.email),
                   onPressed: () {
                     handleEmail(person.email);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.star),
+                  icon: const Icon(Icons.star),
                   onPressed: () {
                     // Favorite functionality
                   },
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            new GestureDetector(
+            const SizedBox(height: 16),
+            GestureDetector(
               onTap: () => {
                 handleLaunchTeamsCall(person.email)
               },
               child: Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -89,8 +89,8 @@ class EmployeeItemDetails extends StatelessWidget {
                     Row(
                       children: [
                         Image.asset('assets/images/teamsLogo.png', width: 20, height: 20, fit: BoxFit.cover,),
-                        SizedBox(width: 5),
-                        Text(
+                        const SizedBox(width: 5),
+                        const Text(
                           'Call via Teams',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -101,13 +101,13 @@ class EmployeeItemDetails extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 8),
-            new GestureDetector(
+            const SizedBox(height: 8),
+            GestureDetector(
               onTap: () => {
                 handleLaunchTeamsMessage(person.email)
               },
               child: Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -116,8 +116,8 @@ class EmployeeItemDetails extends StatelessWidget {
                     Row(
                       children: [
                         Image.asset('assets/images/teamsLogo.png', width: 20, height: 20, fit: BoxFit.cover,),
-                        SizedBox(width: 5),
-                        Text(
+                        const SizedBox(width: 5),
+                        const Text(
                           'Message via Teams',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -128,15 +128,15 @@ class EmployeeItemDetails extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Phone',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -144,15 +144,15 @@ class EmployeeItemDetails extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Email',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -160,12 +160,12 @@ class EmployeeItemDetails extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               color: Colors.grey[200],
               width: MediaQuery.of(context).size.width,
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
