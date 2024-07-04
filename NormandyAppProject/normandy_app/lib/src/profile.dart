@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'components/grid_card.dart';
 
@@ -20,11 +22,9 @@ class Profile extends StatelessWidget {
               icon: FontAwesomeIcons.star,
               text: "Clear Favorites",
               onTap: () async {
-                // assume we are storing in SharedPreferences for now
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
-                // await prefs.setStringList('favorites', <String>[/* favorite id's */]);
-                await prefs.remove('favorites');
+                await prefs.setStringList('favoriteContacts', []);
               },
             ),
             GridCard(
@@ -33,17 +33,20 @@ class Profile extends StatelessWidget {
               onTap: () async {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
-                // await prefs.setString('authtoken', '<jwt>');
-                await prefs.remove('authtoken');
+                await prefs.remove('jwt');
                 if (context.mounted) Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
               },
             ),
             GridCard(
               icon: FontAwesomeIcons.file,
               text: "Clear OneDrive Cache",
-              onTap: () {
+              onTap: () async {
                 // The Cache is local? Because of App sandboxing, I am not sure if we can do this directly.
                 // TODO link to the appropriate page in the Settings app, so users can clear it there.
+                String url = (Theme.of(context).platform == TargetPlatform.android)
+                  ? 'package:com.microsoft.skydrive'
+                  : 'app-settings:';
+                await launchUrlString(url);
               },
             ),
           ]),
