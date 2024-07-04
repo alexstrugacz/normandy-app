@@ -1,21 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/business_contacts/contact_button_functions.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
+import 'package:normandy_app/src/helpers/check_contact_is_favorite.dart';
+import 'package:normandy_app/src/helpers/toggle_favorite_contact.dart';
 
-class ContactDetailView extends StatelessWidget {
+class ContactDetailView extends StatefulWidget {
   final Contact contact;
 
   const ContactDetailView({super.key, required this.contact});
 
   @override
+  ContactDetailViewState createState() => ContactDetailViewState();
+}
+
+class ContactDetailViewState extends State<ContactDetailView> {
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadContactIsFavorite();
+  }
+
+  void loadContactIsFavorite() async {
+    bool currentlyIsFavorite = await checkContactIsFavorite(widget.contact.id);
+    setState(() {
+      isFavorite = currentlyIsFavorite;
+    });
+  }
+
+  void toggleFavorite() async {
+    await toggleFavoriteContact(widget.contact.id);
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${contact.lastName}, ${contact.firstName}"),
+        title: Text(_getHeaderText()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context, true);
           },
         ),
       ),
@@ -26,23 +55,12 @@ class ContactDetailView extends StatelessWidget {
             CircleAvatar(
               radius: 40,
               child: Text(
-                contact.initials,
+                widget.contact.initials,
                 style: const TextStyle(fontSize: 24),
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              "${contact.firstName} ${contact.lastName}",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              contact.jobTitle,
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            Text(
-              contact.company,
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
-            ),
+            ..._buildTitleTextSpans(context),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -50,25 +68,26 @@ class ContactDetailView extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.call),
                   onPressed: () {
-                    handlePhoneCall(contact.businessPhone);
+                    handlePhoneCall(widget.contact.businessPhone);
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.message),
                   onPressed: () {
-                    handleMessage(contact.businessPhone);
+                    handleMessage(widget.contact.businessPhone);
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.email),
                   onPressed: () {
-                    handleEmail(contact.emailAddress);
+                    handleEmail(widget.contact.emailAddress);
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.star),
+                  icon: const Icon(Icons.star), 
+                  color: isFavorite ? const Color.fromARGB(255, 221, 150, 8) : const Color.fromARGB(255, 80, 80, 80),
                   onPressed: () {
-                    // Favorite functionality
+                    toggleFavorite();
                   },
                 ),
               ],
@@ -85,7 +104,7 @@ class ContactDetailView extends StatelessWidget {
                     'Phone',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(contact.businessPhone),
+                  Text(widget.contact.businessPhone),
                 ],
               ),
             ),
@@ -101,7 +120,7 @@ class ContactDetailView extends StatelessWidget {
                     'Email',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(contact.emailAddress),
+                  Text(widget.contact.emailAddress),
                 ],
               ),
             ),
@@ -117,8 +136,9 @@ class ContactDetailView extends StatelessWidget {
                     'Company',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(contact.company),
-                  Text("${contact.businessStreet} ${contact.businessCity}, ${contact.businessCountryRegion} ${contact.businessPostalCode}"),
+                  Text(widget.contact.company),
+                  Text(
+                      "${widget.contact.businessStreet} ${widget.contact.businessCity}, ${widget.contact.businessCountryRegion} ${widget.contact.businessPostalCode}"),
                 ],
               ),
             ),
@@ -126,5 +146,39 @@ class ContactDetailView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getHeaderText() {
+    if (widget.contact.firstName.isEmpty && widget.contact.lastName.isEmpty) {
+      return widget.contact.company;
+    } else {
+      return '${widget.contact.lastName}, ${widget.contact.firstName}';
+    }
+  }
+
+  List<Text> _buildTitleTextSpans(BuildContext context) {
+    if (widget.contact.firstName.isEmpty && widget.contact.lastName.isEmpty) {
+      return [
+        Text(
+          widget.contact.company,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ];
+    } else {
+      return [
+        Text(
+          "${widget.contact.firstName} ${widget.contact.lastName}",
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          widget.contact.jobTitle,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+        Text(
+          widget.contact.company,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      ];
+    }
   }
 }

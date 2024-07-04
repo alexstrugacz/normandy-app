@@ -24,6 +24,7 @@ class Contact {
   bool activeTrade;
   bool active;
   String id;
+  bool favorite = false;
 
   Contact({
     required this.anniversary,
@@ -53,8 +54,27 @@ class Contact {
     required this.id,
   });
 
+  void updateFavorite(bool isFavorite) {
+    favorite = isFavorite;
+  }
   
   factory Contact.fromJson(dynamic json) {
+
+    String initials;
+    try {
+      if (json['FirstName'] == null && json['LastName'] == null) {
+        initials = (json['Company'] ?? "").substring(0, 2);
+      } else if (json['FirstName'] == null) {
+        initials = (json['LastName'] ?? "").substring(0, 2);
+      } else if (json['LastName'] == null) {
+        initials = (json['FirstName'] ?? "").substring(0, 2);
+      } else {
+        initials = (json['FirstName'] ?? "").substring(0, 1) + (json['LastName'] ?? "").substring(0, 1);
+      }
+    } catch (e) {
+      initials = "";
+    }
+
     return Contact(
       anniversary: json['Anniversary'] ?? '',
       birthday: json['Birthday'] ?? '',
@@ -70,7 +90,7 @@ class Contact {
       emailType: json['EmailType'] ?? '',
       firstName: json['FirstName'] ?? '',
       gender: json['Gender'] ?? '',
-      initials: json['Initials'] ?? '',
+      initials: initials.toUpperCase(),
       jobTitle: json['JobTitle'] ?? '',
       lastName: json['LastName'] ?? '',
       notes: json['Notes'] ?? '',
@@ -80,7 +100,7 @@ class Contact {
       categories: json['Categories'] ?? '',
       activeTrade: json['ActiveTrade'] ?? false,
       active: json['Active'] ?? false,
-      id: json['id'] ?? '',
+      id: json['_id'] ?? '',
     );
   }
 }
