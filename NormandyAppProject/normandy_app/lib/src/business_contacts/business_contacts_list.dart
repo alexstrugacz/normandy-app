@@ -83,6 +83,8 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       List<Contact> sortedContacts = await sortContacts(
           data.map((item) => Contact.fromJson(Map.castFrom(item))).toList());
 
+      print(sortedContacts);
+
       setState(() {
         _contacts = sortedContacts;
         _loading = false;
@@ -96,21 +98,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   }
 
   List<String> _getSearchTerms() {
-    List<String> updatedSearchTerms = [];
-
-    for (Contact contact in _contacts) {
-      if (contact.firstName.isNotEmpty && contact.lastName.isNotEmpty) {
-        updatedSearchTerms.add('${contact.firstName} ${contact.lastName}');
-      } else if (contact.firstName.isNotEmpty) {
-        updatedSearchTerms.add(contact.firstName);
-      } else if (contact.lastName.isNotEmpty) {
-        updatedSearchTerms.add(contact.lastName);
-      } else if (contact.company.isNotEmpty) {
-        updatedSearchTerms.add(contact.company);
-      }
-    }
-
-    return updatedSearchTerms;
+    return _contacts.map((contact) => contact.searchTerm).toList();
   }
 
   @override
@@ -206,26 +194,17 @@ class CustomSearchDelegate extends SearchDelegate {
         });
   }
 
-  void _handleReturn() {
-    log("handle return.");
-  }
-
   @override
   Widget buildSuggestions(BuildContext context) {
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
     List<String> matchQuery = [];
-    List<Contact> matchingContacts = [];
 
-    int i = 0;
     for (String term in searchTerms) {
-      Contact matchingContact = contacts[i];
       if (term.toLowerCase().trim().contains(query.toLowerCase().trim())) {
         matchQuery.add(term);
-        matchingContacts.add(matchingContact);
       }
-      i++;
     }
     return ListView.builder(
         itemCount: matchQuery.length,
@@ -233,11 +212,17 @@ class CustomSearchDelegate extends SearchDelegate {
           return ListTile(
               title: Text(matchQuery[index]),
               onTap: () async {
+                String contactName = matchQuery[index];
+                Contact matchedContact = contacts.firstWhere(
+                    (contact) => contact.searchTerm == contactName);
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => ContactDetailView(
-                            contact: matchingContacts[index])));
+                          contact: matchedContact
+                        )
+                    )
+                );
               });
         });
   }
