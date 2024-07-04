@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:normandy_app/src/components/grid_card.dart';
+import 'package:normandy_app/src/homepage_button.dart';
 
 class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
@@ -12,6 +16,16 @@ class HomePage extends StatelessWidget {
     'My Profile',
   ];
 
+  final List<IconData> buttonIcons = [
+    FontAwesomeIcons.addressBook,
+    FontAwesomeIcons.user,
+    FontAwesomeIcons.users,
+    FontAwesomeIcons.fileInvoiceDollar,
+    FontAwesomeIcons.link,
+    FontAwesomeIcons.chartBar,
+    FontAwesomeIcons.user,
+  ];
+
   final Map<String, String> buttonRoutes = {
     'My Profile': '/profile',
     'Expense Reports': '/expense-report-selection',
@@ -21,33 +35,35 @@ class HomePage extends StatelessWidget {
     'Employees': '/employee-list'
   };
 
+  String _getCurrentDate() {
+    DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('EEEE, MMM. d');
+    return formatter.format(now);
+  }
+
   HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('HomePage'),
-      ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 16),
             child: SvgPicture.asset(
               'assets/icon.svg',
               height: 80,
               width: 80,
             ),
           ),
-          // Header
-          const Text(
-            'Mon. Aug 17',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
+          Padding(
+            // no top padding. only left right and bottom
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Text(
+              _getCurrentDate(),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            )),
 
           // Grid of buttons
           Expanded(
@@ -57,26 +73,17 @@ class HomePage extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 16.0,
                 crossAxisSpacing: 16.0,
+                childAspectRatio: 1.75,
                 children: List.generate(buttonNames.length, (index) {
-                  return ElevatedButton(
-                    onPressed: () {
-                      // Route to the corresponding page if the route exists
-                      if (buttonRoutes.containsKey(buttonNames[index])) {
-                        Navigator.pushNamed(
-                            context, buttonRoutes[buttonNames[index]]!);
+                  return HomepageButton(
+                      icon: buttonIcons[index],
+                      text: buttonNames[index],
+                      onTap: () async {
+                        if (buttonRoutes.containsKey(buttonNames[index])) {
+                          Navigator.pushNamed(
+                              context, buttonRoutes[buttonNames[index]]!);
+                        }
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      alignment: Alignment.topLeft,
-                      padding: const EdgeInsets.all(16.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: Text(
-                      buttonNames[index],
-                      style: const TextStyle(fontWeight: FontWeight.normal),
-                    ),
                   );
                 }),
               ),
