@@ -25,6 +25,7 @@ class Contact {
   bool active;
   String id;
   bool favorite = false;
+  String searchTerm = "";
 
   Contact({
     required this.anniversary,
@@ -52,11 +53,31 @@ class Contact {
     required this.activeTrade,
     required this.active,
     required this.id,
-  });
+  }) {
+    searchTerm = _generateSearchTerm();
+  }
+
+
+  String _generateSearchTerm() {
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      return '$firstName $lastName';
+    } else if (firstName.isNotEmpty) {
+      return firstName;
+    } else if (lastName.isNotEmpty) {
+      return lastName;
+    } else if (company.isNotEmpty) {
+      return company;
+    } else {
+      return '';
+    }
+  }
+
 
   void updateFavorite(bool isFavorite) {
     favorite = isFavorite;
   }
+
+
   
   factory Contact.fromJson(dynamic json) {
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/business_contacts/contact_button_functions.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
+import 'package:normandy_app/src/employee-list/launch_teams.dart';
 import 'package:normandy_app/src/helpers/check_contact_is_favorite.dart';
 import 'package:normandy_app/src/helpers/toggle_favorite_contact.dart';
 
@@ -34,6 +35,14 @@ class ContactDetailViewState extends State<ContactDetailView> {
     setState(() {
       isFavorite = !isFavorite;
     });
+  }
+
+  void _handleRedirectToTeamsMessage() async {
+    handleLaunchTeamsMessage(widget.contact.emailAddress);
+  }
+
+  void _handleRedirectToTeamsCall() async {
+    handleLaunchTeamsCall(widget.contact.emailAddress);
   }
 
   @override
@@ -84,8 +93,10 @@ class ContactDetailViewState extends State<ContactDetailView> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.star), 
-                  color: isFavorite ? const Color.fromARGB(255, 221, 150, 8) : const Color.fromARGB(255, 80, 80, 80),
+                  icon: const Icon(Icons.star),
+                  color: isFavorite
+                      ? const Color.fromARGB(255, 221, 150, 8)
+                      : const Color.fromARGB(255, 80, 80, 80),
                   onPressed: () {
                     toggleFavorite();
                   },
@@ -93,9 +104,73 @@ class ContactDetailViewState extends State<ContactDetailView> {
               ],
             ),
             const SizedBox(height: 16),
+            if (widget.contact.emailType == "EX")
+              Column(children: [
+                GestureDetector(
+                  onTap: () {
+                    _handleRedirectToTeamsMessage();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Image.asset("assets/images/teams.png",
+                              height: 25, width: 25),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Message via Teams',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          )
+                        ])
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () {
+                    _handleRedirectToTeamsCall();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Image.asset("assets/images/teams.png",
+                              height: 25, width: 25),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Call via Teams',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          )
+                        ])
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ]),
             Container(
               padding: const EdgeInsets.all(8.0),
-              color: Colors.grey[200],
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(5),
+              ),
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
