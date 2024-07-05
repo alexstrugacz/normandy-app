@@ -21,6 +21,7 @@ class ContactDetailViewState extends State<ContactDetailView> {
   void initState() {
     super.initState();
     loadContactIsFavorite();
+    print(_getAddress());
   }
 
   void loadContactIsFavorite() async {
@@ -49,7 +50,8 @@ class ContactDetailViewState extends State<ContactDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getHeaderText()),
+        centerTitle: false,
+        title: null,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -76,21 +78,21 @@ class ContactDetailViewState extends State<ContactDetailView> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.call),
-                  onPressed: () {
+                  onPressed: widget.contact.businessPhone.isNotEmpty ? () {
                     handlePhoneCall(widget.contact.businessPhone);
-                  },
+                  } : null
                 ),
                 IconButton(
                   icon: const Icon(Icons.message),
-                  onPressed: () {
+                  onPressed: widget.contact.businessPhone.isNotEmpty ? () {
                     handleMessage(widget.contact.businessPhone);
-                  },
+                  } : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.email),
-                  onPressed: () {
+                  onPressed: widget.contact.emailAddress.isNotEmpty ? () {
                     handleEmail(widget.contact.emailAddress);
-                  },
+                  } : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.star),
@@ -179,7 +181,10 @@ class ContactDetailViewState extends State<ContactDetailView> {
                     'Phone',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(widget.contact.businessPhone),
+                  Text(
+                    widget.contact.businessPhone.isEmpty ? "No phone available." : widget.contact.businessPhone,
+                    style: TextStyle(color: widget.contact.businessPhone.isEmpty ? const Color.fromARGB(100, 0, 0, 0) : const Color.fromARGB(255, 0, 0, 0))
+                  )
                 ],
               ),
             ),
@@ -195,7 +200,10 @@ class ContactDetailViewState extends State<ContactDetailView> {
                     'Email',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(widget.contact.emailAddress),
+                  Text(
+                    widget.contact.emailAddress.isEmpty ? "No email available." : widget.contact.emailAddress,
+                    style: TextStyle(color: widget.contact.emailAddress.isEmpty ? const Color.fromARGB(100, 0, 0, 0) : const Color.fromARGB(255, 0, 0, 0))
+                  ),
                 ],
               ),
             ),
@@ -206,15 +214,8 @@ class ContactDetailViewState extends State<ContactDetailView> {
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Company',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(widget.contact.company),
-                  Text(
-                      "${widget.contact.businessStreet} ${widget.contact.businessCity}, ${widget.contact.businessCountryRegion} ${widget.contact.businessPostalCode}"),
-                ],
+                children: 
+                  _buildLocationTextSpans()
               ),
             ),
           ],
@@ -223,13 +224,19 @@ class ContactDetailViewState extends State<ContactDetailView> {
     );
   }
 
-  String _getHeaderText() {
-    if (widget.contact.firstName.isEmpty && widget.contact.lastName.isEmpty) {
-      return widget.contact.company;
-    } else {
-      return '${widget.contact.lastName}, ${widget.contact.firstName}';
-    }
-  }
+  // String _getHeaderText() {
+  //   if (widget.contact.firstName.isEmpty && widget.contact.lastName.isEmpty) {
+  //     return widget.contact.company;
+  //   } else if (widget.contact.firstName.isNotEmpty && widget.contact.lastName.isNotEmpty) {
+  //     return '${widget.contact.lastName}, ${widget.contact.firstName}';
+  //   } else if (widget.contact.firstName.isNotEmpty) {
+  //     return widget.contact.firstName;
+  //   } else if (widget.contact.lastName.isNotEmpty) {
+  //     return widget.contact.lastName;
+  //   } else {
+  //     return "";
+  //   }
+  // }
 
   List<Text> _buildTitleTextSpans(BuildContext context) {
     if (widget.contact.firstName.isEmpty && widget.contact.lastName.isEmpty) {
@@ -240,20 +247,61 @@ class ContactDetailViewState extends State<ContactDetailView> {
         ),
       ];
     } else {
-      return [
+      List<Text> textList = [
         Text(
-          "${widget.contact.firstName} ${widget.contact.lastName}",
+          "${widget.contact.firstName} ${widget.contact.lastName}".trim(),
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          widget.contact.jobTitle,
-          style: const TextStyle(fontSize: 18, color: Colors.grey),
-        ),
-        Text(
-          widget.contact.company,
-          style: const TextStyle(fontSize: 18, color: Colors.grey),
-        ),
+        )
       ];
+
+      if (widget.contact.jobTitle.isNotEmpty) {
+        textList.add(
+          Text(
+            widget.contact.jobTitle,
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
+          )
+        );
+      }
+
+      if (widget.contact.company.isNotEmpty) {
+        textList.add(
+          Text(
+            widget.contact.company,
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
+          )
+        );
+      }
+      return textList;
     }
+  }
+
+  List<Text> _buildLocationTextSpans() {
+    List<Text> locationText = [
+      const Text(
+        'Company',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      )
+    ];
+    if (widget.contact.company.isNotEmpty) {
+      locationText.add(Text(widget.contact.company));
+    }
+    locationText.add(Text(_getAddress()));
+    return locationText;
+  }
+
+  String _getAddress() {
+    String address = widget.contact.businessStreet.trim();
+    if (widget.contact.businessCity.isNotEmpty) {
+      address += " ${widget.contact.businessCity}";
+    }
+    if (widget.contact.businessCountryRegion.isNotEmpty) {
+      address += ", ${widget.contact.businessCountryRegion}";
+    }
+
+    if (widget.contact.businessPostalCode.isNotEmpty) {
+      address += " ${widget.contact.businessPostalCode}";
+    }
+
+    return address.trim();
   }
 }

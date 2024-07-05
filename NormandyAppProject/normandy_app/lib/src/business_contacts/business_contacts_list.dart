@@ -83,9 +83,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       List<Contact> sortedContacts = await sortContacts(
           data.map((item) => Contact.fromJson(Map.castFrom(item))).toList());
 
-      print(sortedContacts);
-
-      setState(() {
+      setState(() { 
         _contacts = sortedContacts;
         _loading = false;
       });
@@ -126,25 +124,25 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                   style: const TextStyle(color: Colors.red, fontSize: 14),
                 ))
           else if (_loading)
-            const Center(child: CircularProgressIndicator())
-          else
-            Column(
-              children: [
-                SizedBox(
-                  height: (MediaQuery.of(context).size.height) -
-                      56, // Appbar is 56 logical pixels tall
-                  child: ListView.builder(
-                    itemCount: _contacts.length,
-                    itemBuilder: (context, index) {
-                      return ContactTile(
-                          contact: _contacts[index], 
-                          index: index,
-                          onRefresh: _refreshContactOrder
-                        );
-                    },
-                  ),
+            const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Center(child: CircularProgressIndicator())
+            )
+          else Expanded(
+              child: 
+                ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: _contacts.length,
+                  itemBuilder: (context, index) {
+                    return ContactTile(
+                      key: UniqueKey(), // Ensure each ContactTile has a unique key
+                      contact: _contacts[index], 
+                      index: index,
+                      onRefresh: _refreshContactOrder,
+                    );
+                  },
                 ),
-              ],
+
             )
         ]));
   }

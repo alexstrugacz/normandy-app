@@ -20,9 +20,14 @@ class ContactTile extends StatelessWidget {
         ),
       )),
       title: RichText(
-        text: TextSpan(children: _buildTitleTextSpans(context))
+        text: TextSpan(
+          children: _buildTitleTextSpans(context),
+        ) 
       ),
-      subtitle: Text(contact.jobTitle),
+      subtitle: (_generateSubtitleText() != "") ? Text(
+        _generateSubtitleText() ?? "",
+        style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 123, 123, 123))
+      ) : null,
       trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,6 +46,21 @@ class ContactTile extends StatelessWidget {
       }
     );
   }
+  
+  String? _generateSubtitleText() {
+    if (contact.firstName == "" && contact.lastName == "") {
+      return null;
+    }
+    if (contact.jobTitle != "" && contact.company != "") {
+      return '${contact.company}, ${contact.jobTitle}';
+    } else if (contact.jobTitle != "") {
+      return contact.jobTitle;
+    } else if (contact.company != "") {
+      return contact.company;
+    } else {
+      return null;
+    }
+  }
 
   List<TextSpan> _buildTitleTextSpans(BuildContext context) {
     if (contact.firstName.isEmpty && contact.lastName.isEmpty) {
@@ -53,15 +73,20 @@ class ContactTile extends StatelessWidget {
     } else {
       return [
         TextSpan(
-          text: '${contact.firstName} ',
-          style: DefaultTextStyle.of(context).style,
+          text: '${contact.firstName.trim()} ',
+          style: DefaultTextStyle.of(context)
+            .style
+            .copyWith(fontSize: 16)
         ),
         TextSpan(
-          text: contact.lastName,
+          text: contact.lastName.trim(),
           style: DefaultTextStyle.of(context)
               .style
-              .copyWith(fontWeight: FontWeight.bold),
-        )
+              .copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16
+              )        
+              )
       ];
     }
   }
