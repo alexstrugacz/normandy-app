@@ -72,7 +72,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     });
 
     final response = await http.get(
-        Uri.parse('http://localhost:5000/api/rolodex'),
+        Uri.parse('https://normandy-backend.azurewebsites.net/api/rolodex'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           "Authorization": "Bearer $jwt"
