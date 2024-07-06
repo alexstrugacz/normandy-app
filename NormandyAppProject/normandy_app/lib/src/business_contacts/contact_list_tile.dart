@@ -24,7 +24,7 @@ class ContactTile extends StatelessWidget {
           children: _buildTitleTextSpans(context),
         ) 
       ),
-      subtitle: (_generateSubtitleText() != "") ? Text(
+      subtitle: (_generateSubtitleText() != null) ? Text(
         _generateSubtitleText() ?? "",
         style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 123, 123, 123))
       ) : null,
@@ -52,11 +52,11 @@ class ContactTile extends StatelessWidget {
       return null;
     }
     if (contact.jobTitle != "" && contact.company != "") {
-      return '${contact.company}, ${contact.jobTitle}';
+      return '${contact.company.trim()}, ${contact.jobTitle.trim()}';
     } else if (contact.jobTitle != "") {
-      return contact.jobTitle;
+      return contact.jobTitle.trim();
     } else if (contact.company != "") {
-      return contact.company;
+      return contact.company.trim();
     } else {
       return null;
     }

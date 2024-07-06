@@ -177,9 +177,14 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+
+    if (query.isEmpty) {
+      return const ListTile(title: Text('Start typing to search'));
+    }
     List<String> matchQuery = [];
+
     for (String term in searchTerms) {
-      if (term.contains(query)) {
+      if (term.toLowerCase().trim().contains(query.toLowerCase().trim())) {
         matchQuery.add(term);
       }
     }
@@ -187,8 +192,20 @@ class CustomSearchDelegate extends SearchDelegate {
         itemCount: matchQuery.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(matchQuery[index]),
-          );
+              title: Text(matchQuery[index]),
+              onTap: () async {
+                String contactName = matchQuery[index];
+                Contact matchedContact = contacts.firstWhere(
+                    (contact) => contact.searchTerm == contactName);
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ContactDetailView(
+                          contact: matchedContact
+                        )
+                    )
+                );
+              });
         });
   }
 
@@ -197,6 +214,7 @@ class CustomSearchDelegate extends SearchDelegate {
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
+    
     List<String> matchQuery = [];
 
     for (String term in searchTerms) {
