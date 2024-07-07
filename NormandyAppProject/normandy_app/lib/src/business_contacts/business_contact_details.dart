@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/business_contacts/contact_button_functions.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
+import 'package:normandy_app/src/business_contacts/launch_google_maps.dart';
 import 'package:normandy_app/src/employee-list/launch_teams.dart';
 import 'package:normandy_app/src/helpers/check_contact_is_favorite.dart';
 import 'package:normandy_app/src/helpers/toggle_favorite_contact.dart';
@@ -43,6 +44,10 @@ class ContactDetailViewState extends State<ContactDetailView> {
 
   void _handleRedirectToTeamsCall() async {
     handleLaunchTeamsCall(widget.contact.emailAddress);
+  }
+
+  void _handleLaunchGoogleMaps() async {
+    handleLaunchGoogleMaps(_getAddress());
   }
 
   @override
@@ -208,16 +213,23 @@ class ContactDetailViewState extends State<ContactDetailView> {
                 ),
               ),
               const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                color: Colors.grey[200],
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: 
-                    _buildLocationTextSpans()
-                ),
-              ),
+
+                  GestureDetector(
+                    onTap: () {
+                    _handleLaunchGoogleMaps();
+                    },
+                    child: 
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: Colors.grey[200],
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: 
+                            _buildLocationTextSpans()
+                        ),
+                      )
+                  )
             ],
           ),
         )

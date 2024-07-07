@@ -8,6 +8,7 @@ import 'components/grid_card.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +26,7 @@ class Profile extends StatelessWidget {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
                 await prefs.setStringList('favoriteContacts', []);
+                showAlertDialog(context);
               },
             ),
             GridCard(
@@ -52,4 +54,32 @@ class Profile extends StatelessWidget {
           ]),
     );
   }
+}
+
+showAlertDialog(BuildContext context) {
+
+  // set up the button
+  Widget okButton = TextButton(
+    child: const Text("OK"),
+    onPressed: () { 
+      Navigator.of(context).pop();
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: const Padding(padding: EdgeInsets.only(top: 8, left: 8, right: 8), child: Text("Favorites cleared")),
+    content: const Padding(padding: EdgeInsets.only(top: 0, left: 8, right: 8), child: Text("Your favorites have been cleared.")),
+    actions: [
+      okButton,
+    ]
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

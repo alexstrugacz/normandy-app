@@ -129,8 +129,9 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                 child: Center(child: CircularProgressIndicator())
             )
           else Expanded(
-              child: 
-                ListView.builder(
+              child: RefreshIndicator(
+                onRefresh: _loadContactsData,
+                child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   itemCount: _contacts.length,
                   itemBuilder: (context, index) {
@@ -141,8 +142,8 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                       onRefresh: _refreshContactOrder,
                     );
                   },
-                ),
-
+                )
+                )
             )
         ]));
   }
@@ -181,32 +182,29 @@ class CustomSearchDelegate extends SearchDelegate {
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
-    List<String> matchQuery = [];
 
-    for (String term in searchTerms) {
-      if (term.toLowerCase().trim().contains(query.toLowerCase().trim())) {
-        matchQuery.add(term);
+    List<Contact> matchedContacts = [];
+
+    for (Contact contact in contacts) {
+      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(contact);
       }
     }
-    return ListView.builder(
-        itemCount: matchQuery.length,
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
         itemBuilder: (context, index) {
-          return ListTile(
-              title: Text(matchQuery[index]),
-              onTap: () async {
-                String contactName = matchQuery[index];
-                Contact matchedContact = contacts.firstWhere(
-                    (contact) => contact.searchTerm == contactName);
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ContactDetailView(
-                          contact: matchedContact
-                        )
-                    )
-                );
-              });
-        });
+          return ContactTile(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            contact: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -214,32 +212,28 @@ class CustomSearchDelegate extends SearchDelegate {
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
-    
-    List<String> matchQuery = [];
 
-    for (String term in searchTerms) {
-      if (term.toLowerCase().trim().contains(query.toLowerCase().trim())) {
-        matchQuery.add(term);
+    List<Contact> matchedContacts = [];
+
+    for (Contact contact in contacts) {
+      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(contact);
       }
     }
-    return ListView.builder(
-        itemCount: matchQuery.length,
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
         itemBuilder: (context, index) {
-          return ListTile(
-              title: Text(matchQuery[index]),
-              onTap: () async {
-                String contactName = matchQuery[index];
-                Contact matchedContact = contacts.firstWhere(
-                    (contact) => contact.searchTerm == contactName);
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ContactDetailView(
-                          contact: matchedContact
-                        )
-                    )
-                );
-              });
-        });
+          return ContactTile(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            contact: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
+          );
+        },
+      ),
+    );
   }
 }
