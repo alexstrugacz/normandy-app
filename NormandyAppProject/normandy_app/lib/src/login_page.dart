@@ -89,36 +89,36 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Form(
             key: _formKey,
             child: (Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset('assets/images/logo.png', height: 100),
+              children: [
+                Image.asset('assets/images/logo.png', height: 80),
                 const SizedBox(height: 8),
                 const Text(
                   'Normandy App',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 8),
                 const Text(
                   'Welcome to the Normandy App.',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 14),
                 ),
-                const SizedBox(height: 4),
                 const Text(
                   'Use your MS 365 Login.',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0), 
                     labelText: 'Email',
                   ),
                   validator: _validateEmail,
+                  style: const TextStyle(fontSize: 14.0)
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -126,24 +126,31 @@ class LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0), 
                   ),
+                  obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
                   validator: _validatePassword,
+                  style: const TextStyle(fontSize: 14.0)
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 if (_errorMessage.isNotEmpty)
-                  Text(
-                    _errorMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                  Padding(padding: const EdgeInsets.only(bottom: 15), child: 
+                    Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 14)
+                    )
                   ),
-                const SizedBox(height: 16),
                 SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 60,
                     child: ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, // Background color
                         foregroundColor: Colors.white, // Text color
+
                         padding: const EdgeInsets.symmetric(
                             horizontal: 32, vertical: 0), // Padding
                         textStyle: const TextStyle(
@@ -152,9 +159,12 @@ class LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(8), // Reduced border radius
-                        ),
+                        )
                       ),
-                      child: const Text('Log In'),
+                      child: const Text(
+                        "Log In",
+                        style: TextStyle(fontSize: 14)
+                      )
                     ))
               ],
             ))),

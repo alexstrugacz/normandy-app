@@ -72,7 +72,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     });
 
     final response = await http.get(
-        Uri.parse('http://localhost:5000/api/rolodex'),
+        Uri.parse('https://normandy-backend.azurewebsites.net/api/rolodex'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           "Authorization": "Bearer $jwt"
@@ -83,9 +83,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       List<Contact> sortedContacts = await sortContacts(
           data.map((item) => Contact.fromJson(Map.castFrom(item))).toList());
 
-      print(sortedContacts);
-
-      setState(() {
+      setState(() { 
         _contacts = sortedContacts;
         _loading = false;
       });
@@ -126,25 +124,26 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                   style: const TextStyle(color: Colors.red, fontSize: 14),
                 ))
           else if (_loading)
-            const Center(child: CircularProgressIndicator())
-          else
-            Column(
-              children: [
-                SizedBox(
-                  height: (MediaQuery.of(context).size.height) -
-                      56, // Appbar is 56 logical pixels tall
-                  child: ListView.builder(
-                    itemCount: _contacts.length,
-                    itemBuilder: (context, index) {
-                      return ContactTile(
-                          contact: _contacts[index], 
-                          index: index,
-                          onRefresh: _refreshContactOrder
-                        );
-                    },
-                  ),
-                ),
-              ],
+            const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Center(child: CircularProgressIndicator())
+            )
+          else Expanded(
+              child: RefreshIndicator(
+                onRefresh: _loadContactsData,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: _contacts.length,
+                  itemBuilder: (context, index) {
+                    return ContactTile(
+                      key: UniqueKey(), // Ensure each ContactTile has a unique key
+                      contact: _contacts[index], 
+                      index: index,
+                      onRefresh: _refreshContactOrder,
+                    );
+                  },
+                )
+                )
             )
         ]));
   }
@@ -179,19 +178,33 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (String term in searchTerms) {
-      if (term.contains(query)) {
-        matchQuery.add(term);
+
+    if (query.isEmpty) {
+      return const ListTile(title: Text('Start typing to search'));
+    }
+
+    List<Contact> matchedContacts = [];
+
+    for (Contact contact in contacts) {
+      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(contact);
       }
     }
-    return ListView.builder(
-        itemCount: matchQuery.length,
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(matchQuery[index]),
+          return ContactTile(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            contact: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
           );
-        });
+        },
+      ),
+    );
   }
 
   @override
@@ -199,31 +212,28 @@ class CustomSearchDelegate extends SearchDelegate {
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
-    List<String> matchQuery = [];
 
-    for (String term in searchTerms) {
-      if (term.toLowerCase().trim().contains(query.toLowerCase().trim())) {
-        matchQuery.add(term);
+    List<Contact> matchedContacts = [];
+
+    for (Contact contact in contacts) {
+      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(contact);
       }
     }
-    return ListView.builder(
-        itemCount: matchQuery.length,
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
         itemBuilder: (context, index) {
-          return ListTile(
-              title: Text(matchQuery[index]),
-              onTap: () async {
-                String contactName = matchQuery[index];
-                Contact matchedContact = contacts.firstWhere(
-                    (contact) => contact.searchTerm == contactName);
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ContactDetailView(
-                          contact: matchedContact
-                        )
-                    )
-                );
-              });
-        });
+          return ContactTile(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            contact: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
+          );
+        },
+      ),
+    );
   }
 }

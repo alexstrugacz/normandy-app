@@ -16,6 +16,10 @@ class HomePage extends StatelessWidget {
     'My Profile',
   ];
 
+  final List<String> disabledButtons = [
+    'Projects Dashboard'
+  ];
+
   final List<IconData> buttonIcons = [
     FontAwesomeIcons.addressBook,
     FontAwesomeIcons.user,
@@ -46,11 +50,15 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: null,
+        toolbarHeight: 40,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
             child: SvgPicture.asset(
               'assets/icon.svg',
               height: 80,
@@ -59,25 +67,27 @@ class HomePage extends StatelessWidget {
           ),
           Padding(
             // no top padding. only left right and bottom
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
             child: Text(
               _getCurrentDate(),
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            )),
-
+            )
+          ),
           // Grid of buttons
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GridView.count(
                 crossAxisCount: 2,
-                mainAxisSpacing: 16.0,
-                crossAxisSpacing: 16.0,
-                childAspectRatio: 1.75,
+                mainAxisSpacing: 5.0,
+                crossAxisSpacing: 5.0,
+                childAspectRatio: 1.5,
+                physics: const NeverScrollableScrollPhysics(),
                 children: List.generate(buttonNames.length, (index) {
                   return HomepageButton(
                       icon: buttonIcons[index],
                       text: buttonNames[index],
+                      isDisabled: disabledButtons.contains(buttonNames[index]),
                       onTap: () async {
                         if (buttonRoutes.containsKey(buttonNames[index])) {
                           Navigator.pushNamed(

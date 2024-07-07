@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Roboto',
         ),
+        debugShowCheckedModeBanner: false,
         home: const LoginPage(),
         routes: {
           "/home": (context) => HomePage(),
