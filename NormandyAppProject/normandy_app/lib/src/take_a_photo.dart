@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
 
 class TakeAPhoto extends StatefulWidget {
   final String header;
@@ -15,6 +18,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isCameraInitialized = false;
+  String _recognizedText = '';
 
   @override
   void initState() {
@@ -50,6 +54,40 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     }
   }
 
+  Future<void> _takePicture() async {
+    if (!_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    if (_cameraController!.value.isTakingPicture) {
+      return;
+    }
+
+    try {
+      final XFile? imageFile = await _cameraController!.takePicture();
+
+      if (imageFile == null) {
+        throw Exception('Error: Image file is null');
+      }
+
+      await _processImage(File(imageFile.path));
+    } catch (e) {
+      print('Error taking picture: $e');
+    }
+  }
+
+  Future<void> _processImage(File imageFile) async {
+    try {
+      final recognizedText =
+          await FlutterTesseractOcr.extractText(imageFile.path);
+      setState(() {
+        _recognizedText = recognizedText;
+      });
+    } catch (e) {
+      print('Error recognizing text: $e');
+    }
+  }
+
   @override
   void dispose() {
     _cameraController?.dispose();
@@ -63,7 +101,16 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         title: Text(widget.header),
       ),
       body: _isCameraInitialized
-          ? CameraPreview(_cameraController!)
+          ? Column(
+              children: [
+                Expanded(child: CameraPreview(_cameraController!)),
+                Text(_recognizedText),
+                ElevatedButton(
+                  onPressed: _takePicture,
+                  child: Text('Take Photo'),
+                ),
+              ],
+            )
           : Center(
               child: CircularProgressIndicator(),
             ),
