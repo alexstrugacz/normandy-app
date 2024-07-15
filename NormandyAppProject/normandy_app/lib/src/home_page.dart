@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:normandy_app/src/components/grid_card.dart';
 import 'package:normandy_app/src/homepage_button.dart';
 
 class HomePage extends StatelessWidget {

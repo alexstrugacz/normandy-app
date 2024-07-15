@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:normandy_app/src/api/alert_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'components/grid_card.dart';
@@ -44,7 +44,6 @@ class Profile extends StatelessWidget {
               text: "Clear OneDrive Cache",
               onTap: () async {
                 // The Cache is local? Because of App sandboxing, I am not sure if we can do this directly.
-                // TODO link to the appropriate page in the Settings app, so users can clear it there.
                 String url = (Theme.of(context).platform == TargetPlatform.android)
                   ? 'package:com.microsoft.skydrive'
                   : 'app-settings:';
@@ -57,29 +56,5 @@ class Profile extends StatelessWidget {
 }
 
 showAlertDialog(BuildContext context) {
-
-  // set up the button
-  Widget okButton = TextButton(
-    child: const Text("OK"),
-    onPressed: () { 
-      Navigator.of(context).pop();
-    },
-  );
-
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: const Padding(padding: EdgeInsets.only(top: 8, left: 8, right: 8), child: Text("Favorites cleared")),
-    content: const Padding(padding: EdgeInsets.only(top: 0, left: 8, right: 8), child: Text("Your favorites have been cleared.")),
-    actions: [
-      okButton,
-    ]
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
+  AlertHelper.showAlert("Favorites cleared", "Your favorites have been cleared.", context, null);
 }

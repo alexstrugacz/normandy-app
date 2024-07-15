@@ -6,6 +6,8 @@ import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
 import 'package:normandy_app/src/expense_reports.dart';
+import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
+import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/currently_stored.dart';
 import 'profile.dart';
@@ -41,6 +43,9 @@ class MyApp extends StatelessWidget {
               const CurrentlyStored(header: 'Currently Stored'),
           '/expense-report-choose-image': (context) =>
               const ChooseImage(header: 'Choose Image'),
+          "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
+          "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
+          "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove")
         });
   }
 }

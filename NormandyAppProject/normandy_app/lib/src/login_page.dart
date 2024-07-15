@@ -39,6 +39,7 @@ class LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
     if (_formKey.currentState!.validate()) {
+      // TODO: Refactor to use api_helper.dart
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
