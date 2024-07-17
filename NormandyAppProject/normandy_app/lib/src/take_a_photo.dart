@@ -1,9 +1,28 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter ML Text Recognition',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const TakeAPhoto(header: 'Take a Photo'),
+    );
+  }
+}
 
 class TakeAPhoto extends StatefulWidget {
   final String header;
@@ -15,10 +34,11 @@ class TakeAPhoto extends StatefulWidget {
 }
 
 class _TakeAPhotoState extends State<TakeAPhoto> {
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
+  late CameraController _cameraController;
+  late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;
   String _recognizedText = '';
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -41,13 +61,13 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
-    if (_cameras != null && _cameras!.isNotEmpty) {
+    if (_cameras.isNotEmpty) {
       _cameraController = CameraController(
-        _cameras![0],
+        _cameras[0],
         ResolutionPreset.high,
       );
 
-      await _cameraController!.initialize();
+      await _cameraController.initialize();
       setState(() {
         _isCameraInitialized = true;
       });
@@ -55,16 +75,12 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   }
 
   Future<void> _takePicture() async {
-    if (!_cameraController!.value.isInitialized) {
-      return;
-    }
-
-    if (_cameraController!.value.isTakingPicture) {
+    if (!_cameraController.value.isInitialized) {
       return;
     }
 
     try {
-      final XFile? imageFile = await _cameraController!.takePicture();
+      final XFile? imageFile = await _cameraController.takePicture();
 
       if (imageFile == null) {
         throw Exception('Error: Image file is null');
@@ -77,20 +93,32 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   }
 
   Future<void> _processImage(File imageFile) async {
+    final inputImage = InputImage.fromFilePath(imageFile.path);
+    final textRecognizer = GoogleMlKit.vision.textRecognizer();
     try {
-      final recognizedText =
-          await FlutterTesseractOcr.extractText(imageFile.path);
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(inputImage);
+
+      String text = '';
+      for (TextBlock block in recognizedText.blocks) {
+        for (TextLine line in block.lines) {
+          text += line.text + '\n';
+        }
+      }
+
       setState(() {
-        _recognizedText = recognizedText;
+        _recognizedText = text;
       });
     } catch (e) {
       print('Error recognizing text: $e');
+    } finally {
+      textRecognizer.close();
     }
   }
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -103,7 +131,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       body: _isCameraInitialized
           ? Column(
               children: [
-                Expanded(child: CameraPreview(_cameraController!)),
+                Expanded(child: CameraPreview(_cameraController)),
                 Text(_recognizedText),
                 ElevatedButton(
                   onPressed: _takePicture,
