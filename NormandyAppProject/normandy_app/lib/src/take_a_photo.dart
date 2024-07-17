@@ -157,6 +157,55 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       _finalProductNames = finalProductNames;
       _finalPrices = finalPrices;
     });
+
+    _showSubmissionDialog();
+  }
+
+  void _showSubmissionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Receipt Items and Final Price submitted'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_finalProductNames.isNotEmpty)
+                Text(
+                  'Final Product Names:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              if (_finalProductNames.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      _finalProductNames.map((name) => Text(name)).toList(),
+                ),
+              SizedBox(height: 10),
+              if (_finalPrices.isNotEmpty)
+                Text(
+                  'Final Prices:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              if (_finalPrices.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _finalPrices.map((price) => Text(price)).toList(),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -213,23 +262,15 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
                     ),
                   ),
                 if (_productNames.isNotEmpty || _prices.isNotEmpty)
-                  ElevatedButton(
-                    onPressed: _submitSelections,
-                    child: Text('Submit'),
-                  ),
-                if (_finalProductNames.isNotEmpty || _finalPrices.isNotEmpty)
-                  Expanded(
-                    child: Column(
-                      children: [
-                        if (_finalProductNames.isNotEmpty)
-                          Text(
-                            'Final Product Names:\n${_finalProductNames.join('\n')}',
-                          ),
-                        if (_finalPrices.isNotEmpty)
-                          Text(
-                            'Final Prices:\n${_finalPrices.join('\n')}',
-                          ),
-                      ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _submitSelections,
+                      child: Text('Submit'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        textStyle: TextStyle(fontSize: 18),
+                      ),
                     ),
                   ),
               ],
