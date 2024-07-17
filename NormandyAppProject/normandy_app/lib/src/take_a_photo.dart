@@ -37,8 +37,13 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;
-  String _recognizedText = '';
   final ImagePicker _picker = ImagePicker();
+  List<String> _productNames = [];
+  List<String> _prices = [];
+  List<bool> _selectedNames = [];
+  List<bool> _selectedPrices = [];
+  List<String> _finalProductNames = [];
+  List<String> _finalPrices = [];
 
   @override
   void initState() {
@@ -96,24 +101,62 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     final inputImage = InputImage.fromFilePath(imageFile.path);
     final textRecognizer = GoogleMlKit.vision.textRecognizer();
     try {
-      final RecognizedText recognizedText =
+      final RecognizedText recognisedText =
           await textRecognizer.processImage(inputImage);
 
-      String text = '';
-      for (TextBlock block in recognizedText.blocks) {
+      List<String> productNames = [];
+      List<String> prices = [];
+
+      for (TextBlock block in recognisedText.blocks) {
         for (TextLine line in block.lines) {
-          text += line.text + '\n';
+          String lineText = line.text.trim();
+
+          // Check if line contains digits and potentially a decimal point (indicative of a price)
+          if (_isPrice(lineText)) {
+            prices.add(lineText);
+          } else {
+            productNames.add(lineText);
+          }
         }
       }
 
       setState(() {
-        _recognizedText = text;
+        _productNames = productNames;
+        _prices = prices;
+        _selectedNames = List<bool>.filled(productNames.length, false);
+        _selectedPrices = List<bool>.filled(prices.length, false);
       });
     } catch (e) {
       print('Error recognizing text: $e');
     } finally {
       textRecognizer.close();
     }
+  }
+
+  bool _isPrice(String input) {
+    return RegExp(r'^\$?\d+(\.\d{1,2})?$').hasMatch(input);
+  }
+
+  void _submitSelections() {
+    List<String> finalProductNames = [];
+    List<String> finalPrices = [];
+
+    for (int i = 0; i < _productNames.length; i++) {
+      if (_selectedNames[i]) {
+        finalProductNames.add(_productNames[i]);
+      }
+    }
+
+    for (int i = 0; i < _prices.length; i++) {
+      if (_selectedPrices[i]) {
+        finalPrices.add(_prices[i]);
+      }
+    }
+
+    setState(() {
+      _finalProductNames = finalProductNames;
+      _finalPrices = finalPrices;
+    });
   }
 
   @override
@@ -132,11 +175,63 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
           ? Column(
               children: [
                 Expanded(child: CameraPreview(_cameraController)),
-                Text(_recognizedText),
                 ElevatedButton(
                   onPressed: _takePicture,
                   child: Text('Take Photo'),
                 ),
+                if (_productNames.isNotEmpty || _prices.isNotEmpty)
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        ..._productNames.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          String name = entry.value;
+                          return CheckboxListTile(
+                            title: Text('Product Name: $name'),
+                            value: _selectedNames[index],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedNames[index] = value ?? false;
+                              });
+                            },
+                          );
+                        }).toList(),
+                        ..._prices.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          String price = entry.value;
+                          return CheckboxListTile(
+                            title: Text('Price: $price'),
+                            value: _selectedPrices[index],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedPrices[index] = value ?? false;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                if (_productNames.isNotEmpty || _prices.isNotEmpty)
+                  ElevatedButton(
+                    onPressed: _submitSelections,
+                    child: Text('Submit'),
+                  ),
+                if (_finalProductNames.isNotEmpty || _finalPrices.isNotEmpty)
+                  Expanded(
+                    child: Column(
+                      children: [
+                        if (_finalProductNames.isNotEmpty)
+                          Text(
+                            'Final Product Names:\n${_finalProductNames.join('\n')}',
+                          ),
+                        if (_finalPrices.isNotEmpty)
+                          Text(
+                            'Final Prices:\n${_finalPrices.join('\n')}',
+                          ),
+                      ],
+                    ),
+                  ),
               ],
             )
           : Center(
