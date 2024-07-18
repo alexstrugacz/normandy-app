@@ -1,13 +1,31 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/business_contacts/contact_list_tile.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
+import 'package:normandy_app/src/helpers/load_favorite_contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessContactsList extends StatefulWidget {
-  const BusinessContactsList({super.key});
+  final bool? isActiveTrades;
+  final String? category;
+  final bool? isEmployee;
+  final bool? isFavorite;
+  late String pageTitle;
+
+  BusinessContactsList({super.key, this.isActiveTrades, this.category, this.isEmployee, this.isFavorite }) {
+    if (category != null) {
+      pageTitle = category!;
+    } else if (isEmployee == true) {
+      pageTitle = "Employees";
+    } else if (isFavorite == true) {
+      pageTitle = "Favorite Contacts";
+    } else {
+      pageTitle = "Business Contacts";
+    }
+  }
 
   @override
   BusinessContactsListState createState() => BusinessContactsListState();
@@ -55,9 +73,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   }
 
   Future<void> _loadContactsData() async {
-    setState(() {
-      _errorMessage = '';
-    });
     jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
@@ -67,16 +82,32 @@ class BusinessContactsListState extends State<BusinessContactsList> {
 
     setState(() {
       _loading = true;
+      _errorMessage = '';
     });
-    // TODO: Use api_helper.dart for this
-    final response = await http.get(
-        Uri.parse('https://normandy-backend.azurewebsites.net/api/rolodex'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "Authorization": "Bearer $jwt"
-        });
 
-    if (response.statusCode == 201) {
+    String url = 'rolodex';
+    if (widget.isActiveTrades == true) {
+      url += '?isActiveTrades=true';
+      if (widget.category != null) {
+        url += '&category=${widget.category}';
+      }
+    } else if (widget.isEmployee == true) {
+      url += '?isEmployee=true';
+    } else if (widget.isFavorite == true) {
+      url += '?isFavorite=true';
+      List<String> favoriteContactIds = await loadFavoriteContacts();
+      if (favoriteContactIds.isNotEmpty) {
+        url += '&favoriteIds=${favoriteContactIds.join(',')}';
+      }
+    }
+
+    http.Response? response = await APIHelper.get(
+      url,
+      context,
+      mounted
+    );
+
+    if ((response != null) && response.statusCode == 201) {
       List<dynamic> data = json.decode(response.body)['rolodex'];
       List<Contact> sortedContacts = await sortContacts(
           data.map((item) => Contact.fromJson(Map.castFrom(item))).toList());
@@ -100,7 +131,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Business Contacts'), actions: [
+        appBar: AppBar(title: Text(widget.pageTitle), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -126,6 +157,13 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                 padding: EdgeInsets.only(top: 20),
                 child: Center(child: CircularProgressIndicator())
             )
+          else if (_contacts.isEmpty)
+            const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "No contacts found.",
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ))
           else Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadContactsData,
@@ -231,6 +269,7 @@ class CustomSearchDelegate extends SearchDelegate {
             onRefresh: () {},
           );
         },
+
       ),
     );
   }
