@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +46,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   List<bool> _selectedPrices = [];
   List<String> _finalProductNames = [];
   List<String> _finalPrices = [];
+  File? _capturedImage;
 
   @override
   void initState() {
@@ -91,6 +94,10 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         throw Exception('Error: Image file is null');
       }
 
+      setState(() {
+        _capturedImage = File(imageFile.path);
+      });
+
       await _processImage(File(imageFile.path));
     } catch (e) {
       print('Error taking picture: $e');
@@ -137,6 +144,39 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     return RegExp(r'^\$?\d+(\.\d{1,2})?$').hasMatch(input);
   }
 
+  Future<void> _uploadToOneDrive(File file) async {
+    // Replace with your actual access token
+    final String accessToken = '';
+
+    // Define the upload URL for OneDrive
+    final String uploadUrl =
+        'https://graph.microsoft.com/v1.0/me/drive/root:/Pictures/${file.path.split('/').last}:/content';
+
+    try {
+      // Read the file's bytes
+      final bytes = await file.readAsBytes();
+
+      // Make the HTTP PUT request to upload the file
+      final response = await http.put(
+        Uri.parse(uploadUrl),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'image/jpeg',
+        },
+        body: bytes,
+      );
+
+      if (response.statusCode == 201) {
+        print('File uploaded successfully');
+      } else {
+        print('Failed to upload file: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error uploading file: $e');
+    }
+  }
+
   void _submitSelections() {
     List<String> finalProductNames = [];
     List<String> finalPrices = [];
@@ -158,7 +198,15 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       _finalPrices = finalPrices;
     });
 
-    _showSubmissionDialog();
+    if (_capturedImage != null) {
+      _uploadToOneDrive(_capturedImage!).then((_) {
+        _showSubmissionDialog();
+      }).catchError((e) {
+        print('Failed to upload image: $e');
+      });
+    } else {
+      _showSubmissionDialog();
+    }
   }
 
   void _showSubmissionDialog() {
