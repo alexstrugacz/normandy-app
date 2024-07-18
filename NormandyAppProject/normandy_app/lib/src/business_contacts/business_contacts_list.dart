@@ -97,7 +97,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       url += '?isFavorite=true';
       List<String> favoriteContactIds = await loadFavoriteContacts();
       if (favoriteContactIds.isNotEmpty) {
-        url += '&favoriteContactIds=${favoriteContactIds.join(',')}';
+        url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
 
