@@ -5,13 +5,27 @@ import 'package:normandy_app/src/business_contacts/contact_list_tile.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
+import 'package:normandy_app/src/helpers/load_favorite_contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BusinessContactsList extends StatefulWidget {
   final bool? isActiveTrades;
   final String? category;
+  final bool? isEmployee;
+  final bool? isFavorite;
+  late String pageTitle;
 
-  const BusinessContactsList({super.key, this.isActiveTrades, this.category});
+  BusinessContactsList({super.key, this.isActiveTrades, this.category, this.isEmployee, this.isFavorite }) {
+    if (category != null) {
+      pageTitle = category!;
+    } else if (isEmployee == true) {
+      pageTitle = "Employees";
+    } else if (isFavorite == true) {
+      pageTitle = "Favorite Contacts";
+    } else {
+      pageTitle = "Business Contacts";
+    }
+  }
 
   @override
   BusinessContactsListState createState() => BusinessContactsListState();
@@ -77,7 +91,12 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       if (widget.category != null) {
         url += '&category=${widget.category}';
       }
-    } 
+    } else if (widget.isEmployee == true) {
+      url += '?isEmployee=true';
+    } else if (widget.isFavorite == true) {
+      List<String> favoriteContactIds = await loadFavoriteContacts();
+      url += '?favoriteIds=${favoriteContactIds.join(',')}';
+    }
 
     http.Response? response = await APIHelper.get(
       url,
@@ -95,7 +114,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         _loading = false;
       });
     } else {
-      print(response?.body);
       setState(() {
         _errorMessage = 'Failed to load contacts data. Please try again later.';
         _loading = false;
@@ -110,7 +128,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.category ?? 'Business Contacts'), actions: [
+        appBar: AppBar(title: Text(widget.pageTitle), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -229,6 +247,10 @@ class CustomSearchDelegate extends SearchDelegate {
       }
     }
 
+    // if (matchedContacts.isEmpty) {
+    //   return const ListTile(title: Text('No results found'));
+    // }
+
     return Expanded(
       child: ListView.builder(
         scrollDirection: Axis.vertical,
@@ -241,6 +263,7 @@ class CustomSearchDelegate extends SearchDelegate {
             onRefresh: () {},
           );
         },
+
       ),
     );
   }

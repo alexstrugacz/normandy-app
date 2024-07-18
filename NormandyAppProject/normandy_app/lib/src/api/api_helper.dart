@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
@@ -36,7 +34,7 @@ class APIHelper {
     String? jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
-      if (mounted) {
+      if (mounted) { 
         Navigator.pushNamed(context, '/');
       } else {
         return null;

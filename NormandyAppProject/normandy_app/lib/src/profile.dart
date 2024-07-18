@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:normandy_app/src/api/alert_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -36,8 +35,9 @@ class Profile extends StatelessWidget {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
                 await prefs.remove('jwt');
-                if (context.mounted)
+                if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+                }
               },
             ),
             GridCard(

@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:normandy_app/src/active_trades/category_page.dart";
 import "package:normandy_app/src/business_contacts/business_contacts_list.dart";
 
 class CategoryButton extends StatelessWidget {
