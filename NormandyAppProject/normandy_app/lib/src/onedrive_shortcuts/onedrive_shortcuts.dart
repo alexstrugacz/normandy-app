@@ -235,10 +235,24 @@ class OneDriveShortcutState extends State<OneDriveShortcut> {
                       )
                     ),
                     if (_loading)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical:20),
-                        child: Center(child: CircularProgressIndicator())
-                      )
+                      Column(children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical:20),
+                          child: Center(child: CircularProgressIndicator())
+                        ),
+                        const SizedBox(height: 6),
+                        InkWell(
+                            onTap: () {
+                              if (selectedCustomer != null) {
+                                checkIfCustomerHasShortcut(selectedCustomer!);
+                              }
+                            },
+                            child: const Text(
+                              "Reload",
+                              style: TextStyle(color: Colors.blue, fontSize: 16),
+                            )
+                        )
+                      ])
                     else if (_errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
