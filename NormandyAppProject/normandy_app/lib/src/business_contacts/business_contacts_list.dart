@@ -94,8 +94,11 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     } else if (widget.isEmployee == true) {
       url += '?isEmployee=true';
     } else if (widget.isFavorite == true) {
+      url += '?isFavorite=true';
       List<String> favoriteContactIds = await loadFavoriteContacts();
-      url += '?favoriteIds=${favoriteContactIds.join(',')}';
+      if (favoriteContactIds.isNotEmpty) {
+        url += '&favoriteContactIds=${favoriteContactIds.join(',')}';
+      }
     }
 
     http.Response? response = await APIHelper.get(
@@ -154,6 +157,13 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                 padding: EdgeInsets.only(top: 20),
                 child: Center(child: CircularProgressIndicator())
             )
+          else if (_contacts.isEmpty)
+            const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "No contacts found.",
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ))
           else Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadContactsData,
@@ -246,10 +256,6 @@ class CustomSearchDelegate extends SearchDelegate {
         matchedContacts.add(contact);
       }
     }
-
-    // if (matchedContacts.isEmpty) {
-    //   return const ListTile(title: Text('No results found'));
-    // }
 
     return Expanded(
       child: ListView.builder(
