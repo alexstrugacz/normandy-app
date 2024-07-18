@@ -16,40 +16,46 @@ class Profile extends StatelessWidget {
       appBar: AppBar(
         title: const Text('My Profile'),
       ),
-      body: GridView.count(
-          crossAxisCount: 2,
-          childAspectRatio: 1.75,
-          children: <Widget>[
-            GridCard(
-              icon: FontAwesomeIcons.star,
-              text: "Clear Favorites",
-              onTap: () async {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                await prefs.setStringList('favoriteContacts', []);
-                if (context.mounted) showAlertDialog(context);
-              },
-            ),
-            GridCard(
-              icon: FontAwesomeIcons.user,
-              text: "Logout",
-              onTap: () async {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                await prefs.remove('jwt');
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
-                }
-              },
-            ),
-            GridCard(
-              icon: FontAwesomeIcons.file,
-              text: "Clear OneDrive Cache",
-              onTap: () async {
-                if (context.mounted) showCacheInstructions(context);
-              },
-            ),
-          ]),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 5.0,
+            crossAxisSpacing: 5.0,
+            childAspectRatio: 1.5,
+            children: <Widget>[
+              GridCard(
+                icon: FontAwesomeIcons.star,
+                text: "Clear Favorites",
+                onTap: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.setStringList('favoriteContacts', []);
+                  if (context.mounted) showAlertDialog(context);
+                },
+              ),
+              GridCard(
+                icon: FontAwesomeIcons.user,
+                text: "Logout",
+                onTap: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.remove('jwt');
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "/", (r) => false);
+                  }
+                },
+              ),
+              GridCard(
+                icon: FontAwesomeIcons.file,
+                text: "Clear OneDrive Cache",
+                onTap: () async {
+                  if (context.mounted) showCacheInstructions(context);
+                },
+              ),
+            ]),
+      ),
     );
   }
 }
@@ -71,7 +77,7 @@ showCacheInstructions(BuildContext context) {
       content: Padding(
         padding: const EdgeInsets.only(top: 0, left: 8, right: 8),
         child: Platform.isAndroid
-            ? SingleChildScrollView(
+            ? const SingleChildScrollView(
                 child: ListBody(
                   children: const <Widget>[
                     Text("Android instructions",
@@ -88,7 +94,7 @@ showCacheInstructions(BuildContext context) {
                   ],
                 ),
               )
-            : SingleChildScrollView(
+            : const SingleChildScrollView(
                 child: ListBody(
                   children: const <Widget>[
                     Text("iOS instructions",
