@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter_onedrive/flutter_onedrive.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +46,10 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   List<String> _finalProductNames = [];
   List<String> _finalPrices = [];
   File? _capturedImage;
+
+  final onedrive = OneDrive(
+      redirectURL: "your redirect URL",
+      clientID: "65b57c78-f688-40e3-baa6-9b963e51542b");
 
   @override
   void initState() {
@@ -118,7 +121,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         for (TextLine line in block.lines) {
           String lineText = line.text.trim();
 
-          // Check if line contains digits and potentially a decimal point (indicative of a price)
           if (_isPrice(lineText)) {
             prices.add(lineText);
           } else {
@@ -144,39 +146,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     return RegExp(r'^\$?\d+(\.\d{1,2})?$').hasMatch(input);
   }
 
-  Future<void> _uploadToOneDrive(File file) async {
-    // Replace with your actual access token
-    final String accessToken = '';
-
-    // Define the upload URL for OneDrive
-    final String uploadUrl =
-        'https://graph.microsoft.com/v1.0/me/drive/root:/Pictures/${file.path.split('/').last}:/content';
-
-    try {
-      // Read the file's bytes
-      final bytes = await file.readAsBytes();
-
-      // Make the HTTP PUT request to upload the file
-      final response = await http.put(
-        Uri.parse(uploadUrl),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'image/jpeg',
-        },
-        body: bytes,
-      );
-
-      if (response.statusCode == 201) {
-        print('File uploaded successfully');
-      } else {
-        print('Failed to upload file: ${response.statusCode}');
-        print('Response: ${response.body}');
-      }
-    } catch (e) {
-      print('Error uploading file: $e');
-    }
-  }
-
   void _submitSelections() {
     List<String> finalProductNames = [];
     List<String> finalPrices = [];
@@ -198,15 +167,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       _finalPrices = finalPrices;
     });
 
-    if (_capturedImage != null) {
-      _uploadToOneDrive(_capturedImage!).then((_) {
-        _showSubmissionDialog();
-      }).catchError((e) {
-        print('Failed to upload image: $e');
-      });
-    } else {
-      _showSubmissionDialog();
-    }
+    _showSubmissionDialog();
   }
 
   void _showSubmissionDialog() {
@@ -254,6 +215,39 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         );
       },
     );
+  }
+
+  Future<void> _connectToOneDrive() async {
+    final isConnected = await onedrive.isConnected();
+    if (!isConnected) {
+      final success = await onedrive.connect(context);
+      if (success) {
+        print('Connected to OneDrive');
+      } else {
+        print('Failed to connect to OneDrive');
+      }
+    }
+  }
+
+  Future<void> _uploadToOneDrive() async {
+    if (_capturedImage == null) return;
+
+    final filePath = _capturedImage!.path;
+    final fileName = filePath.split('/').last;
+    final fileBytes = await _capturedImage!.readAsBytes();
+    final uploadPath =
+        "/path/to/your/folder/$fileName"; // Adjust the path as needed
+
+    try {
+      final response = await onedrive.push(fileBytes, uploadPath);
+      if (response != null) {
+        print('File uploaded successfully: $response');
+      } else {
+        print('File upload failed');
+      }
+    } catch (e) {
+      print('Error uploading file to OneDrive: $e');
+    }
   }
 
   @override
@@ -307,6 +301,17 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
                           );
                         }).toList(),
                       ],
+                    ),
+                  ),
+                if (_productNames.isNotEmpty || _prices.isNotEmpty)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await _connectToOneDrive();
+                        await _uploadToOneDrive();
+                      },
+                      child: Text('Upload to OneDrive'),
                     ),
                   ),
                 if (_productNames.isNotEmpty || _prices.isNotEmpty)
