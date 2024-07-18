@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/business_contacts/business_contact_details.dart';
 import 'package:normandy_app/src/business_contacts/contact_list_tile.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
@@ -70,7 +68,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     setState(() {
       _loading = true;
     });
-
+    // TODO: Use api_helper.dart for this
     final response = await http.get(
         Uri.parse('https://normandy-backend.azurewebsites.net/api/rolodex'),
         headers: <String, String>{
