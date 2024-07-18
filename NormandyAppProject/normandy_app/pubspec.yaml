@@ -13,8 +13,11 @@ dependencies:
   intl: ^0.19.0
   flutter:
     sdk: flutter
-  camera: ^0.9.4+5
-  permission_handler: ^10.2.0
+  camera: ^0.10.0+2
+  permission_handler: ^11.3.1
+  google_mlkit_text_recognition: ^0.11.0
+  image_picker: ^1.0.7
+  path_provider: ^2.0.11
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.0.10+1
@@ -22,6 +25,7 @@ dependencies:
   http: ^1.0.0
   shared_preferences: ^2.0.7
   url_launcher: ^6.0.20
+  google_ml_kit: ^0.16.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -41,6 +45,8 @@ flutter:
 
   assets:
     # Add assets from the images directory to the application.
+    # - assets/tessdata_config.json
+    # - assets/tessdata/eng.traineddata
     - assets/images/
     - assets/icon.svg
     - assets/images/logo.png
