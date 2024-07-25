@@ -9,10 +9,11 @@ class HomePage extends StatelessWidget {
     'Contacts',
     'Active Trade',
     'Employees',
+    'Favorites',
     'Expense Reports',
     'Quick Links',
     'Projects Dashboard',
-    'My Profile',
+    'My Profile'
   ];
 
   final List<String> disabledButtons = [
@@ -23,6 +24,7 @@ class HomePage extends StatelessWidget {
     FontAwesomeIcons.addressBook,
     FontAwesomeIcons.user,
     FontAwesomeIcons.users,
+    FontAwesomeIcons.star,
     FontAwesomeIcons.fileInvoiceDollar,
     FontAwesomeIcons.link,
     FontAwesomeIcons.chartBar,
@@ -36,7 +38,8 @@ class HomePage extends StatelessWidget {
     //'Contacts': '/business-contacts-list',
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
-    'Employees': '/employee-list'
+    'Employees': '/employee-list',
+    'Favorites': '/favorites'
   };
 
   String _getCurrentDate() {

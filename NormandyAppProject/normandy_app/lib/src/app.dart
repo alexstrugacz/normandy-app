@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
-import 'package:normandy_app/src/employee-list/employee_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
@@ -35,7 +34,8 @@ class MyApp extends StatelessWidget {
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
-          "/employee-list": (context) => const EmployeeList(),
+          "/employee-list": (context) => BusinessContactsList(isEmployee: true),
+          "/favorites": (context) => BusinessContactsList(isFavorite: true),
           "/projects-dashboard": (context) => const Text("Coming soon..."),
           '/expense-report-selection': (context) =>
               ExpenseReports(header: 'Expense Reports'),
