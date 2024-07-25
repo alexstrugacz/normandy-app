@@ -205,7 +205,7 @@ class DirectPhoneItemDetailsState extends State<DirectPhoneItemDetails> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text('Normandy Remodeling'),
-                  Text('Add address here'), // To do - Add Normandy Address
+                  Text('440 E Ogden Ave, Hinsdale, IL 60521'),
                 ],
               ),
             ),

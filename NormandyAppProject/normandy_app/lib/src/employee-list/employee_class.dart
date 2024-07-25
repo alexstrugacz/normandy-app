@@ -12,6 +12,7 @@ class Person {
   String id;
   String microsoftId;
   bool favorite;
+  String searchTerm = "";
 
   Person({
     required this.initials,
@@ -27,7 +28,21 @@ class Person {
     required this.id,
     required this.microsoftId,
     required this.favorite,
-  });
+  }) {
+    searchTerm = _generateSearchTerm();
+  }
+
+  String _generateSearchTerm() {
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      return '$firstName $lastName';
+    } else if (firstName.isNotEmpty) {
+      return firstName;
+    } else if (lastName.isNotEmpty) {
+      return lastName;
+    } else {
+      return '';
+    }
+  }
 
   void updateFavorite(bool isFavorite) {
     favorite = isFavorite;
