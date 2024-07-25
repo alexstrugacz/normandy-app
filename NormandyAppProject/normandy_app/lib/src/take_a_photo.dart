@@ -8,8 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future<void> main() async {
-  await dotenv.load(fileName: 'assets/.env');
+void main() async {
+  // Ensure the Flutter framework is fully initialized before running the app
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load the .env file
+  await dotenv.load(fileName: "assets/.env");
+
   runApp(const MyApp());
 }
 
@@ -295,13 +300,14 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
     final String filePath = _capturedImage!.path;
     final String fileName = filePath.split('/').last;
-    final List<int> fileBytes = await _capturedImage!.readAsBytes();
+    final String url =
+        'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Pictures/$fileName:/content';
 
-    final String uploadUrl =
-        "https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/root:/$fileName:/content";
+    final File file = File(filePath);
+    final List<int> fileBytes = await file.readAsBytes();
 
     final http.Response response = await http.put(
-      Uri.parse(uploadUrl),
+      Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/octet-stream',
