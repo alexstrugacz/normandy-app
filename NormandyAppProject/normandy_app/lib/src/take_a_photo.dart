@@ -56,7 +56,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   File? _capturedImage;
 
   final String clientId = dotenv.env['CLIENT_ID'] ?? '';
-  final String clientSecret = dotenv.env['CLIENT_SECRET'] ?? '';
+  final String clientSecret = dotenv.env['CLIENT_SCRT'] ?? '';
   final String tenantId = dotenv.env['TENANT_ID'] ?? '';
   String? _operationsDriveId;
 
