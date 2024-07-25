@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(); // Load the .env file
+  await dotenv.load(fileName: 'assets/.env');
   runApp(const MyApp());
 }
 
@@ -50,9 +50,9 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   List<String> _finalPrices = [];
   File? _capturedImage;
 
-  final String clientId = '65b57c78-f688-40e3-baa6-9b963e51542b';
-  final String clientSecret = 'mxF8Q~1qtIhfum~6.BLsuuNnuhqLGp_141luXcLj';
-  final String tenantId = '6b6dfb01-1b90-4ddb-a215-e16eed277145';
+  final String clientId = dotenv.env['CLIENT_ID'] ?? '';
+  final String clientSecret = dotenv.env['CLIENT_SECRET'] ?? '';
+  final String tenantId = dotenv.env['TENANT_ID'] ?? '';
   String? _operationsDriveId;
 
   @override

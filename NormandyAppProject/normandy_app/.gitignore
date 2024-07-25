@@ -35,6 +35,8 @@ migrate_working_dir/
 .vscode
 .env
 /NormandyAppProject/.env
+/NormandyAppProject/normandy_app/assets/.env
+
 
 # Symbolication related
 app.*.symbols

@@ -50,6 +50,7 @@ flutter:
     # Add assets from the images directory to the application.
     # - assets/tessdata_config.json
     # - assets/tessdata/eng.traineddata
+    - assets/.env
     - assets/images/
     - assets/icon.svg
     - assets/images/logo.png
