@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         home: const LoginPage(),
         routes: {
           "/home": (context) => HomePage(),
-          "/business-contacts-list": (context) => const BusinessContactsList(),
+          "/business-contacts-list": (context) => BusinessContactsList(),
           "/contacts": (context) => const Contacts(),
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
