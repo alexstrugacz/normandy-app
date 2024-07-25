@@ -42,7 +42,7 @@ class Contacts extends StatelessWidget {
                 icon: FontAwesomeIcons.user,
                 text: "Employees",
                 onTap: () async {
-                  Navigator.pushNamed(context, "/business-contacts-list");
+                  Navigator.pushNamed(context, "/employee-list");
                 },
               ),
               GridCard(
