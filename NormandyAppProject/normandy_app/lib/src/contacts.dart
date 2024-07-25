@@ -41,7 +41,9 @@ class Contacts extends StatelessWidget {
               GridCard(
                 icon: FontAwesomeIcons.user,
                 text: "Employees",
-                onTap: () async {},
+                onTap: () async {
+                  Navigator.pushNamed(context, "/business-contacts-list");
+                },
               ),
               GridCard(
                 icon: FontAwesomeIcons.suitcase,
@@ -51,7 +53,9 @@ class Contacts extends StatelessWidget {
               GridCard(
                 icon: FontAwesomeIcons.star,
                 text: "Favorites",
-                onTap: () async {},
+                onTap: () async {
+                  Navigator.pushNamed(context, "/favorites");
+                },
               ),
             ]),
       ),
