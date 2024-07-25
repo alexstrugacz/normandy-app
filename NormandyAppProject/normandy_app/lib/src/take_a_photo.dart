@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_onedrive/flutter_onedrive.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(); // Load the .env file
   runApp(const MyApp());
 }
 
@@ -47,9 +50,10 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   List<String> _finalPrices = [];
   File? _capturedImage;
 
-  final onedrive = OneDrive(
-      redirectURL: "your redirect URL",
-      clientID: "65b57c78-f688-40e3-baa6-9b963e51542b");
+  final String clientId = '65b57c78-f688-40e3-baa6-9b963e51542b';
+  final String clientSecret = 'mxF8Q~1qtIhfum~6.BLsuuNnuhqLGp_141luXcLj';
+  final String tenantId = '6b6dfb01-1b90-4ddb-a215-e16eed277145';
+  String? _operationsDriveId;
 
   @override
   void initState() {
@@ -217,36 +221,98 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     );
   }
 
-  Future<void> _connectToOneDrive() async {
-    final isConnected = await onedrive.isConnected();
-    if (!isConnected) {
-      final success = await onedrive.connect(context);
-      if (success) {
-        print('Connected to OneDrive');
-      } else {
-        print('Failed to connect to OneDrive');
-      }
+  Future<String?> _getAccessToken() async {
+    final String url =
+        'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token';
+
+    final Map<String, String> body = {
+      'client_id': clientId,
+      'scope': 'https://graph.microsoft.com/.default',
+      'client_secret': clientSecret,
+      'grant_type': 'client_credentials',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData['access_token'];
+    } else {
+      print('Failed to get access token: ${response.body}');
+      return null;
+    }
+  }
+
+  Future<void> getAllDrives(String accessToken) async {
+    final String url = 'https://graph.microsoft.com/v1.0/drives';
+
+    final http.Response response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> drives = responseData['value'];
+
+      print('Drives: $drives');
+
+      setState(() {
+        _operationsDriveId = drives.firstWhere(
+          (drive) => drive['name'] == 'Documents',
+          orElse: () => {},
+        )['id'] as String?;
+      });
+
+      print('Found Operations Drive ID: $_operationsDriveId');
+    } else {
+      print('Failed to get drives: ${response.body}');
     }
   }
 
   Future<void> _uploadToOneDrive() async {
     if (_capturedImage == null) return;
 
-    final filePath = _capturedImage!.path;
-    final fileName = filePath.split('/').last;
-    final fileBytes = await _capturedImage!.readAsBytes();
-    final uploadPath =
-        "/path/to/your/folder/$fileName"; // Adjust the path as needed
+    final String? accessToken = await _getAccessToken();
 
-    try {
-      final response = await onedrive.push(fileBytes, uploadPath);
-      if (response != null) {
-        print('File uploaded successfully: $response');
-      } else {
-        print('File upload failed');
-      }
-    } catch (e) {
-      print('Error uploading file to OneDrive: $e');
+    if (accessToken == null) {
+      print('Failed to get access token');
+      return;
+    }
+
+    if (_operationsDriveId == null) {
+      print('Drive named "Operations" not found');
+      return;
+    }
+
+    final String filePath = _capturedImage!.path;
+    final String fileName = filePath.split('/').last;
+    final List<int> fileBytes = await _capturedImage!.readAsBytes();
+
+    final String uploadUrl =
+        "https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/root:/$fileName:/content";
+
+    final http.Response response = await http.put(
+      Uri.parse(uploadUrl),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/octet-stream',
+      },
+      body: fileBytes,
+    );
+
+    if (response.statusCode == 201) {
+      print('File uploaded successfully');
+    } else {
+      print('File upload failed: ${response.body}');
     }
   }
 
@@ -304,33 +370,24 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
                     ),
                   ),
                 if (_productNames.isNotEmpty || _prices.isNotEmpty)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await _connectToOneDrive();
-                        await _uploadToOneDrive();
-                      },
-                      child: Text('Upload to OneDrive'),
-                    ),
-                  ),
-                if (_productNames.isNotEmpty || _prices.isNotEmpty)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _submitSelections,
-                      child: Text('Submit'),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        textStyle: TextStyle(fontSize: 18),
-                      ),
-                    ),
+                  ElevatedButton(
+                    onPressed: _submitSelections,
+                    child: Text('Submit'),
                   ),
               ],
             )
-          : Center(
-              child: CircularProgressIndicator(),
-            ),
+          : Center(child: CircularProgressIndicator()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final String? accessToken = await _getAccessToken();
+          if (accessToken != null) {
+            await getAllDrives(accessToken);
+            await _uploadToOneDrive();
+          }
+        },
+        tooltip: 'Connect to OneDrive',
+        child: Icon(Icons.cloud_upload),
+      ),
     );
   }
 }
