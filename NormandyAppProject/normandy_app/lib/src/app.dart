@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
+import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
+import 'package:normandy_app/src/employee-list/employee_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
@@ -8,6 +10,7 @@ import 'package:normandy_app/src/contacts.dart';
 import 'package:normandy_app/src/expense_reports.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
+import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/currently_stored.dart';
 import 'profile.dart';
@@ -47,7 +50,9 @@ class MyApp extends StatelessWidget {
               const ChooseImage(header: 'Choose Image'),
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
-          "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove")
+          "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove"),
+          '/direct-phone-list': (context) => const DirectPhoneList(),
+          '/superintendent-list': (context) => const SuperintendentsList(),
         });
   }
 }

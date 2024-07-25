@@ -5,6 +5,7 @@ import "package:normandy_app/src/employee-list/employee_list_tile.dart";
   // Sample data for the Person class
   List<Person> people = [
     Person(
+      initials: 'JS',
       ext: '1234',
       lastName: 'Smith',
       firstName: 'John',
@@ -15,9 +16,11 @@ import "package:normandy_app/src/employee-list/employee_list_tile.dart";
       jobTitle: 'Software Engineer',
       department: 'Engineering',
       id: '1',
-      key: 101,
+      microsoftId: '1',
+      favorite: false,
     ),
     Person(
+      initials: 'JD',
       ext: '5678',
       lastName: 'Doe',
       firstName: 'Jane',
@@ -28,9 +31,11 @@ import "package:normandy_app/src/employee-list/employee_list_tile.dart";
       jobTitle: 'Product Manager',
       department: 'Product',
       id: '2',
-      key: 102,
+      microsoftId: '2',
+      favorite: false,
     ),
     Person(
+      initials: 'MB',
       ext: '9101',
       lastName: 'Brown',
       firstName: 'Michael',
@@ -39,9 +44,10 @@ import "package:normandy_app/src/employee-list/employee_list_tile.dart";
       homePhone: '555-0987',
       email: 'michael.brown@example.com',
       jobTitle: 'UX Designer',
-      department: 'Design',
+      department: '',
       id: '3',
-      key: 103,
+      microsoftId: '3',
+      favorite: false,
     ),
   ];
 
