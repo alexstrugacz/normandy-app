@@ -56,7 +56,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   File? _capturedImage;
 
   final String clientId = dotenv.env['CLIENT_ID'] ?? '';
-  final String clientSecret = dotenv.env['CLIENT_SCRT'] ?? '';
+  final String clientSCRT = dotenv.env['CLIENT_SCRT'] ?? '';
   final String tenantId = dotenv.env['TENANT_ID'] ?? '';
   String? _operationsDriveId;
 
@@ -233,7 +233,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     final Map<String, String> body = {
       'client_id': clientId,
       'scope': 'https://graph.microsoft.com/.default',
-      'client_secret': clientSecret,
+      'client_secret': clientSCRT,
       'grant_type': 'client_credentials',
     };
 
