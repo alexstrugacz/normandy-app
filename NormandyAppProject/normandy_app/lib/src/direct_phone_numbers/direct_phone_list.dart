@@ -94,10 +94,26 @@ class DirectPhoneListState extends State<DirectPhoneList> {
     }
   }
 
+  List<String> _getSearchTerms() {
+    return _people.map((contact) => contact.searchTerm).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Direct Phone Numbers')),
+        appBar: AppBar(title: Text('Direct Phone Numbers'), actions: [
+          IconButton(
+              onPressed: () async {
+                await showSearch(
+                    context: context,
+                    delegate: CustomPersonSearchDelegate(
+                      searchTerms: _getSearchTerms(), 
+                      contacts: _people
+                    ));
+                  _refreshContactOrder();
+              },
+              icon: const Icon(Icons.search))
+        ]),
         body: Column(children: <Widget>[
           if (_errorMessage.isNotEmpty)
             Padding(
@@ -129,5 +145,95 @@ class DirectPhoneListState extends State<DirectPhoneList> {
                 )
             )
         ]));
+  }
+}
+
+class CustomPersonSearchDelegate extends SearchDelegate {
+  List<String> searchTerms;
+  List<Person> contacts;
+  @override
+  CustomPersonSearchDelegate({required this.searchTerms, required this.contacts});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          close(context, null);
+        });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+
+    if (query.isEmpty) {
+      return const ListTile(title: Text('Start typing to search'));
+    }
+
+    List<Person> matchedContacts = [];
+
+    for (Person person in contacts) {
+      if (person.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(person);
+      }
+    }
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
+        itemBuilder: (context, index) {
+          return DirectPhoneCard(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            person: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    if (query.isEmpty) {
+      return const ListTile(title: Text('Start typing to search'));
+    }
+
+    List<Person> matchedContacts = [];
+
+    for (Person person in contacts) {
+      if (person.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+        matchedContacts.add(person);
+      }
+    }
+
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: matchedContacts.length,
+        itemBuilder: (context, index) {
+          return DirectPhoneCard(
+            key: UniqueKey(), // Ensure each ContactTile has a unique key
+            person: matchedContacts[index], 
+            index: index,
+            onRefresh: () {},
+          );
+        },
+
+      ),
+    );
   }
 }

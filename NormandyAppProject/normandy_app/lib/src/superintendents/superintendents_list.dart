@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
+import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/superintendents/superintendent_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
@@ -94,10 +95,26 @@ class SuperintendentsListState extends State<SuperintendentsList> {
     }
   }
 
+  List<String> _getSearchTerms() {
+    return _people.map((contact) => contact.searchTerm).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Superintendents')),
+        appBar: AppBar(title: Text('Superintendents'), actions: [
+          IconButton(
+              onPressed: () async {
+                await showSearch(
+                    context: context,
+                    delegate: CustomPersonSearchDelegate(
+                      searchTerms: _getSearchTerms(), 
+                      contacts: _people
+                    ));
+                  _refreshContactOrder();
+              },
+              icon: const Icon(Icons.search))
+        ]),
         body: Column(children: <Widget>[
           if (_errorMessage.isNotEmpty)
             Padding(
