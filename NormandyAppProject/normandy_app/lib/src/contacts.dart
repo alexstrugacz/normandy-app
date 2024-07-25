@@ -48,7 +48,9 @@ class Contacts extends StatelessWidget {
               GridCard(
                 icon: FontAwesomeIcons.suitcase,
                 text: "Active Trades",
-                onTap: () async {},
+                onTap: () async {
+                  Navigator.pushNamed(context, "/select-category-page");
+                },
               ),
               GridCard(
                 icon: FontAwesomeIcons.star,
