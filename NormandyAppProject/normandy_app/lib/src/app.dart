@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
+import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/employee-list/employee_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
 import 'package:normandy_app/src/expense_reports.dart';
+import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/currently_stored.dart';
 import 'profile.dart';
@@ -41,6 +43,8 @@ class MyApp extends StatelessWidget {
               const CurrentlyStored(header: 'Currently Stored'),
           '/expense-report-choose-image': (context) =>
               const ChooseImage(header: 'Choose Image'),
+          '/direct-phone-list': (context) => const DirectPhoneList(),
+          '/superintendent-list': (context) => const SuperintendentsList(),
         });
   }
 }

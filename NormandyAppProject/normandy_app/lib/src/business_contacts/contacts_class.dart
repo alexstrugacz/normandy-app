@@ -77,7 +77,6 @@ class Contact {
     favorite = isFavorite;
   }
 
-
   
   factory Contact.fromJson(dynamic json) {
 
