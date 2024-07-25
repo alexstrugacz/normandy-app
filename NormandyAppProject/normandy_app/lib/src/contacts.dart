@@ -24,12 +24,20 @@ class Contacts extends StatelessWidget {
               GridCard(
                 icon: FontAwesomeIcons.phone,
                 text: "Direct Phone Numbers",
-                onTap: () async {},
+                onTap: () async {
+                  Navigator.pushNamed(
+                    context, '/direct-phone-list'
+                  );
+                },
               ),
               GridCard(
                 icon: FontAwesomeIcons.pencil,
                 text: "Superintendents",
-                onTap: () async {},
+                onTap: () async {
+                   Navigator.pushNamed(
+                    context, '/superintendent-list'
+                  );
+                },
               ),
               GridCard(
                 icon: FontAwesomeIcons.suitcase,

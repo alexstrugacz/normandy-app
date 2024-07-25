@@ -14,8 +14,6 @@ class HomePage extends StatelessWidget {
     'Quick Links',
     'Projects Dashboard',
     'My Profile',
-    'Direct Phone Numbers',
-    'Superintendents'
   ];
 
   final List<String> disabledButtons = [
@@ -31,8 +29,6 @@ class HomePage extends StatelessWidget {
     FontAwesomeIcons.link,
     FontAwesomeIcons.chartBar,
     FontAwesomeIcons.user,
-    FontAwesomeIcons.userGroup,
-    FontAwesomeIcons.user,
   ];
 
   final Map<String, String> buttonRoutes = {
@@ -43,8 +39,6 @@ class HomePage extends StatelessWidget {
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
     'Employees': '/employee-list',
-    'Direct Phone Numbers': '/direct-phone-list',
-    'Superintendents': '/superintendent-list',
   };
 
   String _getCurrentDate() {
