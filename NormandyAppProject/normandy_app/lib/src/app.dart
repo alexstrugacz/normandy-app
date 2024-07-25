@@ -4,6 +4,7 @@ import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
+import 'package:normandy_app/src/contacts.dart';
 import 'package:normandy_app/src/expense_reports.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/home": (context) => HomePage(),
           "/business-contacts-list": (context) => BusinessContactsList(),
+          "/contacts": (context) => const Contacts(),
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),

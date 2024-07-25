@@ -35,7 +35,8 @@ class HomePage extends StatelessWidget {
     'My Profile': '/profile',
     'Expense Reports': '/expense-report-selection',
     'Quick Links': '/quick-links',
-    'Contacts': '/business-contacts-list',
+    //'Contacts': '/business-contacts-list',
+    'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
     'Employees': '/employee-list',
     'Favorites': '/favorites'
