@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
           "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove"),
+          "/clear-onedrive-cache": (context) => ClearOnedriveCache(),
           '/direct-phone-list': (context) => const DirectPhoneList(),
           '/superintendent-list': (context) => const SuperintendentsList(),
         });
