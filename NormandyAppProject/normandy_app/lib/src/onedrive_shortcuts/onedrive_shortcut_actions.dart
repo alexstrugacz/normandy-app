@@ -29,7 +29,12 @@ class OnedriveShortcutActions extends StatelessWidget {
               label: 'Remove Shortcuts',
               url: '/remove-onedrive-shortcut',
               localLink: true
-            )
+            ),
+            QuickLinkButton(
+              label: 'Clear OneDrive Cache',
+              url: '/clear-onedrive-cache',
+              localLink: true
+            ),
           ]
         )
       )
