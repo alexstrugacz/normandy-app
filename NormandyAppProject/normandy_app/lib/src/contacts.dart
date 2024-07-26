@@ -8,13 +8,12 @@ class Contacts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: const Text('Contacts'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: GridView.count(
             crossAxisCount: 2,
             mainAxisSpacing: 5.0,

@@ -16,7 +16,7 @@ class Profile extends StatelessWidget {
         title: const Text('My Profile'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: GridView.count(
             crossAxisCount: 2,
             mainAxisSpacing: 5.0,
@@ -78,7 +78,7 @@ showCacheInstructions(BuildContext context) {
         child: Platform.isAndroid
             ? const SingleChildScrollView(
                 child: ListBody(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text("Android instructions",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text("1. Open Settings"),
@@ -95,7 +95,7 @@ showCacheInstructions(BuildContext context) {
               )
             : const SingleChildScrollView(
                 child: ListBody(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text("iOS instructions",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text("1. Uninstall the OneDrive app from your phone."),
