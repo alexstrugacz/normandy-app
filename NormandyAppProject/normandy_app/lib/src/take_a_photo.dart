@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  // Ensure the Flutter framework is fully initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "assets/.env");
+
   runApp(const MyApp());
 }
 
@@ -36,27 +40,29 @@ class TakeAPhoto extends StatefulWidget {
   _TakeAPhotoState createState() => _TakeAPhotoState();
 }
 
+final String clientId = dotenv.env['CLIENT_ID'] ?? '';
+final String clientSCRT = dotenv.env['CLIENT_SCRT'] ?? '';
+final String tenantId = dotenv.env['TENANT_ID'] ?? '';
+
 class _TakeAPhotoState extends State<TakeAPhoto> {
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;
-  bool _isPictureTaken = false;
+  final ImagePicker _picker = ImagePicker();
+  List<String> _productNames = [];
+  List<String> _prices = [];
+  List<bool> _selectedNames = [];
+  List<bool> _selectedPrices = [];
+  List<String> _finalProductNames = [];
+  List<String> _finalPrices = [];
   File? _capturedImage;
-  SharedPreferences? _prefs;
-  String? _email;
-  String? _password;
+
+  String? _operationsDriveId;
 
   @override
   void initState() {
     super.initState();
     _requestCameraPermission();
-    _initializePreferences();
-  }
-
-  Future<void> _initializePreferences() async {
-    _prefs = await SharedPreferences.getInstance();
-    _email = _prefs?.getString("email");
-    _password = _prefs?.getString("password");
   }
 
   Future<void> _requestCameraPermission() async {
@@ -68,7 +74,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     if (status.isGranted) {
       _initializeCamera();
     } else {
-      print('Camera permission not granted.');
+      // Handle the case when the permission is not granted
     }
   }
 
@@ -84,126 +90,241 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       setState(() {
         _isCameraInitialized = true;
       });
-    } else {
-      print('No cameras available.');
     }
   }
 
   Future<void> _takePicture() async {
     if (!_cameraController.value.isInitialized) {
-      print('Error: Camera is not initialized.');
       return;
     }
 
     try {
-      final XFile file = await _cameraController.takePicture();
+      final XFile? imageFile = await _cameraController.takePicture();
+
+      if (imageFile == null) {
+        throw Exception('Error: Image file is null');
+      }
+
       setState(() {
-        _capturedImage = File(file.path);
-        _isPictureTaken = true;
-        _cameraController.dispose(); // Freeze the camera preview
+        _capturedImage = File(imageFile.path);
       });
-      _processImage(_capturedImage!);
+
+      await _processImage(File(imageFile.path));
     } catch (e) {
       print('Error taking picture: $e');
     }
   }
 
-  Future<void> _processImage(File image) async {
-    final inputImage = InputImage.fromFilePath(image.path);
+  Future<void> _processImage(File imageFile) async {
+    final inputImage = InputImage.fromFilePath(imageFile.path);
     final textRecognizer = GoogleMlKit.vision.textRecognizer();
-    final RecognizedText recognizedText =
-        await textRecognizer.processImage(inputImage);
+    try {
+      final RecognizedText recognisedText =
+          await textRecognizer.processImage(inputImage);
+
+      List<String> productNames = [];
+      List<String> prices = [];
+
+      for (TextBlock block in recognisedText.blocks) {
+        for (TextLine line in block.lines) {
+          String lineText = line.text.trim();
+
+          if (_isPrice(lineText)) {
+            prices.add(lineText);
+          } else {
+            productNames.add(lineText);
+          }
+        }
+      }
+
+      setState(() {
+        _productNames = productNames;
+        _prices = prices;
+        _selectedNames = List<bool>.filled(productNames.length, false);
+        _selectedPrices = List<bool>.filled(prices.length, false);
+      });
+    } catch (e) {
+      print('Error recognizing text: $e');
+    } finally {
+      textRecognizer.close();
+    }
+  }
+
+  bool _isPrice(String input) {
+    return RegExp(r'^\$?\d+(\.\d{1,2})?$').hasMatch(input);
+  }
+
+  void _submitSelections() {
+    List<String> finalProductNames = [];
+    List<String> finalPrices = [];
+
+    for (int i = 0; i < _productNames.length; i++) {
+      if (_selectedNames[i]) {
+        finalProductNames.add(_productNames[i]);
+      }
+    }
+
+    for (int i = 0; i < _prices.length; i++) {
+      if (_selectedPrices[i]) {
+        finalPrices.add(_prices[i]);
+      }
+    }
 
     setState(() {
-      // _productNames.clear();
-      // _prices.clear();
+      _finalProductNames = finalProductNames;
+      _finalPrices = finalPrices;
     });
 
-    // for (TextBlock block in recognizedText.blocks) {
-    //   for (TextLine line in block.lines) {
-    //     final text = line.text;
-    //     if (text.contains('\$')) {
-    //       _prices.add(text);
-    //     } else {
-    //       _productNames.add(text);
-    //     }
-    //   }
-    // }
-
-    // setState(() {
-    //   _selectedNames = List.generate(_productNames.length, (_) => false);
-    //   _selectedPrices = List.generate(_prices.length, (_) => false);
-    // });
-
-    textRecognizer.close();
+    _showSubmissionDialog();
   }
 
-  Future<String?> _generateJwt() async {
-    if (_email == null || _password == null) {
-      print('Email or password is null.');
-      return null;
-    }
+  void _showSubmissionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Receipt Items and Final Price submitted'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_finalProductNames.isNotEmpty)
+                Text(
+                  'Final Product Names:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              if (_finalProductNames.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      _finalProductNames.map((name) => Text(name)).toList(),
+                ),
+              SizedBox(height: 10),
+              if (_finalPrices.isNotEmpty)
+                Text(
+                  'Final Prices:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              if (_finalPrices.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _finalPrices.map((price) => Text(price)).toList(),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-    try {
-      final response = await http.post(
-        Uri.parse('https://normandy-backend.azurewebsites.net/api/auth/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'email': _email!,
-          'password': _password!,
-        }),
-      );
+  Future<String?> _getAccessToken() async {
+    final String url =
+        'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token';
 
-      if (response.statusCode == 201) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return data['token'];
-      } else {
-        print('Failed to generate JWT. Status code: ${response.statusCode}');
-        return null;
-      }
-    } catch (e) {
-      print('Error generating JWT: $e');
+    final Map<String, String> body = {
+      'client_id': clientId,
+      'scope': 'https://graph.microsoft.com/.default',
+      'client_secret': clientSCRT,
+      'grant_type': 'client_credentials',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData['access_token'];
+    } else {
+      print('Failed to get access token: ${response.body}');
       return null;
     }
   }
 
-  Future<void> _uploadImage() async {
-    if (_capturedImage == null) {
-      print('No image captured.');
+  Future<void> getAllDrives(String accessToken) async {
+    final String url = 'https://graph.microsoft.com/v1.0/drives';
+
+    final http.Response response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> drives = responseData['value'];
+
+      print('Drives: $drives');
+
+      setState(() {
+        _operationsDriveId = drives.firstWhere(
+          (drive) => drive['name'] == 'Documents',
+          orElse: () => {},
+        )['id'] as String?;
+      });
+
+      print('Found Operations Drive ID: $_operationsDriveId');
+    } else {
+      print('Failed to get drives: ${response.body}');
+    }
+  }
+
+  Future<void> _uploadToOneDrive() async {
+    if (_capturedImage == null) return;
+
+    final String? accessToken = await _getAccessToken();
+
+    if (accessToken == null) {
+      print('Failed to get access token');
       return;
     }
 
-    final jwt = await _generateJwt();
-    if (jwt == null) {
-      print('Failed to generate JWT.');
+    if (_operationsDriveId == null) {
+      print('Drive named "Operations" not found');
       return;
     }
 
-    final imageBytes = await _capturedImage!.readAsBytes();
-    final apiUrl =
-        'https://graph.microsoft.com/v1.0/me/drive/root:/Pictures/${DateTime.now().millisecondsSinceEpoch}.jpg:/content';
+    final String filePath = _capturedImage!.path;
+    final String fileName = filePath.split('/').last;
+    final String url =
+        'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Pictures/$fileName:/content';
 
-    try {
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $jwt',
-          'Content-Type': 'image/jpeg',
-        },
-        body: imageBytes,
-      );
+    final File file = File(filePath);
+    final List<int> fileBytes = await file.readAsBytes();
 
-      if (response.statusCode == 201) {
-        print('Image uploaded successfully.');
-      } else {
-        print('Failed to upload image. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {
-      print('Error uploading image: $e');
+    final http.Response response = await http.put(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/octet-stream',
+      },
+      body: fileBytes,
+    );
+
+    if (response.statusCode == 201) {
+      print('File uploaded successfully');
+    } else {
+      print('File upload failed: ${response.body}');
     }
+  }
+
+  @override
+  void dispose() {
+    _cameraController.dispose();
+    super.dispose();
   }
 
   @override
@@ -212,50 +333,65 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       appBar: AppBar(
         title: Text(widget.header),
       ),
-      body: Column(
-        children: [
-          if (_isCameraInitialized)
-            Container(
-              height: MediaQuery.of(context).size.height *
-                  0.6, // Camera takes up 60% of the height
-              child: _isPictureTaken
-                  ? Image.file(
-                      _capturedImage!) // Show captured image instead of camera preview
-                  : CameraPreview(_cameraController),
-            ),
-          if (!_isPictureTaken)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ElevatedButton(
-                onPressed: _takePicture,
-                child: const Text('Take Picture'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+      body: _isCameraInitialized
+          ? Column(
+              children: [
+                Expanded(child: CameraPreview(_cameraController)),
+                ElevatedButton(
+                  onPressed: _takePicture,
+                  child: Text('Take Photo'),
                 ),
-              ),
-            ),
-          if (_isPictureTaken)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ElevatedButton(
-                onPressed: _uploadImage,
-                child: const Text('Upload to OneDrive'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-        ],
+                if (_productNames.isNotEmpty || _prices.isNotEmpty)
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        ..._productNames.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          String name = entry.value;
+                          return CheckboxListTile(
+                            title: Text('Product Name: $name'),
+                            value: _selectedNames[index],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedNames[index] = value ?? false;
+                              });
+                            },
+                          );
+                        }).toList(),
+                        ..._prices.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          String price = entry.value;
+                          return CheckboxListTile(
+                            title: Text('Price: $price'),
+                            value: _selectedPrices[index],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedPrices[index] = value ?? false;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                if (_productNames.isNotEmpty || _prices.isNotEmpty)
+                  ElevatedButton(
+                    onPressed: _submitSelections,
+                    child: Text('Submit'),
+                  ),
+              ],
+            )
+          : Center(child: CircularProgressIndicator()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final String? accessToken = await _getAccessToken();
+          if (accessToken != null) {
+            await getAllDrives(accessToken);
+            await _uploadToOneDrive();
+          }
+        },
+        tooltip: 'Connect to OneDrive',
+        child: Icon(Icons.cloud_upload),
       ),
     );
   }

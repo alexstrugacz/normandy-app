@@ -47,7 +47,6 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
     - assets/.env
     - assets/images/
     - assets/icon.svg

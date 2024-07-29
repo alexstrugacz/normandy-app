@@ -39,6 +39,7 @@ class LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
     if (_formKey.currentState!.validate()) {
+      // TODO: Refactor to use api_helper.dart
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
@@ -54,8 +55,6 @@ class LoginPageState extends State<LoginPage> {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final String jwt = data['token'];
         _prefs?.setString("jwt", jwt);
-        _prefs?.setString("email", username);
-        _prefs?.setString("password", password); // Store password too
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
@@ -94,7 +93,7 @@ class LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Form(
             key: _formKey,
-            child: Column(
+            child: (Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset('assets/images/logo.png', height: 80),
@@ -113,62 +112,58 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-                    labelText: 'Email',
-                  ),
-                  validator: _validateEmail,
-                  style: const TextStyle(fontSize: 14.0),
-                ),
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 15.0),
+                      labelText: 'Email',
+                    ),
+                    validator: _validateEmail,
+                    style: const TextStyle(fontSize: 14.0)),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-                  ),
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  validator: _validatePassword,
-                  style: const TextStyle(fontSize: 14.0),
-                ),
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 15.0),
+                    ),
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    validator: _validatePassword,
+                    style: const TextStyle(fontSize: 14.0)),
                 const SizedBox(height: 20),
                 if (_errorMessage.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: Text(
-                      _errorMessage,
-                      style: const TextStyle(color: Colors.red, fontSize: 14),
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: Text(_errorMessage,
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 14))),
                 SizedBox(
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Background color
-                          foregroundColor: Colors.white, // Text color
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 0), // Padding
-                          textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold), // Text style
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // Reduced border radius
-                          )),
-                      child:
-                          const Text("Log In", style: TextStyle(fontSize: 14)),
-                    )),
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue, // Background color
+                            foregroundColor: Colors.white, // Text color
+
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 0), // Padding
+                            textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold), // Text style
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  8), // Reduced border radius
+                            )),
+                        child: const Text("Log In",
+                            style: TextStyle(fontSize: 14))))
               ],
-            )),
+            ))),
       ),
     );
   }
