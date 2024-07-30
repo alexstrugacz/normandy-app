@@ -333,34 +333,55 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _capturedImage = null;
-                            });
-                          },
-                          child: Text('Retake'),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 140.0, top: 10),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 50.0),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _capturedImage = null;
+                              });
+                            },
+                            child: const Text(
+                              'Retake',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              if (_capturedImage != null) {
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 140.0, top: 10),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 50.0),
+                            ),
+                            onPressed: () {
+                              setState(() {
                                 _capturedImages.add(_capturedImage!);
                                 _capturedImage = null;
-                              }
-                            });
-                          },
-                          child: Text('Use Photo'),
+                              });
+                            },
+                            child: const Text(
+                              'Use Photo',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 )
           : Center(child: CircularProgressIndicator()),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _takePicture,
         tooltip: 'Take a Photo',
-        child: Icon(Icons.camera_alt),
+        label: Text('Capture Receipt'),
+        icon: Icon(Icons.camera_alt),
       ),
     );
   }
@@ -388,10 +409,11 @@ class PhotoShowcase extends StatelessWidget {
           return Image.file(images[index]);
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: onUpload,
         tooltip: 'Upload to OneDrive',
-        child: Icon(Icons.cloud_upload),
+        label: Text('Upload to OneDrive'),
+        icon: Icon(Icons.cloud_upload),
       ),
     );
   }

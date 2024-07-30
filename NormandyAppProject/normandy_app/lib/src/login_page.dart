@@ -55,8 +55,7 @@ class LoginPageState extends State<LoginPage> {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final String jwt = data['token'];
         _prefs?.setString("jwt", jwt);
-        _prefs?.setString(
-            "email", username); // Store email in SharedPreferences
+        _prefs?.setString("email", username);
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
