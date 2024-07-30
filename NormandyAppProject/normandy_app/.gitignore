@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 .flutter
 .vscode
+.env
+/NormandyAppProject/.env
+/NormandyAppProject/normandy_app/assets/.env
+env.dart
+
 
 # Symbolication related
 app.*.symbols
