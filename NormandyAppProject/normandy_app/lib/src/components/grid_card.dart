@@ -17,10 +17,14 @@ class GridCard extends StatelessWidget {
             children: <Widget>[
               SizedBox(
                 width: 25,
-                child: FaIcon(icon),
+                child: FaIcon(icon, color: const Color.fromARGB(255, 73, 73, 73))
               ),
               const SizedBox(width: 12),
-              Flexible(child: Text(text)),
+              Flexible(child: Text(text, 
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 73, 73, 73),
+                      fontSize: 14,
+                    ))),
             ],
           ),
         ),

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/ChooseImagePage.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
-import 'package:normandy_app/src/employee-list/employee_list.dart';
+import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
+import 'package:normandy_app/src/contacts.dart';
 import 'package:normandy_app/src/expense_reports.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
+import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'profile.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
@@ -29,11 +31,13 @@ class MyApp extends StatelessWidget {
         home: const LoginPage(),
         routes: {
           "/home": (context) => HomePage(),
-          "/business-contacts-list": (context) => const BusinessContactsList(),
+          "/business-contacts-list": (context) => BusinessContactsList(),
+          "/contacts": (context) => const Contacts(),
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
-          "/employee-list": (context) => const EmployeeList(),
+          "/employee-list": (context) => BusinessContactsList(isEmployee: true),
+          "/favorites": (context) => BusinessContactsList(isFavorite: true),
           "/projects-dashboard": (context) => const Text("Coming soon..."),
           '/expense-report-selection': (context) =>
               ExpenseReports(header: 'Expense Reports'),
@@ -43,8 +47,10 @@ class MyApp extends StatelessWidget {
               const ChooseImagePage(header: 'Choose Image'),
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
-          "/remove-onedrive-shortcut": (context) =>
-              OneDriveShortcut(mode: "remove")
+          "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove"),
+          "/clear-onedrive-cache": (context) => ClearOnedriveCache(),
+          '/direct-phone-list': (context) => const DirectPhoneList(),
+          '/superintendent-list': (context) => const SuperintendentsList(),
         });
   }
 }

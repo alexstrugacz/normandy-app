@@ -9,6 +9,7 @@ class HomePage extends StatelessWidget {
     'Contacts',
     'Active Trade',
     'Employees',
+    'Favorites',
     'Expense Reports',
     'Quick Links',
     'Projects Dashboard',
@@ -23,6 +24,7 @@ class HomePage extends StatelessWidget {
     FontAwesomeIcons.addressBook,
     FontAwesomeIcons.user,
     FontAwesomeIcons.users,
+    FontAwesomeIcons.star,
     FontAwesomeIcons.fileInvoiceDollar,
     FontAwesomeIcons.link,
     FontAwesomeIcons.chartBar,
@@ -33,9 +35,10 @@ class HomePage extends StatelessWidget {
     'My Profile': '/profile',
     'Expense Reports': '/expense-report-selection',
     'Quick Links': '/quick-links',
-    'Contacts': '/business-contacts-list',
+    //'Contacts': '/business-contacts-list',
+    'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
-    'Employees': '/employee-list'
+    'Employees': '/employee-list',
   };
 
   String _getCurrentDate() {
