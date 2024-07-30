@@ -4,8 +4,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'env.dart';
 
 void main() async {
@@ -135,11 +137,28 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       return;
     }
 
-    for (File image in _capturedImages) {
-      final String filePath = image.path;
-      final String fileName = filePath.split('/').last;
+    // Get email from SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? email = prefs.getString("email");
+
+    if (email == null) {
+      print('No email found in SharedPreferences');
+      return;
+    }
+
+    // Extract name part of the email
+    final String userName = email.split('@').first;
+
+    // Get current date in mmdd format
+    final String date = DateFormat('MMyy').format(DateTime.now());
+    final String folderName = 'nbexp_${userName}_$date';
+
+    for (int i = 0; i < _capturedImages.length; i++) {
+      final File image = _capturedImages[i];
+      final String fileName =
+          (i + 1).toString().padLeft(4, '0') + '.jpg'; // 0001, 0002, 0003, etc.
       final String url =
-          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$fileName:/content';
+          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderName/$fileName:/content';
 
       final List<int> fileBytes = await image.readAsBytes();
 
@@ -154,7 +173,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         );
 
         if (response.statusCode == 201) {
-          print('File uploaded successfully');
+          print('File uploaded successfully: $fileName');
         } else {
           print('File upload failed: ${response.body}');
         }

@@ -55,6 +55,8 @@ class LoginPageState extends State<LoginPage> {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final String jwt = data['token'];
         _prefs?.setString("jwt", jwt);
+        _prefs?.setString(
+            "email", username); // Store email in SharedPreferences
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
@@ -150,7 +152,6 @@ class LoginPageState extends State<LoginPage> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue, // Background color
                             foregroundColor: Colors.white, // Text color
-
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 32, vertical: 0), // Padding
                             textStyle: const TextStyle(
