@@ -174,6 +174,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
         if (response.statusCode == 201) {
           print('File uploaded successfully: $fileName');
+          _showUploadSuccessDialog();
         } else {
           print('File upload failed: ${response.body}');
         }
@@ -268,7 +269,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
               return;
             }
 
-            // Find the drive named "Documents"
             final drive = drives.firstWhere(
               (drive) => drive['name'] == 'Documents',
               orElse: () => null,
@@ -296,6 +296,43 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     }
   }
 
+  void _showUploadSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Upload Successful'),
+          content: Text('All images have been uploaded successfully.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _navigateToShowcase() async {
+    final updatedImages = await Navigator.of(context).push<List<File>>(
+      MaterialPageRoute(
+        builder: (context) => PhotoShowcase(
+          images: List<File>.from(_capturedImages),
+          onUpload: _uploadToOneDrive,
+        ),
+      ),
+    );
+
+    if (updatedImages != null) {
+      setState(() {
+        _capturedImages = updatedImages;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _cameraController.dispose();
@@ -311,16 +348,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
           if (_capturedImages.isNotEmpty)
             IconButton(
               icon: Icon(Icons.done),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PhotoShowcase(
-                      images: _capturedImages,
-                      onUpload: _uploadToOneDrive,
-                    ),
-                  ),
-                );
-              },
+              onPressed: _navigateToShowcase,
             ),
         ],
       ),
@@ -387,7 +415,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   }
 }
 
-class PhotoShowcase extends StatelessWidget {
+class PhotoShowcase extends StatefulWidget {
   final List<File> images;
   final Future<void> Function() onUpload;
 
@@ -395,22 +423,85 @@ class PhotoShowcase extends StatelessWidget {
       : super(key: key);
 
   @override
+  _PhotoShowcaseState createState() => _PhotoShowcaseState();
+}
+
+class _PhotoShowcaseState extends State<PhotoShowcase> {
+  late List<bool> _selectedImages;
+  late List<File> _currentImages;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedImages = List.generate(widget.images.length, (_) => false);
+    _currentImages = List<File>.from(widget.images);
+  }
+
+  void _toggleSelection(int index) {
+    setState(() {
+      _selectedImages[index] = !_selectedImages[index];
+    });
+  }
+
+  void _deleteSelectedImages() {
+    setState(() {
+      final toRemove = [];
+      for (int i = 0; i < _selectedImages.length; i++) {
+        if (_selectedImages[i]) {
+          toRemove.add(i);
+        }
+      }
+      for (int i = toRemove.length - 1; i >= 0; i--) {
+        _currentImages.removeAt(toRemove[i]);
+        _selectedImages.removeAt(toRemove[i]);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Photo Showcase'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: _deleteSelectedImages,
+          ),
+          IconButton(
+            icon: Icon(Icons.done),
+            onPressed: () {
+              Navigator.of(context).pop(_currentImages);
+            },
+          ),
+        ],
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
         ),
-        itemCount: images.length,
+        itemCount: _currentImages.length,
         itemBuilder: (context, index) {
-          return Image.file(images[index]);
+          return GestureDetector(
+            onTap: () => _toggleSelection(index),
+            child: GridTile(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.file(_currentImages[index], fit: BoxFit.cover),
+                  if (_selectedImages[index])
+                    Container(
+                      color: Colors.black54,
+                      child: Icon(Icons.check, color: Colors.white),
+                    ),
+                ],
+              ),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: onUpload,
+        onPressed: widget.onUpload,
         tooltip: 'Upload to OneDrive',
         label: Text('Upload to OneDrive'),
         icon: Icon(Icons.cloud_upload),
