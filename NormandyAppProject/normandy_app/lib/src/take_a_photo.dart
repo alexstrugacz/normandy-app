@@ -139,7 +139,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       final String filePath = image.path;
       final String fileName = filePath.split('/').last;
       final String url =
-          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Pictures/$fileName:/content';
+          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$fileName:/content';
 
       final List<int> fileBytes = await image.readAsBytes();
 
@@ -199,49 +199,81 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
   }
 
   Future<void> getAllDrives(String accessToken) async {
-    final String url = 'https://graph.microsoft.com/v1.0/drives';
+    final String sitesUrl = 'https://graph.microsoft.com/v1.0/sites';
 
     try {
-      final http.Response response = await http.get(
-        Uri.parse(url),
+      // Fetch all sites
+      final http.Response sitesResponse = await http.get(
+        Uri.parse(sitesUrl),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final List<dynamic> drives = responseData['value'];
+      if (sitesResponse.statusCode == 200) {
+        final Map<String, dynamic> sitesData = json.decode(sitesResponse.body);
+        final List<dynamic> sites = sitesData['value'];
 
-        if (drives.isEmpty) {
-          print('No drives found.');
+        if (sites.isEmpty) {
+          print('No sites found.');
           return;
         }
 
-        print('All Drives:');
-        drives.forEach((drive) {
-          print('Drive Name: ${drive['name']}');
-        });
-
-        // Find the drive with the name "Documents"
-        final drive = drives.firstWhere(
-          (drive) => drive['name'] == 'Documents',
+        // Find the site named "Operations"
+        final site = sites.firstWhere(
+          (site) => site['name'] == 'Operations',
           orElse: () => null,
         );
 
-        if (drive != null) {
-          setState(() {
-            _operationsDriveId = drive['id'] as String?;
-          });
-          print('Found Documents Drive ID: $_operationsDriveId');
+        if (site != null) {
+          final String operationsSiteId = site['id'];
+          print('Found Operations Site ID: $operationsSiteId');
+
+          // Fetch drives for the Operations site
+          final String drivesUrl =
+              'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
+          final http.Response drivesResponse = await http.get(
+            Uri.parse(drivesUrl),
+            headers: {
+              'Authorization': 'Bearer $accessToken',
+            },
+          );
+
+          if (drivesResponse.statusCode == 200) {
+            final Map<String, dynamic> drivesData =
+                json.decode(drivesResponse.body);
+            final List<dynamic> drives = drivesData['value'];
+
+            if (drives.isEmpty) {
+              print('No drives found for Operations site.');
+              return;
+            }
+
+            // Find the drive named "Documents"
+            final drive = drives.firstWhere(
+              (drive) => drive['name'] == 'Documents',
+              orElse: () => null,
+            );
+
+            if (drive != null) {
+              setState(() {
+                _operationsDriveId = drive['id'] as String?;
+              });
+              print('Found Documents Drive ID: $_operationsDriveId');
+            } else {
+              print('Drive named "Documents" not found.');
+            }
+          } else {
+            print('Failed to get drives: ${drivesResponse.body}');
+          }
         } else {
-          print('Drive named "Documents" not found.');
+          print('Site named "Operations" not found.');
         }
       } else {
-        print('Failed to get drives: ${response.body}');
+        print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      print('Error getting drives: $e');
+      print('Error getting sites or drives: $e');
     }
   }
 
