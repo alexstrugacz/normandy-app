@@ -122,7 +122,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     }
   }
 
-  Future<void> _uploadToOneDrive() async {
+  Future<void> _uploadToOneDrive(String folderName) async {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
@@ -137,7 +137,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       return;
     }
 
-    // Get email from SharedPreferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? email = prefs.getString("email");
 
@@ -146,19 +145,15 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       return;
     }
 
-    // Extract name part of the email
     final String userName = email.split('@').first;
-
-    // Get current date in mmdd format
     final String date = DateFormat('MMyy').format(DateTime.now());
-    final String folderName = 'nbexp_${userName}_$date';
+    final String folderPath = 'nbexp_${userName}_$date-$folderName';
 
     for (int i = 0; i < _capturedImages.length; i++) {
       final File image = _capturedImages[i];
-      final String fileName =
-          (i + 1).toString().padLeft(4, '0') + '.jpg'; // 0001, 0002, 0003, etc.
+      final String fileName = (i + 1).toString().padLeft(4, '0') + '.jpg';
       final String url =
-          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderName/$fileName:/content';
+          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderPath/$fileName:/content';
 
       final List<int> fileBytes = await image.readAsBytes();
 
@@ -222,7 +217,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     final String sitesUrl = 'https://graph.microsoft.com/v1.0/sites';
 
     try {
-      // Fetch all sites
       final http.Response sitesResponse = await http.get(
         Uri.parse(sitesUrl),
         headers: {
@@ -239,7 +233,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
           return;
         }
 
-        // Find the site named "Operations"
         final site = sites.firstWhere(
           (site) => site['name'] == 'Operations',
           orElse: () => null,
@@ -249,7 +242,6 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
           final String operationsSiteId = site['id'];
           print('Found Operations Site ID: $operationsSiteId');
 
-          // Fetch drives for the Operations site
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
           final http.Response drivesResponse = await http.get(
@@ -321,7 +313,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       MaterialPageRoute(
         builder: (context) => PhotoShowcase(
           images: List<File>.from(_capturedImages),
-          onUpload: _uploadToOneDrive,
+          onUpload: (folderName) => _uploadToOneDrive(folderName),
         ),
       ),
     );
@@ -417,7 +409,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
 class PhotoShowcase extends StatefulWidget {
   final List<File> images;
-  final Future<void> Function() onUpload;
+  final Future<void> Function(String folderName) onUpload;
 
   const PhotoShowcase({Key? key, required this.images, required this.onUpload})
       : super(key: key);
@@ -456,6 +448,43 @@ class _PhotoShowcaseState extends State<PhotoShowcase> {
         _selectedImages.removeAt(toRemove[i]);
       }
     });
+  }
+
+  Future<void> _showUploadDialog() async {
+    String folderName = '';
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Upload to OneDrive'),
+          content: TextField(
+            onChanged: (value) {
+              folderName = value;
+            },
+            decoration: InputDecoration(hintText: "Enter folder name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(folderName);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null && result.isNotEmpty) {
+      await widget.onUpload(result);
+    }
   }
 
   @override
@@ -501,7 +530,7 @@ class _PhotoShowcaseState extends State<PhotoShowcase> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: widget.onUpload,
+        onPressed: _showUploadDialog,
         tooltip: 'Upload to OneDrive',
         label: Text('Upload to OneDrive'),
         icon: Icon(Icons.cloud_upload),

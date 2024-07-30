@@ -52,7 +52,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
     }
   }
 
-  Future<void> _uploadToOneDrive() async {
+  Future<void> _uploadToOneDrive(String folderName) async {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
@@ -77,13 +77,13 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
 
     final String userName = email.split('@').first;
     final String date = DateFormat('MMyy').format(DateTime.now());
-    final String folderName = 'nbexp_${userName}_$date';
+    final String folderPath = 'nbexp_${userName}_$date-$folderName';
 
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
       final String fileName = (i + 1).toString().padLeft(4, '0') + '.jpg';
       final String url =
-          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderName/$fileName:/content';
+          'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderPath/$fileName:/content';
 
       final List<int> fileBytes = await image.readAsBytes();
 
@@ -243,7 +243,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
       MaterialPageRoute(
         builder: (context) => PhotoShowcase(
           images: List<File>.from(_selectedImages),
-          onUpload: _uploadToOneDrive,
+          onUpload: (folderName) => _uploadToOneDrive(folderName),
         ),
       ),
     );
