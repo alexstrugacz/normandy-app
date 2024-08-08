@@ -29,26 +29,35 @@ class APIHelper {
 
     return response;
   }
-
+  
   static Future<http.Response?> post(String url, Map<String, dynamic> body,
-      BuildContext context, bool mounted) async {
-    String? jwt = await getJwt();
-    if (jwt == null) {
-      // Redirect to the login page
-      if (mounted) {
-        Navigator.pushNamed(context, '/');
-      } else {
-        return null;
+      BuildContext context, bool mounted, [bool? overrideJWT]) async {
+    if (overrideJWT != true) {
+      String? jwt = await getJwt();
+      if (jwt == null) {
+        // Redirect to the login page
+        if (mounted) {
+          Navigator.pushNamed(context, '/');
+        } else {
+          return null;
+        }
       }
-    }
 
-    final response = await http.post(Uri.parse(baseUrl + url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "Authorization": "Bearer $jwt"
-        },
-        body: jsonEncode(body));
-    return response;
+      final response = await http.post(Uri.parse(baseUrl + url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            "Authorization": "Bearer $jwt"
+          },
+          body: jsonEncode(body));
+      return response;
+    } else {
+      final response = await http.post(Uri.parse(baseUrl + url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(body));
+        return response;
+    }
   }
 
   static Future<http.Response?> delete(

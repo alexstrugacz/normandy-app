@@ -28,10 +28,12 @@ class LoginPageState extends State<LoginPage> {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  bool _loading = false;
   String _errorMessage = '';
 
   Future<void> _login() async {
     setState(() {
+      _loading = true;
       _errorMessage = '';
     });
     final String username = _usernameController.text;
@@ -44,8 +46,11 @@ class LoginPageState extends State<LoginPage> {
           'password': password,
         },
         context,
-        mounted
+        mounted,
+        true
       );
+
+      print("Response received.");
 
       if ((response != null) && response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -53,12 +58,22 @@ class LoginPageState extends State<LoginPage> {
         _prefs?.setString("jwt", jwt);
         _prefs?.setString("email", username);
         if (!mounted) return;
+        setState(() {
+          _loading = false;
+          _errorMessage = '';
+        });
+
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() {
+          _loading = false;
           _errorMessage = 'Login failed. Please check your email and password.';
         });
       }
+    } else {
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -139,7 +154,14 @@ class LoginPageState extends State<LoginPage> {
                       child: Text(_errorMessage,
                           style: const TextStyle(
                               color: Colors.red, fontSize: 14))),
-                SizedBox(
+                
+                if (_loading)
+                  const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Center(child: CircularProgressIndicator())
+                  )
+                else
+                  SizedBox(
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
@@ -157,7 +179,7 @@ class LoginPageState extends State<LoginPage> {
                                   8), // Reduced border radius
                             )),
                         child: const Text("Log In",
-                            style: TextStyle(fontSize: 14))))
+                            style: TextStyle(fontSize: 14)))),
               ],
             ))),
       ),

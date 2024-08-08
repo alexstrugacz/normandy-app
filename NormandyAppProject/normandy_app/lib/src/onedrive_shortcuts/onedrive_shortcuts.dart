@@ -43,7 +43,9 @@ class OneDriveShortcutState extends State<OneDriveShortcut> {
     );
 
     if ((response != null) && (response.statusCode == 200)) {
-      bool exists = json.decode(response.body)['exists'];
+      dynamic existsRaw = json.decode(response.body)['exists'];
+      bool exists = (existsRaw != false && existsRaw != 'false' && existsRaw != null);
+
       String? nextShortcutModificationAllowedDate = json.decode(response.body)['nextShortcutModificationAllowedDate'];
       DateTime? nextDate = nextShortcutModificationAllowedDate != null ? DateTime.parse(nextShortcutModificationAllowedDate) : null;
 
