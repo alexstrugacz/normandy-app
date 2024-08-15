@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
           '/project-upload': (context) => const ProjectUpload(),
           '/project-upload/page': (context) => const ProjectUploadPage(),
           '/project-upload/photo': (context) => ProjectUploadPhoto(),
+          '/project-upload/gallery': (context) => ProjectUploadGallery(),
         });
   }
 }
