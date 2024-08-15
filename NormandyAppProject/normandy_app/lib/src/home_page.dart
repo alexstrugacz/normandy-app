@@ -7,9 +7,9 @@ import 'package:normandy_app/src/homepage_button.dart';
 class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
     'Contacts',
-    'Active Trade',
-    'Employees',
-    'Favorites',
+    // 'Active Trade',
+    // 'Employees',
+    // 'Favorites',
     'Expense Reports',
     'Upload Image',
     'Quick Links',
@@ -41,6 +41,7 @@ class HomePage extends StatelessWidget {
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
     'Employees': '/employee-list',
+    'Favorites': '/favorites',
     'Upload Image': '/project-upload',
   };
 
