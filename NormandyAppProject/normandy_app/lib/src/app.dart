@@ -4,6 +4,7 @@ import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
+import 'package:normandy_app/src/projectupload.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
 import 'package:normandy_app/src/contacts.dart';
@@ -51,6 +52,9 @@ class MyApp extends StatelessWidget {
           "/clear-onedrive-cache": (context) => ClearOnedriveCache(),
           '/direct-phone-list': (context) => const DirectPhoneList(),
           '/superintendent-list': (context) => const SuperintendentsList(),
+          '/project-upload': (context) => const ProjectUpload(),
+          '/project-upload/page': (context) => const ProjectUploadPage(),
+          '/project-upload/photo': (context) => ProjectUploadPhoto(),
         });
   }
 }

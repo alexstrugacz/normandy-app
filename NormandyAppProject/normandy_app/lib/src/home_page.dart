@@ -11,6 +11,7 @@ class HomePage extends StatelessWidget {
     'Employees',
     'Favorites',
     'Expense Reports',
+    'Upload Image',
     'Quick Links',
     'Projects Dashboard',
     'My Profile',
@@ -26,6 +27,7 @@ class HomePage extends StatelessWidget {
     FontAwesomeIcons.users,
     FontAwesomeIcons.star,
     FontAwesomeIcons.fileInvoiceDollar,
+    FontAwesomeIcons.upload,
     FontAwesomeIcons.link,
     FontAwesomeIcons.chartBar,
     FontAwesomeIcons.user,
@@ -39,6 +41,7 @@ class HomePage extends StatelessWidget {
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
     'Employees': '/employee-list',
+    'Upload Image': '/project-upload',
   };
 
   String _getCurrentDate() {
