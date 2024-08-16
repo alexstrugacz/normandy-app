@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
@@ -35,7 +34,6 @@ class SuperintendentsListState extends State<SuperintendentsList> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favoritePeople =
         prefs.getStringList('superintendents') ?? [];
-    print(favoritePeople);
     for (Person person in newPeople) {
       if (favoritePeople.contains(person.id)) {
         person.favorite = true;
@@ -102,7 +100,7 @@ class SuperintendentsListState extends State<SuperintendentsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Superintendents'), actions: [
+        appBar: AppBar(title: const Text('Superintendents'), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -141,7 +139,7 @@ class SuperintendentsListState extends State<SuperintendentsList> {
                       index: index,
                       onRefresh: _refreshContactOrder,
                     );
-                  },
+                  }
                 )
                 )
             )
