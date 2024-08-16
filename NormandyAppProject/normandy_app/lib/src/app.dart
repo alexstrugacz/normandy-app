@@ -11,6 +11,7 @@ import 'package:normandy_app/src/expense_reports.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
 import 'package:normandy_app/src/so_forms/create_so.dart';
+import 'package:normandy_app/src/so_forms/edit_so.dart';
 import 'package:normandy_app/src/so_forms/so_form_options.dart';
 import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
           '/direct-phone-list': (context) => const DirectPhoneList(),
           '/superintendent-list': (context) => const SuperintendentsList(),
           "/so-forms": (context) => const SOFormOptions(),
-          "/create-so-form": (context) => const CreateSOForm()
+          "/create-so-form": (context) => const CreateSOForm(),
+          "/edit-so-form": (context) => const EditSOForm()
         });
   }
 }

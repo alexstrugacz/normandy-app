@@ -18,14 +18,12 @@ class CreateSOFormState extends State<CreateSOForm> {
   String? jwt;
   Customer? selectedCustomer;
   String? selectedProject;
-  String? selectedServiceProvider;
+  String?  selectedServiceProvider;
   String problemDescription = '';
   DateTime dateOfRequest = DateTime.now();
 
   List<DropdownMenuItem<String>> _projects = [];
   List<DropdownMenuItem<String>> _serviceProviders = [];
-  Map<String, String> _projectsMap = {};
-  Map<String, String> _serviceProvidersMap = {};
 
   bool _loading = false;
   String _errorMessage = '';
@@ -33,7 +31,7 @@ class CreateSOFormState extends State<CreateSOForm> {
   @override
   void initState() {
     super.initState();
-    selectedServiceProvider = "Kenney Kozik";
+    selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
   }
 
 
@@ -59,7 +57,6 @@ class CreateSOFormState extends State<CreateSOForm> {
 
     if ((response != null) && (response.statusCode == 200)) {
       List<dynamic> data = json.decode(response.body)['serviceHandlers'];
-      Map<String, String> serviceProvidersMap = {};
 
       print(data);
 
@@ -67,18 +64,16 @@ class CreateSOFormState extends State<CreateSOForm> {
 
       for (var serviceProvider in data) {
         serviceProviders.add(DropdownMenuItem<String>(
-          value: serviceProvider['name'],
+          value: serviceProvider['_id'],
           child: Text(
             serviceProvider['name'],       
             style: const TextStyle(fontSize: 12)
           ),
         ));
-        serviceProvidersMap[serviceProvider['name']] = serviceProvider['_id'];
       }
 
       setState(() {
         _serviceProviders = serviceProviders;
-        _serviceProvidersMap = serviceProvidersMap;
         _loading = false;
       });
     } else {
@@ -109,22 +104,19 @@ class CreateSOFormState extends State<CreateSOForm> {
       if ((response != null) && (response.statusCode == 200)) {
         List<dynamic> data = json.decode(response.body)['projects'];
         List<DropdownMenuItem<String>> projects = [];
-        Map<String, String> projectsMap = {};
 
         for (var project in data) {
           projects.add(DropdownMenuItem<String>(
-            value: project['projectName'],
+            value: project['_id'],
             child: Text(
               project['projectName'],       
               style: const TextStyle(fontSize: 12)
             ),
           ));
-          projectsMap[project['projectName']] = project['_id'];
         }
 
         setState(() {
           _projects = projects;
-          _projectsMap = projectsMap;
           _loading = false;
         });
       } else {
@@ -136,7 +128,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     }
   }
 
-  Future<void> createServiceOrder() async { // TODO: Rename to Create Service Order
+  Future<void> createServiceOrder() async { 
     setState(() {
       _loading = true;
     });
@@ -165,17 +157,13 @@ class CreateSOFormState extends State<CreateSOForm> {
       return;
     }
 
-    String? selectedProjectId = _projectsMap[selectedProject];
-
-    if (selectedProjectId == null) {
+    if (selectedProject == null) {
       setState(() {
         _errorMessage = 'An error occurred while creating the service order. Please try again.';
         _loading=false;
       });
       return;
     }
-
-    String? selectedServiceProviderId = _serviceProvidersMap[selectedServiceProvider];
 
     if (selectedServiceProvider == null) {
       setState(() {
@@ -188,12 +176,12 @@ class CreateSOFormState extends State<CreateSOForm> {
     print("Initiate request.");
 
     Map<String, dynamic> body = {
-      "projectId": selectedProjectId,
+      "projectId": selectedProject,
       "dateOfRequest": dateOfRequest.toIso8601String(),
       "description": problemDescription,
       "serviceHandler": [
         {
-          "id": selectedServiceProviderId,
+          "id": selectedServiceProvider,
           "customOptionMode": false,
           "dateAssigned": dateOfRequest.toIso8601String()
         }

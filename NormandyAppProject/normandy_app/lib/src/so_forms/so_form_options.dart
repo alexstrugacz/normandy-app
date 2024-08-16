@@ -21,7 +21,7 @@ class SOFormOptions extends StatelessWidget {
             ),
             QuickLinkButton(
               label: 'Edit Service Order',
-              url: '/remove-onedrive-shortcut',
+              url: '/edit-so-form',
               localLink: true
             )
           ]
