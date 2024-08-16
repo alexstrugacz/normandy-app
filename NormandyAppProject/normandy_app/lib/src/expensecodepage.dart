@@ -27,7 +27,7 @@ class _ExpenseCodePageState extends State<ExpenseCodePage> {
     'Client 1',
     'Client 2',
     'Client 3'
-  ]; // Replace with actual clients
+  ]; // Pull clients from normandy backend
   final List<Map<String, String>> accountingCodes = [
     {'Operational Expenses': '7200'},
     {'Meetings': '7880'},
@@ -122,7 +122,7 @@ class _ExpenseCodePageState extends State<ExpenseCodePage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle form submission
+                // Send data to normandy backend
               },
               child: Text('Submit'),
             ),
