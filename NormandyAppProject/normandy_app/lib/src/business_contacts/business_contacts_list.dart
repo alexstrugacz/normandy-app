@@ -13,20 +13,9 @@ class BusinessContactsList extends StatefulWidget {
   final String? category;
   final bool? isEmployee;
   final bool? isFavorite;
-  late String pageTitle;
 
-  BusinessContactsList({super.key, this.isActiveTrades, this.category, this.isEmployee, this.isFavorite }) {
-    if (category != null) {
-      pageTitle = category!;
-    } else if (isEmployee == true) {
-      pageTitle = "Employees";
-    } else if (isFavorite == true) {
-      pageTitle = "Favorite Contacts";
-    } else {
-      pageTitle = "Business Contacts";
-    }
-  }
-
+  const BusinessContactsList({super.key, this.isActiveTrades, this.category, this.isEmployee, this.isFavorite });
+  
   @override
   BusinessContactsListState createState() => BusinessContactsListState();
 }
@@ -36,10 +25,25 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   String _errorMessage = '';
   List<Contact> _contacts = [];
   bool _loading = false;
+  String pageTitle = "";
+
+  void generatePageTitle() {
+    if (widget.category != null) {
+      pageTitle = widget.category!;
+    } else if (widget.isEmployee == true) {
+      pageTitle = "Employees";
+    } else if (widget.isFavorite == true) {
+      pageTitle = "Favorite Contacts";
+    } else {
+      pageTitle = "Business Contacts";
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
+    generatePageTitle();
     _loadContactsData();
   }
 
@@ -131,7 +135,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.pageTitle), actions: [
+        appBar: AppBar(title: Text(pageTitle), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -227,19 +231,17 @@ class CustomSearchDelegate extends SearchDelegate {
       }
     }
 
-    return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: matchedContacts.length,
-        itemBuilder: (context, index) {
-          return ContactTile(
-            key: UniqueKey(), // Ensure each ContactTile has a unique key
-            contact: matchedContacts[index], 
-            index: index,
-            onRefresh: () {},
-          );
-        },
-      ),
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: matchedContacts.length,
+      itemBuilder: (context, index) {
+        return ContactTile(
+          key: UniqueKey(), // Ensure each ContactTile has a unique key
+          contact: matchedContacts[index], 
+          index: index,
+          onRefresh: () {},
+        );
+      },
     );
   }
 
@@ -257,8 +259,7 @@ class CustomSearchDelegate extends SearchDelegate {
       }
     }
 
-    return Expanded(
-      child: ListView.builder(
+    return ListView.builder(
         scrollDirection: Axis.vertical,
         itemCount: matchedContacts.length,
         itemBuilder: (context, index) {
@@ -269,8 +270,6 @@ class CustomSearchDelegate extends SearchDelegate {
             onRefresh: () {},
           );
         },
-
-      ),
-    );
+      );
   }
 }

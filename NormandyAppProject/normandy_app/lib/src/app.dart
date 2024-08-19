@@ -11,6 +11,9 @@ import 'package:normandy_app/src/contacts.dart';
 import 'package:normandy_app/src/expense_reports.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcut_actions.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/onedrive_shortcuts.dart';
+import 'package:normandy_app/src/so_forms/create_so.dart';
+import 'package:normandy_app/src/so_forms/edit_so.dart';
+import 'package:normandy_app/src/so_forms/so_form_options.dart';
 import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'profile.dart';
@@ -32,13 +35,13 @@ class MyApp extends StatelessWidget {
         home: const LoginPage(),
         routes: {
           "/home": (context) => HomePage(),
-          "/business-contacts-list": (context) => BusinessContactsList(),
+          "/business-contacts-list": (context) => const BusinessContactsList(),
           "/contacts": (context) => const Contacts(),
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
-          "/employee-list": (context) => BusinessContactsList(isEmployee: true),
-          "/favorites": (context) => BusinessContactsList(isFavorite: true),
+          "/employee-list": (context) => const BusinessContactsList(isEmployee: true),
+          "/favorites": (context) => const BusinessContactsList(isFavorite: true),
           "/projects-dashboard": (context) => const Text("Coming soon..."),
           '/expense-report-selection': (context) =>
               ExpenseReports(header: 'Expense Reports'),
@@ -49,9 +52,12 @@ class MyApp extends StatelessWidget {
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
           "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove"),
-          "/clear-onedrive-cache": (context) => ClearOnedriveCache(),
+          "/clear-onedrive-cache": (context) => const ClearOnedriveCache(),
           '/direct-phone-list': (context) => const DirectPhoneList(),
           '/superintendent-list': (context) => const SuperintendentsList(),
+          "/so-forms": (context) => const SOFormOptions(),
+          "/create-so-form": (context) => const CreateSOForm(),
+          "/edit-so-form": (context) => const EditSOForm()
           '/project-upload': (context) => const ProjectUpload(),
           '/project-upload/page': (context) => const ProjectUploadPage(),
           '/project-upload/photo': (context) => ProjectUploadPhoto(),

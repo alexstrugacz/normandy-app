@@ -60,6 +60,29 @@ class APIHelper {
     }
   }
 
+  static Future<http.Response?> put(String url, Map<String, dynamic> body,
+      BuildContext context, bool mounted) async {
+    String? jwt = await getJwt();
+    if (jwt == null) {
+      // Redirect to the login page
+      if (mounted) {
+        Navigator.pushNamed(context, '/');
+      } else {
+        return null;
+      }
+    }
+
+    print(baseUrl + url);
+
+    final response = await http.put(Uri.parse(baseUrl + url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "Authorization": "Bearer $jwt"
+        },
+        body: jsonEncode(body));
+    return response;
+  }
+
   static Future<http.Response?> delete(
       String url, BuildContext context, bool mounted) async {
     String? jwt = await getJwt();

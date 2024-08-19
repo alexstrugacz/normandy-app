@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_card.dart';
@@ -34,7 +33,6 @@ class DirectPhoneListState extends State<DirectPhoneList> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favoritePeople =
         prefs.getStringList('directPhones') ?? [];
-    print(favoritePeople);
     for (Person person in newPeople) {
       if (favoritePeople.contains(person.id)) {
         person.favorite = true;
@@ -101,7 +99,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Direct Phone Numbers'), actions: [
+        appBar: AppBar(title: const Text('Direct Phone Numbers'), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -190,19 +188,17 @@ class CustomPersonSearchDelegate extends SearchDelegate {
       }
     }
 
-    return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: matchedContacts.length,
-        itemBuilder: (context, index) {
-          return DirectPhoneCard(
-            key: UniqueKey(), // Ensure each ContactTile has a unique key
-            person: matchedContacts[index], 
-            index: index,
-            onRefresh: () {},
-          );
-        },
-      ),
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: matchedContacts.length,
+      itemBuilder: (context, index) {
+        return DirectPhoneCard(
+          key: UniqueKey(), // Ensure each ContactTile has a unique key
+          person: matchedContacts[index], 
+          index: index,
+          onRefresh: () {},
+        );
+      }
     );
   }
 
@@ -220,20 +216,17 @@ class CustomPersonSearchDelegate extends SearchDelegate {
       }
     }
 
-    return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: matchedContacts.length,
-        itemBuilder: (context, index) {
-          return DirectPhoneCard(
-            key: UniqueKey(), // Ensure each ContactTile has a unique key
-            person: matchedContacts[index], 
-            index: index,
-            onRefresh: () {},
-          );
-        },
-
-      ),
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: matchedContacts.length,
+      itemBuilder: (context, index) {
+        return DirectPhoneCard(
+          key: UniqueKey(), // Ensure each ContactTile has a unique key
+          person: matchedContacts[index], 
+          index: index,
+          onRefresh: () {}
+        );
+      }
     );
   }
 }

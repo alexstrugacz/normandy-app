@@ -7,12 +7,10 @@ import 'package:normandy_app/src/homepage_button.dart';
 class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
     'Contacts',
-    // 'Active Trade',
-    // 'Employees',
-    // 'Favorites',
     'Expense Reports',
     'Upload Image',
     'Quick Links',
+    'Service Orders',
     'Projects Dashboard',
     'My Profile',
   ];
@@ -23,20 +21,19 @@ class HomePage extends StatelessWidget {
 
   final List<IconData> buttonIcons = [
     FontAwesomeIcons.addressBook,
-    FontAwesomeIcons.user,
-    FontAwesomeIcons.users,
-    FontAwesomeIcons.star,
-    FontAwesomeIcons.fileInvoiceDollar,
+    FontAwesomeIcons.receipt,
     FontAwesomeIcons.upload,
     FontAwesomeIcons.link,
+    FontAwesomeIcons.fileInvoiceDollar,
     FontAwesomeIcons.chartBar,
-    FontAwesomeIcons.user,
+    FontAwesomeIcons.user
   ];
 
   final Map<String, String> buttonRoutes = {
     'My Profile': '/profile',
     'Expense Reports': '/expense-report-selection',
     'Quick Links': '/quick-links',
+    'Service Orders': "/so-forms",
     //'Contacts': '/business-contacts-list',
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
@@ -95,7 +92,11 @@ class HomePage extends StatelessWidget {
                       text: buttonNames[index],
                       isDisabled: disabledButtons.contains(buttonNames[index]),
                       onTap: () async {
+                        print(buttonRoutes);
+                        print(buttonNames[index]);
+
                         if (buttonRoutes.containsKey(buttonNames[index])) {
+                          print("URL ${buttonRoutes[buttonNames[index]]}");
                           Navigator.pushNamed(
                               context, buttonRoutes[buttonNames[index]]!);
                         }
