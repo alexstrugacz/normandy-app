@@ -653,7 +653,7 @@
 					"\"url_launcher_ios\"",
 					"-ld64",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.normandyremodeling.normandyapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a4.normandyapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -997,7 +997,7 @@
 					"\"url_launcher_ios\"",
 					"-ld64",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.normandyremodeling.normandyapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a4.normandyapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1181,7 +1181,7 @@
 					"\"url_launcher_ios\"",
 					"-ld64",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.normandyremodeling.normandyapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a4.normandyapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

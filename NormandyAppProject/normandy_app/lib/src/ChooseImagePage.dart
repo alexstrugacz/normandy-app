@@ -121,6 +121,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
     };
 
     try {
+      print('choosing $url');
       final http.Response response = await http.post(
         Uri.parse(url),
         headers: {

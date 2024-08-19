@@ -8,6 +8,7 @@ class HomePage extends StatelessWidget {
   final List<String> buttonNames = [
     'Contacts',
     'Expense Reports',
+    'Upload Image',
     'Quick Links',
     'Service Orders',
     'Projects Dashboard',
@@ -21,8 +22,9 @@ class HomePage extends StatelessWidget {
   final List<IconData> buttonIcons = [
     FontAwesomeIcons.addressBook,
     FontAwesomeIcons.receipt,
+    FontAwesomeIcons.upload,
     FontAwesomeIcons.link,
-    FontAwesomeIcons.fileInvoice,
+    FontAwesomeIcons.fileInvoiceDollar,
     FontAwesomeIcons.chartBar,
     FontAwesomeIcons.user
   ];
@@ -36,7 +38,8 @@ class HomePage extends StatelessWidget {
     'Contacts': '/contacts',
     'Active Trade': '/select-category-page',
     'Employees': '/employee-list',
-    'Favorites': '/favorites'
+    'Favorites': '/favorites',
+    'Upload Image': '/project-upload',
   };
 
   String _getCurrentDate() {
