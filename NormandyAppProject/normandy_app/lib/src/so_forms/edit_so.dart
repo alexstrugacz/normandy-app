@@ -43,32 +43,6 @@ class EditSOFormState extends State<EditSOForm> {
     super.initState();
   }
 
-  Future<void> loadServiceOrderData() async {
-    // Load the service order data from the selected SO
-
-    if (selectedServiceOrder == null) return;
-
-    setState(() {
-      _errorMessage = '';
-      _loading = true;
-    });
-
-    http.Response? response = await APIHelper.get(
-      'service-orders/$selectedServiceOrder',
-      context,
-      mounted
-    );
-
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  Future<void> saveServiceOrderData() async {
-    // Save the service order data as per edits
-
-  }
-
   Future<void> loadProjects() async {
     // Implement your API call here to fetch projects
     if (selectedCustomer?.id != null) {
@@ -158,9 +132,7 @@ class EditSOFormState extends State<EditSOForm> {
       });
 
     }
-
   }
-
 
   Future<void> handleSelectCustomer(Customer customer) async {
     setState(() {
@@ -171,7 +143,7 @@ class EditSOFormState extends State<EditSOForm> {
 
   @override
   Widget build(BuildContext context) {
-return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Edit Service Order',
@@ -203,6 +175,14 @@ return Scaffold(
                     style: TextStyle(color: Color.fromARGB(255, 78, 78, 78), fontSize: 20)
                   )
                 ))
+              else if (_loading)
+                const Column(children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical:20),
+                    child: Center(child: CircularProgressIndicator())
+                  ),
+                  SizedBox(height: 6)
+                ])
               else
                 Container( 
                   margin: const EdgeInsets.only(top: 0),

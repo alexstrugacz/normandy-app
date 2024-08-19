@@ -4,10 +4,10 @@ import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 
 class APIHelper {
-  // static String baseUrl = "https://normandy-backend.azurewebsites.net/api/";
+  static String baseUrl = "https://normandy-backend.azurewebsites.net/api/";
 
   // Only uncomment this in development, and ensure your NormandyBackend copy is running on Port 4000
-  static String baseUrl = "http://localhost:4000/api/";
+  // static String baseUrl = "http://localhost:4000/api/";
 
   static Future<http.Response?> get(
       String url, BuildContext context, bool mounted) async {
@@ -58,6 +58,29 @@ class APIHelper {
           body: jsonEncode(body));
         return response;
     }
+  }
+
+  static Future<http.Response?> put(String url, Map<String, dynamic> body,
+      BuildContext context, bool mounted) async {
+    String? jwt = await getJwt();
+    if (jwt == null) {
+      // Redirect to the login page
+      if (mounted) {
+        Navigator.pushNamed(context, '/');
+      } else {
+        return null;
+      }
+    }
+
+    print(baseUrl + url);
+
+    final response = await http.put(Uri.parse(baseUrl + url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "Authorization": "Bearer $jwt"
+        },
+        body: jsonEncode(body));
+    return response;
   }
 
   static Future<http.Response?> delete(

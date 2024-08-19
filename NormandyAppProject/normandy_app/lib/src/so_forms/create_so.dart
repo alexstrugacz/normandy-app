@@ -84,7 +84,6 @@ class CreateSOFormState extends State<CreateSOForm> {
     }
   }
 
-
   Future<void> loadProjects() async {
     // Implement your API call here to fetch projects
     loadServiceProviders();
@@ -205,7 +204,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     if ((response != null) && (response.statusCode == 201)) {
       // Service order created successfully
       if (mounted) {
-        AlertHelper.showAlert("Shortcut added", "Shortcut added to the customer folder.", context, () {
+        AlertHelper.showAlert("Created Service Order", "Service order successfully created.", context, () {
           Navigator.pop(context);
         });
       }
@@ -249,7 +248,7 @@ class CreateSOFormState extends State<CreateSOForm> {
               icon: const Icon(Icons.search))
         ]
       ),
-      body: Container(
+      body: SingleChildScrollView( // Wrap the body in SingleChildScrollView
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +265,7 @@ class CreateSOFormState extends State<CreateSOForm> {
             else
               Container( 
                 margin: const EdgeInsets.only(top: 10),
-                padding: const EdgeInsets.all(4.0),
+                padding: const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 20),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
