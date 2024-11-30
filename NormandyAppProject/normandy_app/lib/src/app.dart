@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
           '/superintendent-list': (context) => const SuperintendentsList(),
           "/so-forms": (context) => const SOFormOptions(),
           "/create-so-form": (context) => const CreateSOForm(),
-          "/edit-so-form": (context) => const EditSOForm()
+          "/edit-so-form": (context) => const EditSOForm(),
           '/project-upload': (context) => const ProjectUpload(),
           '/project-upload/page': (context) => const ProjectUploadPage(),
           '/project-upload/photo': (context) => ProjectUploadPhoto(),
