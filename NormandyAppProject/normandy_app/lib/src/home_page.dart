@@ -4,43 +4,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/homepage_button.dart';
 
+class _Button {
+  String name;
+  String route;
+  IconData icon;
+  _Button(this.name, this.route, this.icon);
+}
+
 class HomePage extends StatelessWidget {
-  final List<String> buttonNames = [
-    'Contacts',
-    'Expense Reports',
-    'Upload Image',
-    'Quick Links',
-    'Service Orders',
-    'Projects Dashboard',
-    'My Profile',
+  final List<_Button> buttons = [
+    _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
+    _Button('Upload Image', '/project-upload', FontAwesomeIcons.addressBook),
+    _Button('Quick Links', '/quick-links', FontAwesomeIcons.addressBook),
+    _Button('Service Orders', '/so-forms', FontAwesomeIcons.addressBook),
+    _Button('My Profile', '/profile', FontAwesomeIcons.addressBook),
+    _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.addressBook),
   ];
-
-  final List<String> disabledButtons = [
-    'Projects Dashboard'
-  ];
-
-  final List<IconData> buttonIcons = [
-    FontAwesomeIcons.addressBook,
-    FontAwesomeIcons.receipt,
-    FontAwesomeIcons.upload,
-    FontAwesomeIcons.link,
-    FontAwesomeIcons.fileInvoiceDollar,
-    FontAwesomeIcons.chartBar,
-    FontAwesomeIcons.user
-  ];
-
-  final Map<String, String> buttonRoutes = {
-    'My Profile': '/profile',
-    'Expense Reports': '/expense-report-selection',
-    'Quick Links': '/quick-links',
-    'Service Orders': "/so-forms",
-    //'Contacts': '/business-contacts-list',
-    'Contacts': '/contacts',
-    'Active Trade': '/select-category-page',
-    'Employees': '/employee-list',
-    'Favorites': '/favorites',
-    'Upload Image': '/project-upload',
-  };
 
   String _getCurrentDate() {
     DateTime now = DateTime.now();
@@ -86,23 +65,20 @@ class HomePage extends StatelessWidget {
                 crossAxisSpacing: 5.0,
                 childAspectRatio: 1.5,
                 physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(buttonNames.length, (index) {
+                children: buttons.map((button) {
                   return HomepageButton(
-                      icon: buttonIcons[index],
-                      text: buttonNames[index],
-                      isDisabled: disabledButtons.contains(buttonNames[index]),
+                      icon: button.icon,
+                      text: button.name,
+                      isDisabled: false,
                       onTap: () async {
-                        print(buttonRoutes);
-                        print(buttonNames[index]);
+                        print(button.route);
+                        print(button.name);
 
-                        if (buttonRoutes.containsKey(buttonNames[index])) {
-                          print("URL ${buttonRoutes[buttonNames[index]]}");
-                          Navigator.pushNamed(
-                              context, buttonRoutes[buttonNames[index]]!);
-                        }
+                        print("URL ${button.route}");
+                        Navigator.pushNamed(context, button.route);
                       }
                   );
-                }),
+                }).toList(),
               ),
             ),
           ),

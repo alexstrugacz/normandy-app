@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/ChooseImagePage.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
+import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/projectupload.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
           '/project-upload/page': (context) => const ProjectUploadPage(),
           '/project-upload/photo': (context) => ProjectUploadPhoto(),
           '/project-upload/gallery': (context) => ProjectUploadGallery(),
+          '/coming-soon': (context) => ComingSoon(),
         });
   }
 }
