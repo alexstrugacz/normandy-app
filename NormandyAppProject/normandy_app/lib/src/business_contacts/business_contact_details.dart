@@ -308,8 +308,8 @@ class ContactDetailViewState extends State<ContactDetailView> {
     if (widget.contact.businessCity.isNotEmpty) {
       address += " ${widget.contact.businessCity}";
     }
-    if (widget.contact.businessCountryRegion.isNotEmpty) {
-      address += ", ${widget.contact.businessCountryRegion}";
+    if (widget.contact.businessState.isNotEmpty) {
+      address += ", ${widget.contact.businessState}";
     }
 
     if (widget.contact.businessPostalCode.isNotEmpty) {

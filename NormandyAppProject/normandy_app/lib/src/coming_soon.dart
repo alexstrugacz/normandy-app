@@ -44,17 +44,15 @@ class ComingSoon extends StatelessWidget {
                     text: button.name,
                     isDisabled: !button.enabled,
                     isGrey: true,
-                    onTap: button.enabled
-                        ? () async {
-                            print(button.route);
-                            print(button.name);
+                    onTap: () async {
+                      print(button.route);
+                      print(button.name);
 
-                            if (button.route != null) {
-                              print("URL ${button.route}");
-                              Navigator.pushNamed(context, button.route!);
-                            }
-                          }
-                        : null,
+                      if (button.route != null) {
+                        print("URL ${button.route}");
+                        Navigator.pushNamed(context, button.route!);
+                      }
+                    },
                   );
                 }).toList(),
               ),
