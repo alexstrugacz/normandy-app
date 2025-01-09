@@ -6,12 +6,15 @@ class _Button {
   String name;
   String? route;
   IconData icon;
-  _Button(this.name, this.route, this.icon);
+  bool enabled;
+  _Button(this.name, this.route, this.icon, {this.enabled = false});
 }
 
 class ComingSoon extends StatelessWidget {
   final List<_Button> buttons = [
-    _Button('Expense Reports', '/expense-report-selection', FontAwesomeIcons.addressBook),
+    _Button('Expense Reports', '/expense-report-selection',
+        FontAwesomeIcons.addressBook,
+        enabled: true),
     _Button('Projects Dashboard', null, FontAwesomeIcons.addressBook),
   ];
 
@@ -37,18 +40,21 @@ class ComingSoon extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: buttons.map((button) {
                   return HomepageButton(
-                      icon: button.icon,
-                      text: button.name,
-                      isDisabled: true,
-                      onTap: () async {
-                        print(button.route);
-                        print(button.name);
+                    icon: button.icon,
+                    text: button.name,
+                    isDisabled: !button.enabled,
+                    isGrey: true,
+                    onTap: button.enabled
+                        ? () async {
+                            print(button.route);
+                            print(button.name);
 
-                        if (button.route != null) {
-                          print("URL ${button.route}");
-                          Navigator.pushNamed(context, button.route!);
-                        }
-                      }
+                            if (button.route != null) {
+                              print("URL ${button.route}");
+                              Navigator.pushNamed(context, button.route!);
+                            }
+                          }
+                        : null,
                   );
                 }).toList(),
               ),
@@ -57,6 +63,5 @@ class ComingSoon extends StatelessWidget {
         ],
       ),
     );
-
   }
 }

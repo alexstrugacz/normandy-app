@@ -5,6 +5,7 @@ class HomepageButton extends StatelessWidget {
   final String text;
   final IconData icon;
   final bool isDisabled;
+  final bool? isGrey;
   final Function()? onTap;
 
   const HomepageButton({
@@ -12,6 +13,7 @@ class HomepageButton extends StatelessWidget {
     required this.text,
     required this.icon,
     required this.isDisabled,
+    this.isGrey,
     this.onTap,
   });
 
@@ -20,7 +22,7 @@ class HomepageButton extends StatelessWidget {
     return GestureDetector(
       onTap: isDisabled ? null : onTap,
       child: Opacity(
-        opacity: isDisabled ? 0.4 : 1,
+        opacity: (isGrey ?? isDisabled) ? 0.4 : 1,
         child: Card(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10), // Adjusted vertical padding
