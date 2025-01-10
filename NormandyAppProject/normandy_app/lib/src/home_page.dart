@@ -14,11 +14,11 @@ class _Button {
 class HomePage extends StatelessWidget {
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
-    _Button('Upload Image', '/project-upload', FontAwesomeIcons.addressBook),
-    _Button('Quick Links', '/quick-links', FontAwesomeIcons.addressBook),
-    _Button('Service Orders', '/so-forms', FontAwesomeIcons.addressBook),
-    _Button('My Profile', '/profile', FontAwesomeIcons.addressBook),
-    _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.addressBook),
+    _Button('Upload Image', '/project-upload', FontAwesomeIcons.upload),
+    _Button('Quick Links', '/quick-links', FontAwesomeIcons.link),
+    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar),
+    _Button('My Profile', '/profile', FontAwesomeIcons.user),
+    _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock),
   ];
 
   String _getCurrentDate() {

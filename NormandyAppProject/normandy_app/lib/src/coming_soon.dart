@@ -13,9 +13,9 @@ class _Button {
 class ComingSoon extends StatelessWidget {
   final List<_Button> buttons = [
     _Button('Expense Reports', '/expense-report-selection',
-        FontAwesomeIcons.addressBook,
+        FontAwesomeIcons.receipt,
         enabled: true),
-    _Button('Projects Dashboard', null, FontAwesomeIcons.addressBook),
+    _Button('Projects Dashboard', null, FontAwesomeIcons.chartBar),
   ];
 
   @override
