@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/ChooseImagePage.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
+import 'package:normandy_app/src/client_ChooseImage.dart';
 import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
-import 'package:normandy_app/src/choose_image.dart';
 import 'package:normandy_app/src/projectupload.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
@@ -41,8 +41,10 @@ class MyApp extends StatelessWidget {
           "/profile": (context) => const Profile(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
-          "/employee-list": (context) => const BusinessContactsList(isEmployee: true),
-          "/favorites": (context) => const BusinessContactsList(isFavorite: true),
+          "/employee-list": (context) =>
+              const BusinessContactsList(isEmployee: true),
+          "/favorites": (context) =>
+              const BusinessContactsList(isFavorite: true),
           "/projects-dashboard": (context) => const Text("Coming soon..."),
           '/expense-report-selection': (context) =>
               ExpenseReports(header: 'Expense Reports'),
@@ -52,7 +54,8 @@ class MyApp extends StatelessWidget {
               const ChooseImagePage(header: 'Choose Image'),
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
-          "/remove-onedrive-shortcut": (context) => OneDriveShortcut(mode: "remove"),
+          "/remove-onedrive-shortcut": (context) =>
+              OneDriveShortcut(mode: "remove"),
           "/clear-onedrive-cache": (context) => const ClearOnedriveCache(),
           '/direct-phone-list': (context) => const DirectPhoneList(),
           '/superintendent-list': (context) => const SuperintendentsList(),
@@ -64,6 +67,9 @@ class MyApp extends StatelessWidget {
           '/project-upload/photo': (context) => ProjectUploadPhoto(),
           '/project-upload/gallery': (context) => ProjectUploadGallery(),
           '/coming-soon': (context) => ComingSoon(),
+          '/client-choose-image-page': (context) => ClientChooseImagePage(
+                header: 'Client Image Upload',
+              ),
         });
   }
 }

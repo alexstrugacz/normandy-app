@@ -14,7 +14,8 @@ class _Button {
 class HomePage extends StatelessWidget {
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
-    _Button('Upload Image', '/project-upload', FontAwesomeIcons.upload),
+    _Button(
+        'Upload Image', '/client-choose-image-page', FontAwesomeIcons.upload),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link),
     _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar),
     _Button('My Profile', '/profile', FontAwesomeIcons.user),
@@ -40,7 +41,8 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
             child: SvgPicture.asset(
               'assets/icon.svg',
               height: 80,
@@ -48,13 +50,13 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Padding(
-            // no top padding. only left right and bottom
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
-            child: Text(
-              _getCurrentDate(),
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            )
-          ),
+              // no top padding. only left right and bottom
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
+              child: Text(
+                _getCurrentDate(),
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              )),
           // Grid of buttons
           Expanded(
             child: Padding(
@@ -76,8 +78,7 @@ class HomePage extends StatelessWidget {
 
                         print("URL ${button.route}");
                         Navigator.pushNamed(context, button.route);
-                      }
-                  );
+                      });
                 }).toList(),
               ),
             ),
