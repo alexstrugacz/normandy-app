@@ -71,6 +71,9 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         setState(() {
           _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
         });
+        print('Selected images: ${_selectedImages.length}');
+      } else {
+        print('No images picked');
       }
     } else {
       print('Storage permission denied');
@@ -84,8 +87,6 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
       print('Failed to get access token');
       return;
     }
-
-    await getAllDrives(accessToken);
 
     if (_clientProjectsDriveId == null) {
       print('Drive named "Client Projects Active" not found');
@@ -150,6 +151,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
+        print('Access token retrieved');
         return responseData['access_token'];
       } else {
         print('Failed to get access token: ${response.body}');
@@ -206,6 +208,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
               setState(() {
                 _clientProjectsDriveId = drive['id'] as String?;
               });
+              print('Client Projects Active/Documents drive found');
             } else {
               print('Drive named "Documents" not found.');
             }
@@ -239,6 +242,8 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> folders = data['value'];
 
+        print('Retrieved ${folders.length} client folders');
+
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -254,6 +259,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
                           _selectedClientFolderId = folder['id'];
                         });
                         Navigator.of(context).pop();
+                        print('Selected folder: ${folder['name']}');
                       },
                     );
                   }).toList(),
@@ -311,6 +317,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
               setState(() {
                 _selectedUploadType = value;
               });
+              print('Selected upload type: $value');
             },
           ),
           Expanded(
@@ -338,12 +345,19 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
                 onPressed: () async {
                   final String? accessToken = await _getAccessToken();
                   if (accessToken != null) {
+                    print('Fetching client folders...');
                     _selectClientFolder(accessToken);
                   }
                 },
                 label: Text('Select Client Folder'),
                 icon: Icon(Icons.folder_open),
               ),
+              if (_selectedImages.isNotEmpty && _selectedClientFolderId != null)
+                FloatingActionButton.extended(
+                  onPressed: _uploadToOneDrive,
+                  label: Text('Upload Images'),
+                  icon: Icon(Icons.cloud_upload),
+                ),
             ],
           ),
         ],
