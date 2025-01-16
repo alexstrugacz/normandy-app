@@ -53,19 +53,20 @@ class ContactDetailViewState extends State<ContactDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: null,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
+        appBar: AppBar(
+          centerTitle: false,
+          title: null,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 48),
+        body: SingleChildScrollView(
+            child: Padding(
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 48),
           child: Column(
             children: [
               CircleAvatar(
@@ -83,21 +84,27 @@ class ContactDetailViewState extends State<ContactDetailView> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.call),
-                    onPressed: widget.contact.businessPhone.isNotEmpty ? () {
-                      handlePhoneCall(widget.contact.businessPhone);
-                    } : null
+                    onPressed: widget.contact.businessPhone.isNotEmpty
+                        ? () {
+                            handlePhoneCall(widget.contact.businessPhone);
+                          }
+                        : null,
                   ),
                   IconButton(
                     icon: const Icon(Icons.message),
-                    onPressed: widget.contact.businessPhone.isNotEmpty ? () {
-                      handleMessage(widget.contact.businessPhone);
-                    } : null,
+                    onPressed: widget.contact.businessPhone.isNotEmpty
+                        ? () {
+                            handleMessage(widget.contact.businessPhone);
+                          }
+                        : null,
                   ),
                   IconButton(
                     icon: const Icon(Icons.email),
-                    onPressed: widget.contact.emailAddress.isNotEmpty ? () {
-                      handleEmail(widget.contact.emailAddress);
-                    } : null,
+                    onPressed: widget.contact.emailAddress.isNotEmpty
+                        ? () {
+                            handleEmail(widget.contact.emailAddress);
+                          }
+                        : null,
                   ),
                   IconButton(
                     icon: const Icon(Icons.star),
@@ -172,70 +179,40 @@ class ContactDetailViewState extends State<ContactDetailView> {
                   ),
                   const SizedBox(height: 8),
                 ]),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Phone',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.contact.businessPhone.isEmpty ? "No phone available." : widget.contact.businessPhone,
-                      style: TextStyle(color: widget.contact.businessPhone.isEmpty ? const Color.fromARGB(100, 0, 0, 0) : const Color.fromARGB(255, 0, 0, 0))
-                    )
-                  ],
-                ),
-              ),
+              _buildRegion(title: 'Phone', content: [
+                Text(
+                    widget.contact.businessPhone.isEmpty
+                        ? "No phone available."
+                        : widget.contact.businessPhone,
+                    style: TextStyle(
+                        color: widget.contact.businessPhone.isEmpty
+                            ? const Color.fromARGB(100, 0, 0, 0)
+                            : const Color.fromARGB(255, 0, 0, 0)))
+              ]),
               const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                color: Colors.grey[200],
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Email',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.contact.emailAddress.isEmpty ? "No email available." : widget.contact.emailAddress,
-                      style: TextStyle(color: widget.contact.emailAddress.isEmpty ? const Color.fromARGB(100, 0, 0, 0) : const Color.fromARGB(255, 0, 0, 0))
-                    ),
-                  ],
-                ),
-              ),
+              _buildRegion(title: 'Email', content: [
+                Text(
+                    widget.contact.emailAddress.isEmpty
+                        ? "No email available."
+                        : widget.contact.emailAddress,
+                    style: TextStyle(
+                        color: widget.contact.emailAddress.isEmpty
+                            ? const Color.fromARGB(100, 0, 0, 0)
+                            : const Color.fromARGB(255, 0, 0, 0)))
+              ]),
               const SizedBox(height: 8),
-
-                  GestureDetector(
-                    onTap: () {
-                    _handleLaunchGoogleMaps();
-                    },
-                    child: 
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        color: Colors.grey[200],
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: 
-                            _buildLocationTextSpans()
-                        ),
-                      )
-                  )
+              GestureDetector(
+                onTap: () {
+                  _handleLaunchGoogleMaps();
+                },
+                child: _buildRegion(
+                    title: 'Company', content: _buildLocationTextSpans()),
+              ),
+              ..._buildCategories(),
+              ..._buildActiveStatus(),
             ],
           ),
-        )
-      ) 
-      
-    );
+        )));
   }
 
   // String _getHeaderText() {
@@ -269,33 +246,24 @@ class ContactDetailViewState extends State<ContactDetailView> {
       ];
 
       if (widget.contact.jobTitle.isNotEmpty) {
-        textList.add(
-          Text(
-            widget.contact.jobTitle,
-            style: const TextStyle(fontSize: 18, color: Colors.grey),
-          )
-        );
+        textList.add(Text(
+          widget.contact.jobTitle,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ));
       }
 
       if (widget.contact.company.isNotEmpty) {
-        textList.add(
-          Text(
-            widget.contact.company,
-            style: const TextStyle(fontSize: 18, color: Colors.grey),
-          )
-        );
+        textList.add(Text(
+          widget.contact.company,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ));
       }
       return textList;
     }
   }
 
   List<Text> _buildLocationTextSpans() {
-    List<Text> locationText = [
-      const Text(
-        'Company',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      )
-    ];
+    List<Text> locationText = [];
     if (widget.contact.company.isNotEmpty) {
       locationText.add(Text(widget.contact.company));
     }
@@ -317,5 +285,84 @@ class ContactDetailViewState extends State<ContactDetailView> {
     }
 
     return address.trim();
+  }
+
+  Container _buildRegion({
+    required String title,
+    required List<Widget> content,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.grey[200],
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+          ...content,
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildCategories() {
+    if (widget.contact.categories.isEmpty) return [];
+    return [
+      const SizedBox(height: 8),
+      _buildRegion(title: 'Categories', content: [
+        Text(widget.contact.categories),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildActiveStatus() {
+    // TODO cleanup
+    if (widget.contact.active && widget.contact.activeTrade) {
+      return [];
+    }
+    List<Widget> rowContent = [];
+    if (widget.contact.active) {
+      rowContent.add(
+        Container(
+          padding: const EdgeInsets.all(4.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            color: const Color.fromARGB(255, 152, 194, 152),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Active'),
+            ],
+          ),
+        ),
+      );
+    }
+    if (widget.contact.activeTrade) {
+      rowContent.addAll([
+        SizedBox(width: 8.0),
+        Container(
+          padding: const EdgeInsets.all(4.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            color: const Color.fromARGB(255, 152, 194, 152),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Active Trade'),
+            ],
+          ),
+        ),
+      ]);
+    }
+    return [
+      const SizedBox(height: 8),
+      Row(children: rowContent),
+    ];
   }
 }

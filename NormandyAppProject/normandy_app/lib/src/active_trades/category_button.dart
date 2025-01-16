@@ -21,12 +21,11 @@ class CategoryButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            // Probably don't need a page for the categories; can just use the business contacts list and send it filtered data
-            builder: (context) => BusinessContactsList(
-              isActiveTrades: true,
-              category: label
-            )
-          ),
+              // Probably don't need a page for the categories; can just use the business contacts list and send it filtered data
+              builder: (context) => BusinessContactsList(
+                    isActiveTrades: true,
+                    category: label,
+                  )),
         );
       },
       child: Center(

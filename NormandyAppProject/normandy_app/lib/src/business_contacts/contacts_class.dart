@@ -82,11 +82,11 @@ class Contact {
 
     String initials;
     try {
-      if (json['FirstName'] == null && json['LastName'] == null) {
+      if ((json['FirstName']?.isEmpty ?? true) && (json['LastName']?.isEmpty ?? true)) {
         initials = (json['Company'] ?? "").substring(0, 2);
-      } else if (json['FirstName'] == null) {
+      } else if (json['FirstName']?.isEmpty ?? true) {
         initials = (json['LastName'] ?? "").substring(0, 2);
-      } else if (json['LastName'] == null) {
+      } else if (json['LastName']?.isEmpty ?? true) {
         initials = (json['FirstName'] ?? "").substring(0, 2);
       } else {
         initials = (json['FirstName'] ?? "").substring(0, 1) + (json['LastName'] ?? "").substring(0, 1);
