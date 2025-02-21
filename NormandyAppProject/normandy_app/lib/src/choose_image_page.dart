@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
@@ -11,13 +12,13 @@ import 'env.dart';
 class ChooseImagePage extends StatefulWidget {
   final String header;
 
-  const ChooseImagePage({Key? key, required this.header}) : super(key: key);
+  const ChooseImagePage({super.key, required this.header});
 
   @override
-  _ChooseImagePageState createState() => _ChooseImagePageState();
+  ChooseImagePageState createState() => ChooseImagePageState();
 }
 
-class _ChooseImagePageState extends State<ChooseImagePage> {
+class ChooseImagePageState extends State<ChooseImagePage> {
   List<File> _selectedImages = [];
   String? clientId;
   String? clientSCRT;
@@ -33,19 +34,19 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
 
   void _initializeEnvVariables() {
     try {
-      clientId = CLIENT_ID;
-      clientSCRT = CLIENT_SCRT;
-      tenantId = TENANT_ID;
+      clientId = clientId;
+      clientSCRT = clientSecret;
+      tenantId = tenantId;
     } catch (e) {
-      print('Error accessing environment variables: $e');
+      if(kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? pickedFiles = await picker.pickMultiImage();
+    final List<XFile> pickedFiles = await picker.pickMultiImage();
 
-    if (pickedFiles != null) {
+    if (pickedFiles.isNotEmpty) {
       setState(() {
         _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
       });
@@ -56,14 +57,14 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      print('Failed to get access token');
+      if(kDebugMode) print('Failed to get access token');
       return;
     }
 
     await getAllDrives(accessToken);
 
     if (_operationsDriveId == null) {
-      print('Drive named "Operations" not found');
+      if(kDebugMode) print('Drive named "Operations" not found');
       return;
     }
 
@@ -71,7 +72,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
     final String? email = prefs.getString("email");
 
     if (email == null) {
-      print('No email found in SharedPreferences');
+      if(kDebugMode) print('No email found in SharedPreferences');
       return;
     }
 
@@ -81,7 +82,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
 
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
-      final String fileName = (i + 1).toString().padLeft(4, '0') + '.jpg';
+      final String fileName = '${(i + 1).toString().padLeft(4, '0')}.jpg';
       final String url =
           'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderPath/$fileName:/content';
 
@@ -98,13 +99,13 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
         );
 
         if (response.statusCode == 201) {
-          print('File uploaded successfully: $fileName');
+          if(kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          print('File upload failed: ${response.body}');
+          if(kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        print('Error uploading file: $e');
+        if(kDebugMode) print('Error uploading file: $e');
       }
     }
   }
@@ -121,7 +122,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
     };
 
     try {
-      print('choosing $url');
+      if(kDebugMode) print('choosing $url');
       final http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -131,15 +132,15 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
       );
 
       if (response.statusCode == 200) {
-        print('Access token: ${response.body}');
+        if(kDebugMode) print('Access token: ${response.body}');
         final Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['access_token'];
       } else {
-        print('Failed to get access token: ${response.body}');
+        if(kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Error getting access token: $e');
+      if(kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
@@ -160,7 +161,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
         final List<dynamic> sites = sitesData['value'];
 
         if (sites.isEmpty) {
-          print('No sites found.');
+          if(kDebugMode) print('No sites found.');
           return;
         }
 
@@ -171,7 +172,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
 
         if (site != null) {
           final String operationsSiteId = site['id'];
-          print('Found Operations Site ID: $operationsSiteId');
+          if(kDebugMode) print('Found Operations Site ID: $operationsSiteId');
 
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
@@ -188,7 +189,7 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
             final List<dynamic> drives = drivesData['value'];
 
             if (drives.isEmpty) {
-              print('No drives found for Operations site.');
+              if(kDebugMode) print('No drives found for Operations site.');
               return;
             }
 
@@ -201,21 +202,21 @@ class _ChooseImagePageState extends State<ChooseImagePage> {
               setState(() {
                 _operationsDriveId = drive['id'] as String?;
               });
-              print('Found Documents Drive ID: $_operationsDriveId');
+              if(kDebugMode) print('Found Documents Drive ID: $_operationsDriveId');
             } else {
-              print('Drive named "Documents" not found.');
+              if(kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            print('Failed to get drives: ${drivesResponse.body}');
+            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
           }
         } else {
-          print('Site named "Operations" not found.');
+          if(kDebugMode) print('Site named "Operations" not found.');
         }
       } else {
-        print('Failed to get sites: ${sitesResponse.body}');
+        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      print('Error getting sites or drives: $e');
+      if(kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 

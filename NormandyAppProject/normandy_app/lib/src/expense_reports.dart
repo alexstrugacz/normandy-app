@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class ExpenseReports extends StatelessWidget {
   final String header;
@@ -17,11 +18,9 @@ class ExpenseReports extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Fix warning below
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -50,9 +49,9 @@ class ExpenseReports extends StatelessWidget {
                           Navigator.pushNamed(
                               context, buttonRoutes[buttonNames[index]]!);
                         } else {
-                          print('No route defined for ${buttonNames[index]}');
+                          if(kDebugMode) print('No route defined for ${buttonNames[index]}');
                         }
-                        print('Pressed ${buttonNames[index]}');
+                        if(kDebugMode) print('Pressed ${buttonNames[index]}');
                       },
                       style: ElevatedButton.styleFrom(
                         alignment: Alignment.topLeft,

@@ -14,7 +14,7 @@ class APIHelper {
     String? jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pushNamed(context, '/');
       } else {
         return null;
@@ -36,7 +36,7 @@ class APIHelper {
       String? jwt = await getJwt();
       if (jwt == null) {
         // Redirect to the login page
-        if (mounted) {
+        if (context.mounted) {
           Navigator.pushNamed(context, '/');
         } else {
           return null;
@@ -65,14 +65,12 @@ class APIHelper {
     String? jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pushNamed(context, '/');
       } else {
         return null;
       }
     }
-
-    print(baseUrl + url);
 
     final response = await http.put(Uri.parse(baseUrl + url),
         headers: <String, String>{
@@ -88,7 +86,7 @@ class APIHelper {
     String? jwt = await getJwt();
     if (jwt == null) {
       // Redirect to the login page
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pushNamed(context, '/');
       } else {
         return null;

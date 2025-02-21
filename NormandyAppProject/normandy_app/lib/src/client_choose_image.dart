@@ -1,8 +1,7 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,14 +10,13 @@ import 'env.dart';
 class ClientChooseImagePage extends StatefulWidget {
   final String header;
 
-  const ClientChooseImagePage({Key? key, required this.header})
-      : super(key: key);
+  const ClientChooseImagePage({super.key, required this.header});
 
   @override
-  _ClientChooseImagePageState createState() => _ClientChooseImagePageState();
+  ClientChooseImagePageState createState() => ClientChooseImagePageState();
 }
 
-class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
+class ClientChooseImagePageState extends State<ClientChooseImagePage> {
   List<File> _selectedImages = [];
   String? clientId;
   String? clientSCRT;
@@ -54,29 +52,29 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
   void _initializeEnvVariables() {
     try {
-      clientId = CLIENT_ID;
-      clientSCRT = CLIENT_SCRT;
-      tenantId = TENANT_ID;
+      clientId = clientId;
+      clientSCRT = clientSecret;
+      tenantId = tenantId;
     } catch (e) {
-      print('Error accessing environment variables: $e');
+      if(kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
   Future<void> _pickImage() async {
     if (await Permission.storage.request().isGranted) {
       final ImagePicker picker = ImagePicker();
-      final List<XFile>? pickedFiles = await picker.pickMultiImage();
+      final List<XFile> pickedFiles = await picker.pickMultiImage();
 
-      if (pickedFiles != null) {
+      if (pickedFiles.isNotEmpty) {
         setState(() {
           _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
         });
-        print('Selected images: ${_selectedImages.length}');
+        if(kDebugMode) print('Selected images: ${_selectedImages.length}');
       } else {
-        print('No images picked');
+        if(kDebugMode) print('No images picked');
       }
     } else {
-      print('Storage permission denied');
+      if(kDebugMode) print('Storage permission denied');
     }
   }
 
@@ -84,23 +82,23 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      print('Failed to get access token');
+      if(kDebugMode) print('Failed to get access token');
       return;
     }
 
     if (_clientProjectsDriveId == null) {
-      print('Drive named "Client Projects Active" not found');
+      if(kDebugMode) print('Drive named "Client Projects Active" not found');
       return;
     }
 
     if (_selectedClientFolderId == null) {
-      print('No client folder selected');
+      if(kDebugMode) print('No client folder selected');
       return;
     }
 
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
-      final String fileName = (i + 1).toString().padLeft(4, '0') + '.jpg';
+      final String fileName = '${(i + 1).toString().padLeft(4, '0')}.jpg';
       final String folderPath = folderPaths[_selectedUploadType] ?? '';
       final String url =
           'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/items/$_selectedClientFolderId:/$folderPath/$fileName:/content';
@@ -118,13 +116,13 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         );
 
         if (response.statusCode == 201) {
-          print('File uploaded successfully: $fileName');
+          if(kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          print('File upload failed: ${response.body}');
+          if(kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        print('Error uploading file: $e');
+        if(kDebugMode) print('Error uploading file: $e');
       }
     }
   }
@@ -151,14 +149,14 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        print('Access token retrieved');
+        if(kDebugMode) print('Access token retrieved');
         return responseData['access_token'];
       } else {
-        print('Failed to get access token: ${response.body}');
+        if(kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Error getting access token: $e');
+      if(kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
@@ -208,21 +206,21 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
               setState(() {
                 _clientProjectsDriveId = drive['id'] as String?;
               });
-              print('Client Projects Active/Documents drive found');
+              if(kDebugMode) print('Client Projects Active/Documents drive found');
             } else {
-              print('Drive named "Documents" not found.');
+              if(kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            print('Failed to get drives: ${drivesResponse.body}');
+            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
           }
         } else {
-          print('Site named "Client Projects Active" not found.');
+          if(kDebugMode) print('Site named "Client Projects Active" not found.');
         }
       } else {
-        print('Failed to get sites: ${sitesResponse.body}');
+        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      print('Error getting sites or drives: $e');
+      if(kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 
@@ -238,11 +236,11 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && mounted) {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> folders = data['value'];
 
-        print('Retrieved ${folders.length} client folders');
+        if(kDebugMode) print('Retrieved ${folders.length} client folders');
 
         showDialog(
           context: context,
@@ -259,7 +257,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
                           _selectedClientFolderId = folder['id'];
                         });
                         Navigator.of(context).pop();
-                        print('Selected folder: ${folder['name']}');
+                        if(kDebugMode) print('Selected folder: ${folder['name']}');
                       },
                     );
                   }).toList(),
@@ -269,10 +267,10 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
           },
         );
       } else {
-        print('Failed to get client folders: ${response.body}');
+        if(kDebugMode) print('Failed to get client folders: ${response.body}');
       }
     } catch (e) {
-      print('Error getting client folders: $e');
+      if(kDebugMode) print('Error getting client folders: $e');
     }
   }
 
@@ -317,7 +315,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
               setState(() {
                 _selectedUploadType = value;
               });
-              print('Selected upload type: $value');
+              if(kDebugMode) print('Selected upload type: $value');
             },
           ),
           Expanded(
@@ -345,7 +343,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
                 onPressed: () async {
                   final String? accessToken = await _getAccessToken();
                   if (accessToken != null) {
-                    print('Fetching client folders...');
+                    if(kDebugMode) print('Fetching client folders...');
                     _selectClientFolder(accessToken);
                   }
                 },
