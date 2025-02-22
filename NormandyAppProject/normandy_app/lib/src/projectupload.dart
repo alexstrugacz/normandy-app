@@ -61,12 +61,12 @@ Future<void> _uploadToOneDrive(List<File> images, String folderId) async {
 
 Future<String?> _getAccessToken() async {
   final String url =
-      'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token';
+      'https://login.microsoftonline.com/$TENANT_ID/oauth2/v2.0/token';
 
   final Map<String, String> body = {
-    'client_id': clientId,
+    'client_id': CLIENT_ID,
     'scope': 'https://graph.microsoft.com/.default',
-    'client_secret': clientSecret,
+    'client_secret': CLIENT_SCRT,
     'grant_type': 'client_credentials',
   };
 
@@ -279,9 +279,9 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
 
   void _initializeEnvVariables() {
     try {
-      clientId = clientId;
-      clientSCRT = clientSecret;
-      tenantId = tenantId;
+      clientId = CLIENT_ID;
+      clientSCRT = CLIENT_SCRT;
+      tenantId = TENANT_ID;
     } catch (e) {
       if(kDebugMode) print('Error accessing environment variables: $e');
     }
@@ -538,9 +538,9 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
 
   void _initializeEnvVariables() {
     try {
-      clientId = clientId;
-      clientSCRT = clientSecret;
-      tenantId = tenantId;
+      clientId = CLIENT_ID;
+      clientSCRT = CLIENT_SCRT;
+      tenantId = TENANT_ID;
     } catch (e) {
       if(kDebugMode) print('Error accessing environment variables: $e');
     }
