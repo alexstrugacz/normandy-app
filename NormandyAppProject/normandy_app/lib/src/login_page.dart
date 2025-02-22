@@ -23,13 +23,14 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _initializePreferences();
-    if(_prefs?.getString("jwt") != null) {
-      Navigator.pushReplacementNamed(context, '/home');
-    }
   }
 
   Future<void> _initializePreferences() async {
+    WidgetsFlutterBinding.ensureInitialized();
     _prefs = await SharedPreferences.getInstance();
+    if(_prefs?.getString("jwt") != null && mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   bool _loading = false;
