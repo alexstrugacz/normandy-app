@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/homepage_button.dart';
+import 'package:flutter/foundation.dart';
 
 class _Button {
   String name;
@@ -12,6 +13,7 @@ class _Button {
 }
 
 class HomePage extends StatelessWidget {
+  // ignore: library_private_types_in_public_api
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
     _Button(
@@ -73,10 +75,10 @@ class HomePage extends StatelessWidget {
                       text: button.name,
                       isDisabled: false,
                       onTap: () async {
-                        print(button.route);
-                        print(button.name);
+                        if(kDebugMode) print(button.route);
+                        if(kDebugMode) print(button.name);
 
-                        print("URL ${button.route}");
+                        if(kDebugMode) print("URL ${button.route}");
                         Navigator.pushNamed(context, button.route);
                       });
                 }).toList(),

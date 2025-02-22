@@ -6,6 +6,7 @@ import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 class CreateSOForm extends StatefulWidget {
   const CreateSOForm({super.key});
@@ -58,7 +59,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     if ((response != null) && (response.statusCode == 200)) {
       List<dynamic> data = json.decode(response.body)['serviceHandlers'];
 
-      print(data);
+      if(kDebugMode) print(data);
 
       List<DropdownMenuItem<String>> serviceProviders = [];
 
@@ -172,7 +173,7 @@ class CreateSOFormState extends State<CreateSOForm> {
       return;
     }
 
-    print("Initiate request.");
+    if(kDebugMode) print("Initiate request.");
 
     Map<String, dynamic> body = {
       "projectId": selectedProject,
@@ -187,7 +188,7 @@ class CreateSOFormState extends State<CreateSOForm> {
       ]
     };
 
-    print("Request body: $body");
+    if(kDebugMode) print("Request body: $body");
 
 
     http.Response? response = await APIHelper.post(
@@ -197,7 +198,7 @@ class CreateSOFormState extends State<CreateSOForm> {
       mounted
     );
 
-    print("Response received.");
+    if(kDebugMode) print("Response received.");
 
     
 
@@ -211,7 +212,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     } else {
       // Error creating service order
       // Display error message
-      print("Error Message ${response?.body}");
+      if(kDebugMode) print("Error Message ${response?.body}");
 
       setState(() {
         _errorMessage = 'An error occurred while creating the service order. Please try again.';

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,6 +23,9 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _initializePreferences();
+    if(_prefs?.getString("jwt") != null) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   Future<void> _initializePreferences() async {
@@ -50,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
         true
       );
 
-      print("Response received.");
+      if(kDebugMode) print("Response received.");
 
       if ((response != null) && response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/api/alert_helper.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class SelectedSOForm extends StatefulWidget {
   final String serviceOrderId;
@@ -24,8 +25,8 @@ class SelectedSOFormState extends State<SelectedSOForm> {
   // String? description;
   // String? solution;
 
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _solutionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _solutionController = TextEditingController();
 
   List<DropdownMenuItem<String>> _serviceProviders = [];
 
@@ -47,7 +48,7 @@ class SelectedSOFormState extends State<SelectedSOForm> {
     if ((response != null) && (response.statusCode == 200)) {
       List<dynamic> data = json.decode(response.body)['serviceHandlers'];
 
-      print(data);
+      if(kDebugMode) print(data);
 
       List<DropdownMenuItem<String>> serviceProviders = [];
 
@@ -81,7 +82,7 @@ class SelectedSOFormState extends State<SelectedSOForm> {
       mounted
     );
 
-    print(response);
+    if(kDebugMode) print(response);
 
     if (response == null) {
       return;
@@ -90,9 +91,9 @@ class SelectedSOFormState extends State<SelectedSOForm> {
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body)["serviceOrder"];
 
-      print('Data: $data');
+      if(kDebugMode) print('Data: $data');
 
-      print("Solution: ${data['solution']}");
+      if(kDebugMode) print("Solution: ${data['solution']}");
 
       setState(() {
         dateOfRequest = data['dateOfRequest'];
@@ -136,7 +137,7 @@ class SelectedSOFormState extends State<SelectedSOForm> {
       requestBody['singleServiceHandlerId'] = selectedServiceProvider;
     }
 
-    print("Request Body: $requestBody");
+    if(kDebugMode) print("Request Body: $requestBody");
     
     http.Response? response = await APIHelper.put(
       'service-orders/${widget.serviceOrderId}',
@@ -155,8 +156,8 @@ class SelectedSOFormState extends State<SelectedSOForm> {
         });
       }
     } else {
-      print(response?.body);
-      print(response?.statusCode);
+      if(kDebugMode) print(response?.body);
+      if(kDebugMode) print(response?.statusCode);
       setState(() {
         _errorMessage = 'An error occurred while saving data. Please try again.';
         _loading = false;
