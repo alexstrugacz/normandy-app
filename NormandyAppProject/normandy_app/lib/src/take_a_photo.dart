@@ -59,9 +59,9 @@ class TakeAPhotoState extends State<TakeAPhoto> {
 
   void _initializeEnvVariables() {
     try {
-      clientId = clientId;
-      clientSCRT = clientSecret;
-      tenantId = tenantId;
+      clientId = CLIENT_ID;
+      clientSCRT = CLIENT_SCRT;
+      tenantId = TENANT_ID;
     } catch (e) {
       if(kDebugMode) print('Error accessing environment variables: $e');
     }
