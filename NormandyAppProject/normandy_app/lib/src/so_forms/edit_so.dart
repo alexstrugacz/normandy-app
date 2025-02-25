@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';

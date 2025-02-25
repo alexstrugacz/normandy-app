@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/homepage_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,12 +12,15 @@ class _Button {
 }
 
 class ComingSoon extends StatelessWidget {
+  // ignore: library_private_types_in_public_api
   final List<_Button> buttons = [
     _Button('Expense Reports', '/expense-report-selection',
         FontAwesomeIcons.receipt,
         enabled: true),
     _Button('Projects Dashboard', null, FontAwesomeIcons.chartBar),
   ];
+
+  ComingSoon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +49,11 @@ class ComingSoon extends StatelessWidget {
                     isDisabled: !button.enabled,
                     isGrey: true,
                     onTap: () async {
-                      print(button.route);
-                      print(button.name);
+                      if(kDebugMode) print(button.route);
+                      if(kDebugMode) print(button.name);
 
                       if (button.route != null) {
-                        print("URL ${button.route}");
+                        if(kDebugMode) print("URL ${button.route}");
                         Navigator.pushNamed(context, button.route!);
                       }
                     },

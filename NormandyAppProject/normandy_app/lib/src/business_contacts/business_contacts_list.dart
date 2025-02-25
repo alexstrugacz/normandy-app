@@ -104,12 +104,16 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
+    
+    http.Response? response;
 
-    http.Response? response = await APIHelper.get(
-      url,
-      context,
-      mounted
-    );
+    if(mounted) {
+      response = await APIHelper.get(
+        url,
+        context,
+        mounted
+      );
+    }
 
     if ((response != null) && response.statusCode == 201) {
       List<dynamic> data = json.decode(response.body)['rolodex'];

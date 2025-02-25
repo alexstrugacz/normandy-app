@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,11 +14,13 @@ class MyApp extends StatelessWidget {
 }
 
 class ExpenseCodePage extends StatefulWidget {
+  const ExpenseCodePage({super.key});
+
   @override
-  _ExpenseCodePageState createState() => _ExpenseCodePageState();
+  ExpenseCodePageState createState() => ExpenseCodePageState();
 }
 
-class _ExpenseCodePageState extends State<ExpenseCodePage> {
+class ExpenseCodePageState extends State<ExpenseCodePage> {
   String jobNonJobValue = 'Non-Job';
   late String clientValue;
   late String accountingCodeValue;

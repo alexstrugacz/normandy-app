@@ -39,7 +39,7 @@ class CustomSearchDelegate extends SearchDelegate {
   }
   // @override
   // void _onQueryChanged(String newQuery) {
-  //   print("Query changed: $newQuery");
+  //   if(kDebugMode) print("Query changed: $newQuery");
   //   _loadCustomers(newQuery);
   // }
 

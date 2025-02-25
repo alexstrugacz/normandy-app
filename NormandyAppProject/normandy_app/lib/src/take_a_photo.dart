@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'env.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +15,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +32,13 @@ class MyApp extends StatelessWidget {
 class TakeAPhoto extends StatefulWidget {
   final String header;
 
-  const TakeAPhoto({Key? key, required this.header}) : super(key: key);
+  const TakeAPhoto({super.key, required this.header});
 
   @override
-  _TakeAPhotoState createState() => _TakeAPhotoState();
+  TakeAPhotoState createState() => TakeAPhotoState();
 }
 
-class _TakeAPhotoState extends State<TakeAPhoto> {
+class TakeAPhotoState extends State<TakeAPhoto> {
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;
@@ -64,7 +63,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       clientSCRT = CLIENT_SCRT;
       tenantId = TENANT_ID;
     } catch (e) {
-      print('Error accessing environment variables: $e');
+      if(kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
@@ -77,7 +76,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     if (status.isGranted) {
       _initializeCamera();
     } else {
-      print('Camera permission not granted');
+      if(kDebugMode) print('Camera permission not granted');
     }
   }
 
@@ -95,10 +94,10 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
           _isCameraInitialized = true;
         });
       } else {
-        print('No cameras available');
+        if(kDebugMode) print('No cameras available');
       }
     } catch (e) {
-      print('Error initializing camera: $e');
+      if(kDebugMode) print('Error initializing camera: $e');
     }
   }
 
@@ -108,9 +107,9 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     }
 
     try {
-      final XFile? imageFile = await _cameraController.takePicture();
+      final XFile imageFile = await _cameraController.takePicture();
 
-      if (imageFile == null) {
+      if (imageFile.path.isEmpty) {
         throw Exception('Error: Image file is null');
       }
 
@@ -118,7 +117,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         _capturedImage = File(imageFile.path);
       });
     } catch (e) {
-      print('Error taking picture: $e');
+      if(kDebugMode) print('Error taking picture: $e');
     }
   }
 
@@ -126,14 +125,14 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      print('Failed to get access token');
+      if(kDebugMode) print('Failed to get access token');
       return;
     }
 
     await getAllDrives(accessToken);
 
     if (_operationsDriveId == null) {
-      print('Drive named "Operations" not found');
+      if(kDebugMode) print('Drive named "Operations" not found');
       return;
     }
 
@@ -141,7 +140,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
     final String? email = prefs.getString("email");
 
     if (email == null) {
-      print('No email found in SharedPreferences');
+      if(kDebugMode) print('No email found in SharedPreferences');
       return;
     }
 
@@ -151,7 +150,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
     for (int i = 0; i < _capturedImages.length; i++) {
       final File image = _capturedImages[i];
-      final String fileName = (i + 1).toString().padLeft(4, '0') + '.jpg';
+      final String fileName = '${(i + 1).toString().padLeft(4, '0')}.jpg';
       final String url =
           'https://graph.microsoft.com/v1.0/drives/$_operationsDriveId/items/root:/Expenses/$folderPath/$fileName:/content';
 
@@ -168,13 +167,13 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         );
 
         if (response.statusCode == 201) {
-          print('File uploaded successfully: $fileName');
+          if(kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          print('File upload failed: ${response.body}');
+          if(kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        print('Error uploading file: $e');
+        if(kDebugMode) print('Error uploading file: $e');
       }
     }
   }
@@ -200,15 +199,15 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
       );
 
       if (response.statusCode == 200) {
-        print('Access token: ${response.body}');
+        if(kDebugMode) print('Access token: ${response.body}');
         final Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['access_token'];
       } else {
-        print('Failed to get access token: ${response.body}');
+        if(kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Error getting access token: $e');
+      if(kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
@@ -229,7 +228,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
         final List<dynamic> sites = sitesData['value'];
 
         if (sites.isEmpty) {
-          print('No sites found.');
+          if(kDebugMode) print('No sites found.');
           return;
         }
 
@@ -240,7 +239,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
 
         if (site != null) {
           final String operationsSiteId = site['id'];
-          print('Found Operations Site ID: $operationsSiteId');
+          if(kDebugMode) print('Found Operations Site ID: $operationsSiteId');
 
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
@@ -257,7 +256,7 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
             final List<dynamic> drives = drivesData['value'];
 
             if (drives.isEmpty) {
-              print('No drives found for Operations site.');
+              if(kDebugMode) print('No drives found for Operations site.');
               return;
             }
 
@@ -270,21 +269,21 @@ class _TakeAPhotoState extends State<TakeAPhoto> {
               setState(() {
                 _operationsDriveId = drive['id'] as String?;
               });
-              print('Found Documents Drive ID: $_operationsDriveId');
+              if(kDebugMode) print('Found Documents Drive ID: $_operationsDriveId');
             } else {
-              print('Drive named "Documents" not found.');
+              if(kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            print('Failed to get drives: ${drivesResponse.body}');
+            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
           }
         } else {
-          print('Site named "Operations" not found.');
+          if(kDebugMode) print('Site named "Operations" not found.');
         }
       } else {
-        print('Failed to get sites: ${sitesResponse.body}');
+        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      print('Error getting sites or drives: $e');
+      if(kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 
@@ -411,14 +410,13 @@ class PhotoShowcase extends StatefulWidget {
   final List<File> images;
   final Future<void> Function(String folderName) onUpload;
 
-  const PhotoShowcase({Key? key, required this.images, required this.onUpload})
-      : super(key: key);
+  const PhotoShowcase({super.key, required this.images, required this.onUpload});
 
   @override
-  _PhotoShowcaseState createState() => _PhotoShowcaseState();
+  PhotoShowcaseState createState() => PhotoShowcaseState();
 }
 
-class _PhotoShowcaseState extends State<PhotoShowcase> {
+class PhotoShowcaseState extends State<PhotoShowcase> {
   late List<bool> _selectedImages;
   late List<File> _currentImages;
 

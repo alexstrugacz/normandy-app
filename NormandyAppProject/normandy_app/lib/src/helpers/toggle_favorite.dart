@@ -1,5 +1,6 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 Future<void> toggleIsFavorite(
   String id,
@@ -13,5 +14,5 @@ Future<void> toggleIsFavorite(
     favorites.add(id);
   }
   prefs.setStringList(route, favorites);
-  print(prefs.getStringList(route));
+  if(kDebugMode) print(prefs.getStringList(route));
 }
