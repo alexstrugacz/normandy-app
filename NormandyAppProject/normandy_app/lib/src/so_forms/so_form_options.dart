@@ -15,7 +15,7 @@ class SOFormOptions extends StatelessWidget {
           childAspectRatio: 2.3,
           children: const [
             QuickLinkButton(
-              label: 'Add Service Order',
+              label: 'Create New Service Order',
               url: '/create-so-form',
               localLink: true
             ),

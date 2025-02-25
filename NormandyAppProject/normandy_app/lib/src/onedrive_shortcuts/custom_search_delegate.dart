@@ -1,34 +1,35 @@
 import 'dart:convert';
-
-
-
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/api/api_helper.dart';
+import 'package:async/async.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   BuildContext context;
   bool mounted;
   final Function onSelectCustomer;
-
-  CustomSearchDelegate({required this.context, required this.mounted, required this.onSelectCustomer});
+  CustomSearchDelegate(
+      {required this.context,
+      required this.mounted,
+      required this.onSelectCustomer});
 
   String? jwt;
   String _errorMessage = '';
+  String currQuery = '';
+  List<Customer> customers = [];
+  Timer? _debounce;
 
   Future<List<Customer>> _loadCustomers() async {
-
-    http.Response? response = await APIHelper.get(
-      'customers/search?query=$query',
-      context,
-      mounted
-    );
+    http.Response? response =
+        await APIHelper.get('customers/search?query=^$query', context, mounted);
 
     if ((response != null) && response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body)['customers'];
-      List<Customer> customers = data.map((dynamic item) => Customer.fromJson(item)).toList(); 
+      List<Customer> customers =
+          data.map((dynamic item) => Customer.fromJson(item)).toList();
       return customers;
     } else {
       _errorMessage = 'Failed to load contacts data. Please try again later.';
@@ -36,7 +37,7 @@ class CustomSearchDelegate extends SearchDelegate {
       // throw Exception('Failed to load contacts data. Please try again later.');
     }
   }
-  // @override 
+  // @override
   // void _onQueryChanged(String newQuery) {
   //   print("Query changed: $newQuery");
   //   _loadCustomers(newQuery);
@@ -63,50 +64,63 @@ class CustomSearchDelegate extends SearchDelegate {
         });
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    if (query.isEmpty) {
-      return const Expanded(child: ListTile(title: Text('Start typing to search')));
-    }
-    return FutureBuilder<List<Customer>>(
-      future: _loadCustomers(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
-                    title: Text(
-                      snapshot.data![index].folderName,
-                    ),
-                    onTap: () {
-                      if (snapshot.data?[index] != null) {
-                        onSelectCustomer(snapshot.data![index]);
-                        close(context, snapshot.data![index]);
-                      }
-                    },
-                  );
+  Widget displayCustomers() {
+    return (customers.isEmpty && !query.isEmpty)
+        ? const ListTile(title: Text('No matches'))
+        : ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: customers.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
+                title: Text(
+                  customers[index].folderName,
+                ),
+                onTap: () {
+                  onSelectCustomer(customers[index]);
+                  close(context, customers[index]);
                 },
               );
-          } else {
-            return const Expanded(child: ListTile(title: Text('No results found')));
-          }
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.connectionState == ConnectionState.none) {
-          return const ListTile(title: Text('No results found'));
-        } else {
-          return ListTile(title: Text(_errorMessage));
-        }
-      }
-    );
+            },
+          );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return displayCustomers();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      if (query == currQuery) {
+        return;
+      }
+      customers = [];
+      query = query;
+      if (query.isEmpty) {
+        currQuery = query;
+        return;
+      }
+      customers = await _loadCustomers();
+      query = query;
+      currQuery = query;
+    });
+    if (query.isEmpty) {
+      return ListTile(title: Text('Start typing to search'));
+    }
+    if (query != currQuery) {
+      return const Padding(
+          padding: EdgeInsets.only(top: 20),
+          child: Center(child: CircularProgressIndicator()));
+    }
+    return displayCustomers();
+  }
+
+  @override
+  dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }
