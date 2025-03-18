@@ -34,9 +34,9 @@ class CreateSOFormState extends State<CreateSOForm> {
 
   bool hasNumber() {
     return ownerWhoCalled == 1 &&
-            (selectedCustomer?.cellPhone1.isNotEmpty ?? false) ||
+            (selectedCustomer?.cellPhone1?.isNotEmpty ?? false) ||
         ownerWhoCalled == 2 &&
-            (selectedCustomer?.cellPhone2.isNotEmpty ?? false);
+            (selectedCustomer?.cellPhone2?.isNotEmpty ?? false);
   }
 
   String cellPhoneRepr(String s) {
@@ -63,8 +63,8 @@ class CreateSOFormState extends State<CreateSOForm> {
     setState(() {
       selectedCustomer =
           Customer.fromJson(json.decode(response.body)['customer']);
-      if ((selectedCustomer?.cellPhone1.isEmpty ?? true) &&
-          (selectedCustomer?.cellPhone2.isNotEmpty ?? false)) {
+      if ((selectedCustomer?.cellPhone1?.isEmpty ?? true) &&
+          (selectedCustomer?.cellPhone2?.isNotEmpty ?? false)) {
         ownerWhoCalled = 2;
       } else {
         ownerWhoCalled = 1;
@@ -321,6 +321,26 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                       vertical: 8),
                                               child: Text(
                                                 'Date of Request: ${DateFormat.yMMMd().format(dateOfRequest)}',
+                                                style: const TextStyle(
+                                                    fontSize: 14),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Text(
+                                                'Date Assigned: ${DateFormat.yMMMd().format(dateOfRequest)}',
+                                                style: const TextStyle(
+                                                    fontSize: 14),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: Text(
+                                                'Home Address: ${selectedCustomer?.address}, ${selectedCustomer?.city}, ${selectedCustomer?.state} ${selectedCustomer?.zip}',
                                                 style: const TextStyle(
                                                     fontSize: 14),
                                               ),
