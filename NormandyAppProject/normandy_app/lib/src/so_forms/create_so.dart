@@ -20,14 +20,32 @@ class CreateSOFormState extends State<CreateSOForm> {
   Customer? selectedCustomer;
   String? selectedProject;
   String? selectedServiceProvider;
+  String? newCellPhone;
+  int ownerWhoCalled = 1;
   String problemDescription = '';
   DateTime dateOfRequest = DateTime.now();
+  DateTime dateAssigned = DateTime.now();
 
   List<DropdownMenuItem<String>> _projects = [];
   List<DropdownMenuItem<String>> _serviceProviders = [];
 
   bool _loading = false;
   String _errorMessage = '';
+
+  bool hasNumber() {
+    return ownerWhoCalled == 1 &&
+            (selectedCustomer?.cellPhone1.isNotEmpty ?? false) ||
+        ownerWhoCalled == 2 &&
+            (selectedCustomer?.cellPhone2.isNotEmpty ?? false);
+  }
+
+  String cellPhoneRepr(String s) {
+    if (s.isEmpty) {
+      return 'No cell on file';
+    } else {
+      return s;
+    }
+  }
 
   @override
   void initState() {
@@ -36,8 +54,21 @@ class CreateSOFormState extends State<CreateSOForm> {
   }
 
   Future<void> handleSelectCustomer(Customer customer) async {
+    http.Response? response =
+        await APIHelper.get('customers/${customer.id}', context, mounted);
+
+    if ((response == null) || response.statusCode != 200) {
+      return;
+    }
     setState(() {
-      selectedCustomer = customer;
+      selectedCustomer =
+          Customer.fromJson(json.decode(response.body)['customer']);
+      if ((selectedCustomer?.cellPhone1.isEmpty ?? true) &&
+          (selectedCustomer?.cellPhone2.isNotEmpty ?? false)) {
+        ownerWhoCalled = 2;
+      } else {
+        ownerWhoCalled = 1;
+      }
     });
     loadProjects();
   }
@@ -55,7 +86,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     if ((response != null) && (response.statusCode == 200)) {
       List<dynamic> data = json.decode(response.body)['serviceHandlers'];
 
-      if(kDebugMode) print(data);
+      if (kDebugMode) print(data);
 
       List<DropdownMenuItem<String>> serviceProviders = [];
 
@@ -168,7 +199,7 @@ class CreateSOFormState extends State<CreateSOForm> {
       return;
     }
 
-    if(kDebugMode) print("Initiate request.");
+    if (kDebugMode) print("Initiate request.");
 
     Map<String, dynamic> body = {
       "projectId": selectedProject,
@@ -180,15 +211,17 @@ class CreateSOFormState extends State<CreateSOForm> {
           "customOptionMode": false,
           "dateAssigned": dateOfRequest.toIso8601String()
         }
-      ]
+      ],
+      'newCellPhone1': ownerWhoCalled == 1 ? newCellPhone : null,
+      'newCellPhone2': ownerWhoCalled == 2 ? newCellPhone : null,
     };
 
-    if(kDebugMode) print("Request body: $body");
+    if (kDebugMode) print("Request body: $body");
 
     http.Response? response =
         await APIHelper.post("service-orders", body, context, mounted);
 
-    if(kDebugMode) print("Response received.");
+    if (kDebugMode) print("Response received.");
 
     if ((response != null) && (response.statusCode == 201)) {
       // Service order created successfully
@@ -201,7 +234,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     } else {
       // Error creating service order
       // Display error message
-      if(kDebugMode) print("Error Message ${response?.body}");
+      if (kDebugMode) print("Error Message ${response?.body}");
 
       setState(() {
         _errorMessage =
@@ -318,6 +351,87 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                   )),
                                             ),
                                             const SizedBox(height: 5),
+                                            // Caller Dropdown + Info
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                              child: DropdownButtonFormField<
+                                                      int>(
+                                                  value: ownerWhoCalled,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      newCellPhone = null;
+                                                      if (value != null)
+                                                        ownerWhoCalled = value;
+                                                    });
+                                                  },
+                                                  items: [
+                                                    DropdownMenuItem(
+                                                      value: 1,
+                                                      child: Text(
+                                                        '${selectedCustomer?.fname1} ${selectedCustomer?.lname1} | ${cellPhoneRepr(selectedCustomer?.cellPhone1 ?? "")}',
+                                                        style: const TextStyle(
+                                                            fontSize: 12),
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 2,
+                                                      child: Text(
+                                                        '${selectedCustomer?.fname2} ${selectedCustomer?.lname2} | ${cellPhoneRepr(selectedCustomer?.cellPhone2 ?? "")}',
+                                                        style: const TextStyle(
+                                                            fontSize: 12),
+                                                      ),
+                                                    )
+                                                  ],
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    labelText:
+                                                        'Select Owner who Took Call',
+                                                    labelStyle:
+                                                        TextStyle(fontSize: 14),
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black)),
+                                            ),
+                                            ...(!hasNumber()
+                                                ? [
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 8),
+                                                      child: TextFormField(
+                                                        maxLines: 1,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            newCellPhone =
+                                                                value;
+                                                          });
+                                                        },
+                                                        keyboardType: TextInputType.number,
+                                                        decoration: const InputDecoration(
+                                                            labelText:
+                                                                'Provide a cell number',
+                                                            border:
+                                                                OutlineInputBorder(),
+                                                            labelStyle:
+                                                                TextStyle(
+                                                                    fontSize:
+                                                                        14)),
+                                                        style: const TextStyle(
+                                                            fontSize: 12),
+                                                        onTapOutside: (event) {
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                        },
+                                                      ),
+                                                    )
+                                                  ]
+                                                : []),
+                                            const SizedBox(height: 5),
                                             // Service Provider Dropdown
                                             Padding(
                                               padding:
@@ -380,7 +494,9 @@ class CreateSOFormState extends State<CreateSOForm> {
                                               width: double
                                                   .infinity, // Spans the width of the screen
                                               child: ElevatedButton(
-                                                onPressed: createServiceOrder,
+                                                onPressed: hasNumber() || newCellPhone != null
+                                                    ? createServiceOrder
+                                                    : null,
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors
                                                       .blue, // Solid blue background

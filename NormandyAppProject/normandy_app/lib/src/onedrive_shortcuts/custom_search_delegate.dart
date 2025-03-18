@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/api/api_helper.dart';
-import 'package:async/async.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   BuildContext context;
