@@ -19,6 +19,7 @@ import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'profile.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
+import 'package:normandy_app/src/customers/customer_search.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
           '/client-choose-image-page': (context) => ClientChooseImagePage(
                 header: 'Client Image Upload',
               ),
+          '/customers': (context) => CustomerSearchPage(),
         });
   }
 }

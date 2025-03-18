@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link),
     _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar),
     _Button('My Profile', '/profile', FontAwesomeIcons.user),
+    _Button('Customers', '/customers', FontAwesomeIcons.users),
     _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock),
   ];
 
