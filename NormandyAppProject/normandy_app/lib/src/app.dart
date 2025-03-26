@@ -20,7 +20,7 @@ import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/settings.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
 import 'package:normandy_app/src/customers/customer_search.dart';
-import 'package:normandy_app/src/settings/normandyAppContributers.dart';
+import 'package:normandy_app/src/settings/normandy_app_contributers.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {

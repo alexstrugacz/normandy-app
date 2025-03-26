@@ -1,15 +1,9 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:normandy_app/src/settings/Contributor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:normandy_app/src/api/api_helper.dart';
 
 import '../components/list_card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 
 class NormandyAppContributers extends StatefulWidget {
   const NormandyAppContributers({super.key});

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/settings.dart';
 import 'package:normandy_app/src/settings/settings_service.dart';
 
 import 'settings_controller.dart';
