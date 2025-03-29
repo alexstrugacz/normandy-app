@@ -18,12 +18,13 @@ class CustomSearchDelegate extends SearchDelegate {
   String? jwt;
   String _errorMessage = '';
   String currQuery = '';
+  bool loading = true;
   List<Customer> customers = [];
   Timer? _debounce;
 
   Future<List<Customer>> _loadCustomers() async {
     http.Response? response =
-        await APIHelper.get('customers/search?query=^$query', context, mounted);
+        await APIHelper.get('customers/search?query=^$currQuery', context, mounted);
 
     if ((response != null) && response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body)['customers'];
@@ -36,11 +37,6 @@ class CustomSearchDelegate extends SearchDelegate {
       // throw Exception('Failed to load contacts data. Please try again later.');
     }
   }
-  // @override
-  // void _onQueryChanged(String newQuery) {
-  //   if(kDebugMode) print("Query changed: $newQuery");
-  //   _loadCustomers(newQuery);
-  // }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -92,8 +88,10 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
+    _debounce = Timer(const Duration(milliseconds: 100), () async {
+      loading = true;
       if (query == currQuery) {
+        loading = false;
         return;
       }
       customers = [];
@@ -102,14 +100,15 @@ class CustomSearchDelegate extends SearchDelegate {
         currQuery = query;
         return;
       }
-      customers = await _loadCustomers();
-      query = query;
       currQuery = query;
+      customers = await _loadCustomers();
+      loading = false;
+      query = query;
     });
     if (query.isEmpty) {
       return ListTile(title: Text('Start typing to search'));
     }
-    if (query != currQuery) {
+    if (loading) {
       return const Padding(
           padding: EdgeInsets.only(top: 20),
           child: Center(child: CircularProgressIndicator()));
