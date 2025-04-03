@@ -21,8 +21,9 @@ class CustomerSearchPageState extends State<CustomerSearchPage> {
   }
 
   handleSearch() async {
+    // TODO: Implement "show more" button to load more results
     var response = await APIHelper.get(
-        'customers?mode=1&searchTerm=${_searchController.text}&limit=15',
+        'customers?mode=1&searchTerm=${_searchController.text}&limit=50',
         context,
         mounted);
     var newResults =
