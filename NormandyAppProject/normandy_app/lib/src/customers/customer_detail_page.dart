@@ -6,6 +6,7 @@ import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailPage extends StatefulWidget {
   final String customerId;
@@ -88,17 +89,50 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     "Home Phone: ${customer!.homePhone1}",
                     style: TextStyle(fontSize: 16),
                   ),
-                  Text(
-                    "Cell Phone: ${customer!.cellPhone1}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Cell Phone: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('tel:${customer!.cellPhone1}')),
+                        child: Text(
+                          customer!.cellPhone1,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Work Phone: ${customer!.workPhone1}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Work Phone: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('tel:${customer!.workPhone1}')),
+                        child: Text(
+                          customer!.workPhone1,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Email: ${customer!.email}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Email: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('mailto:${customer!.email}')),
+                        child: Text(
+                          customer!.email,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20),
                   Text(
@@ -118,17 +152,50 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     "Home Phone: ${customer!.homePhone2}",
                     style: TextStyle(fontSize: 16),
                   ),
-                  Text(
-                    "Cell Phone: ${customer!.cellPhone2}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Cell Phone: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('tel:${customer!.cellPhone2}')),
+                        child: Text(
+                          customer!.cellPhone2,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Work Phone: ${customer!.workPhone2}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Work Phone: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('tel:${customer!.workPhone2}')),
+                        child: Text(
+                          customer!.workPhone2,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Email: ${customer!.email2}",
-                    style: TextStyle(fontSize: 16),
+                  Row(
+                    children: [
+                      Text(
+                        "Email: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => launchUrl(Uri.parse('mailto:${customer!.email2}')),
+                        child: Text(
+                          customer!.email2,
+                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20),
                   Text(
