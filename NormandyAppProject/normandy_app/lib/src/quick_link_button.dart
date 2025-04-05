@@ -18,7 +18,7 @@ class QuickLinkButton extends StatelessWidget {
       return;
     } else {
       if (!await launchUrl(Uri.parse(url))) {
-        throw Exception('Could not launch the URL.');
+        throw Exception('Could not launch the app.');
       }
     }
   }
