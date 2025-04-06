@@ -17,7 +17,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   String? jwt;
   String _errorMessage = '';
-  String? currQuery;
+  String? lastQuery;
   bool loading = true;
   List<Customer> customers = [];
   Timer? _debounce;
@@ -88,14 +88,16 @@ class CustomSearchDelegate extends SearchDelegate {
   void _startSearchDebounced(VoidCallback updateUI) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 100), () async {
-      if (query.isNotEmpty) {
-        if (currQuery == query) return;
+      final currQuery = query;
+      lastQuery = currQuery;
+      if (currQuery.isNotEmpty) {
         loading = true;
         updateUI();
-        currQuery = query;
         customers = await _loadCustomers(query);
-        loading = false;
-        updateUI();
+        if (currQuery == lastQuery) {
+          loading = false;
+          updateUI();
+        }
       } else {
         loading = false;
         customers = [];
@@ -107,7 +109,10 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
-      _startSearchDebounced(() => setState(() {}));
+      if (lastQuery != query) {
+        lastQuery = query;
+        _startSearchDebounced(() => setState(() {}));
+      }
       if (query.isEmpty) {
         return ListTile(title: Text('Start typing to search'));
       }
