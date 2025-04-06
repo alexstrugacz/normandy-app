@@ -17,14 +17,14 @@ class CustomSearchDelegate extends SearchDelegate {
 
   String? jwt;
   String _errorMessage = '';
-  String currQuery = '';
+  String? currQuery;
   bool loading = true;
   List<Customer> customers = [];
   Timer? _debounce;
 
-  Future<List<Customer>> _loadCustomers() async {
+  Future<List<Customer>> _loadCustomers(String query) async {
     http.Response? response =
-        await APIHelper.get('customers/search?query=^$currQuery', context, mounted);
+        await APIHelper.get('customers/search?query=^$query', context, mounted);
 
     if ((response != null) && response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body)['customers'];
@@ -85,35 +85,39 @@ class CustomSearchDelegate extends SearchDelegate {
     return displayCustomers();
   }
 
+  void _startSearchDebounced(VoidCallback updateUI) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 100), () async {
+      if (query.isNotEmpty) {
+        if (currQuery == query) return;
+        loading = true;
+        updateUI();
+        currQuery = query;
+        customers = await _loadCustomers(query);
+        loading = false;
+        updateUI();
+      } else {
+        loading = false;
+        customers = [];
+        updateUI();
+      }
+    });
+  }
+
   @override
   Widget buildSuggestions(BuildContext context) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 100), () async {
-      loading = true;
-      if (query == currQuery) {
-        loading = false;
-        return;
-      }
-      customers = [];
-      query = query;
+    return StatefulBuilder(builder: (context, setState) {
+      _startSearchDebounced(() => setState(() {}));
       if (query.isEmpty) {
-        currQuery = query;
-        return;
+        return ListTile(title: Text('Start typing to search'));
       }
-      currQuery = query;
-      customers = await _loadCustomers();
-      loading = false;
-      query = query;
+      if (loading) {
+        return const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Center(child: CircularProgressIndicator()));
+      }
+      return displayCustomers();
     });
-    if (query.isEmpty) {
-      return ListTile(title: Text('Start typing to search'));
-    }
-    if (loading) {
-      return const Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: Center(child: CircularProgressIndicator()));
-    }
-    return displayCustomers();
   }
 
   @override
