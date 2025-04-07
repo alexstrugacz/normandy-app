@@ -1,8 +1,57 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
-import 'package:normandy_app/src/customers/customer_detail_page.dart';
+import 'package:normandy_app/src/customers/customer_list_tile.dart';
+
+class SearchUtils {
+  static Future<List<Map<String, dynamic>>> handleSearch({
+    required String searchTerm,
+    required String searchByField,
+    required int page,
+    required BuildContext context,
+    required bool mounted,
+  }) async {
+    if (searchTerm.isEmpty) {
+      return [];
+    }
+    var response = await APIHelper.get(
+        'customers?mode=1&searchTerm=$searchTerm&limit=50&searchByField=$searchByField&page=$page',
+        context,
+        mounted);
+    List<Map<String, dynamic>> newResults =
+        response != null ? List<Map<String, dynamic>>.from(json.decode(response.body)['customers']) : [];
+    for (var customer in newResults) {
+      if (customer['lastSoldJobDate'] != null) {
+        customer['lastSoldJobDate'] =
+            DateFormat('yMd').format(DateTime.parse(customer['lastSoldJobDate']));
+      } else {
+        customer['lastSoldJobDate'] = 'N/A';
+      }
+      if (customer['lastSoldJobDesignerName'] == null) {
+        customer['lastSoldJobDesignerName'] = 'N/A';
+      }
+    }
+
+    // sort the results so customers with status="Customer" are first
+    newResults.sort((a, b) {
+      String statusA = a['status'] ?? '';
+      String statusB = b['status'] ?? '';
+      if (statusA == 'Customer' && statusB != 'Customer') {
+        return -1;
+      } else if (statusA != 'Customer' && statusB == 'Customer') {
+        return 1;
+      }
+      return 0;
+    });
+
+    newResults =
+        newResults.where((customer) => customer['status'] != 'Inquiry').toList();
+
+    return newResults;
+  }
+}
 
 class CustomerSearchPage extends StatefulWidget {
   const CustomerSearchPage({super.key});
@@ -12,121 +61,151 @@ class CustomerSearchPage extends StatefulWidget {
 }
 
 class CustomerSearchPageState extends State<CustomerSearchPage> {
-  final TextEditingController _searchController = TextEditingController();
-  List<dynamic> searchResults = [];
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSearch(context: context, delegate: CustomerSearchDelegate(context: context));
+    });
   }
 
-  handleSearch() async {
-    // TODO: Implement "show more" button to load more results
-    var response = await APIHelper.get(
-        'customers?mode=1&searchTerm=${_searchController.text}&limit=50',
-        context,
-        mounted);
-    var newResults =
-        response != null ? json.decode(response.body)['customers'] : [];
-    for (var customer in newResults) {
-      if(customer['lastSoldJobDate'] != null) {
-        customer['lastSoldJobDate'] = DateFormat('yMd').format(DateTime.parse(customer['lastSoldJobDate']));
-      } else {
-        customer['lastSoldJobDate'] = 'N/A';
-      }
-      if(customer['lastSoldJobDesignerName'] == null) {
-        customer['lastSoldJobDesignerName'] = 'N/A';
-      }
-    }
-    setState(() {
-      searchResults = newResults;
-    });
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // placeholder
       appBar: AppBar(
-        title: Text('Customer Page'),
+        title: Text('Customer Search'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: CustomerSearchDelegate(context: context));
+            },
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: (value) {
-                handleSearch();
-              },
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: searchResults.length,
-                itemBuilder: (context, index) {
-                  var customer = searchResults[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CustomerDetailPage(customerId: customer['_id']),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
-                      child: ListTile(
-                        title: Text(
-                          "Last Name 1: ${customer['lname1']}",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "First Name 1: ${customer['fname1']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "Last Name 2: ${customer['lname2']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "First Name 2: ${customer['fname2']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "City: ${customer['city']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "Status: ${customer['status']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "Last Job Designer: ${customer['lastSoldJobDesignerName']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "Last Job Date: ${customer['lastSoldJobDate']}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+    );
+  }
+}
+
+class CustomerSearchDelegate extends SearchDelegate {
+  final BuildContext context;
+  List<Map<String, dynamic>> searchResults = [];
+  String searchByField = 'lname1'; // Default search field
+  final searchFields = [
+    'lname1',
+    'fname1',
+    'lname2',
+    'fname2',
+    'city',
+  ];
+  int page = 1; // Default page number
+
+  @override
+  CustomerSearchDelegate({required this.context});
+
+  // handle page increase
+  void increasePage() {
+    page++;
+    if(kDebugMode) print("Page increased to $page");
+    showResults(context); // Refresh results  
+  }
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      DropdownButton<String>(
+        value: searchByField,
+        onChanged: (String? newValue) {
+          searchByField = newValue!;
+          page = 1; // Reset page to 1 when search field changes
+          showSuggestions(context); // Refresh suggestions
+        },
+        items: searchFields.map<DropdownMenuItem<String>>((String field) {
+          return DropdownMenuItem<String>(
+            value: field,
+            child: Text(field),
+          );
+        }).toList(),
       ),
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return FutureBuilder(
+      future: SearchUtils.handleSearch(
+        searchTerm: query,
+        searchByField: searchByField,
+        page: page,
+        context: context,
+        mounted: true,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data == null || (snapshot.data as List).isEmpty) {
+          return Center(child: Text('No results found.'));
+        }
+        var results = snapshot.data as List<Map<String, dynamic>>;
+        searchResults = results;
+        return CustomerListTile(searchResults: searchResults, nextPage: increasePage);
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    
+    page = 1; // Reset page to 1 when suggestions are built (called on field change)
+
+    if (query.isEmpty) {
+      return const ListTile(
+        title: Text('Start typing to search'),
+      );
+    }
+
+    return FutureBuilder(
+      future: SearchUtils.handleSearch(
+        searchTerm: query,
+        searchByField: searchByField,
+        page: page,
+        context: context,
+        mounted: true,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data == null) {
+          return Center(child: Text('No results found.'));
+        }
+        var results = snapshot.data as List<Map<String, dynamic>>;
+        searchResults = results;
+        return CustomerListTile(searchResults: searchResults, nextPage: increasePage);
+      },
     );
   }
 }

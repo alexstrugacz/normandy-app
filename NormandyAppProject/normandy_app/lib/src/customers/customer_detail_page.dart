@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailPage extends StatefulWidget {
@@ -21,11 +23,13 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   Customer? customer;
   User? customerContact;
   List<Note> notes = [];
+  // String userId = '';
 
   @override
   void initState() {
     super.initState();
     fetchCustomerDetails();
+    // fetchUserId();
   }
 
   fetchCustomerDetails() async {
@@ -56,6 +60,57 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           notes = newNotes;
         });
       }
+
+      if(kDebugMode) print(customerContact?.email ?? 'No email found');
+    }
+  }
+
+  // void fetchUserId() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   if(prefs.getString('email') == null) {
+  //     return;
+  //   }
+  //   var response = await APIHelper.get('users/:email/?${prefs.getString('email')}', context, mounted);
+  //   if (response != null && response.statusCode == 200) {
+  //     print(response.body);
+  //     var user = User.fromJson(json.decode(response.body)['user']);
+  //     setState(() {
+  //       userId = user.userId ?? '';
+  //     });
+  //   }
+  // }
+
+  void openMailApp(List<String> emails) {
+    if (emails.isEmpty || emails.every((email) => email.isEmpty)) return;
+    final emailString = emails.where((email) => email.isNotEmpty).join(',');
+    launchUrl(Uri.parse('mailto:$emailString'));
+  }
+
+  void openPhoneApp(String? phone1, String? phone2, String? phone3) {
+    final phone = phone1?.isNotEmpty == true
+        ? phone1
+        : phone2?.isNotEmpty == true
+            ? phone2
+            : phone3?.isNotEmpty == true
+                ? phone3
+                : null;
+
+    if (phone != null) {
+      launchUrl(Uri.parse('tel:$phone'));
+    }
+  }
+
+  void openMessageApp(String? phone1, String? phone2, String? phone3) {
+    final phone = phone1?.isNotEmpty == true
+        ? phone1
+        : phone2?.isNotEmpty == true
+            ? phone2
+            : phone3?.isNotEmpty == true
+                ? phone3
+                : null;
+
+    if (phone != null) {
+      launchUrl(Uri.parse('sms:$phone'));
     }
   }
 
@@ -63,7 +118,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer Details'),
+        title: Text(customer?.lname1 ?? 'Customer Details'),
       ),
       body: customer == null
           ? Center(child: CircularProgressIndicator())
@@ -72,196 +127,149 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Owner 1",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Text(
+                        customer?.fname1 ?? '',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () => openPhoneApp(customer?.cellPhone1, customer?.homePhone1, customer?.workPhone1),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.phone,
+                            size: 28,
+                            color: (customer?.cellPhone1.isNotEmpty == true || customer?.homePhone1.isNotEmpty == true || customer?.workPhone1.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => openMessageApp(customer?.cellPhone1, customer?.homePhone1, customer?.workPhone1),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.message,
+                            size: 28,
+                            color: (customer?.cellPhone1.isNotEmpty == true || customer?.homePhone1.isNotEmpty == true || customer?.workPhone1.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => openMailApp([customer?.email ?? '']),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.email,
+                            size: 28,
+                            color: (customer?.email.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    "First Name 1: ${customer!.fname1}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Last Name 1: ${customer!.lname1}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Home Phone: ${customer!.homePhone1}",
-                    style: TextStyle(fontSize: 16),
-                  ),
                   Row(
                     children: [
                       Text(
-                        "Cell Phone: ",
+                        customer?.fname2 ?? '',
                         style: TextStyle(fontSize: 16),
                       ),
                       GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('tel:${customer!.cellPhone1}')),
-                        child: Text(
-                          customer!.cellPhone1,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        onTap: () => openPhoneApp(customer?.cellPhone2, customer?.homePhone2, customer?.workPhone2),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.phone,
+                            size: 28,
+                            color: (customer?.cellPhone2.isNotEmpty == true || customer?.homePhone2.isNotEmpty == true || customer?.workPhone2.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Work Phone: ",
-                        style: TextStyle(fontSize: 16),
                       ),
                       GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('tel:${customer!.workPhone1}')),
-                        child: Text(
-                          customer!.workPhone1,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        onTap: () => openMessageApp(customer?.cellPhone2, customer?.homePhone2, customer?.workPhone2),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.message,
+                            size: 28,
+                            color: (customer?.cellPhone2.isNotEmpty == true || customer?.homePhone2.isNotEmpty == true || customer?.workPhone2.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Email: ",
-                        style: TextStyle(fontSize: 16),
                       ),
                       GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('mailto:${customer!.email}')),
-                        child: Text(
-                          customer!.email,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        onTap: () => openMailApp([customer?.email2 ?? '']),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.email,
+                            size: 28,
+                            color: (customer?.email2.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    "Owner 2",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    "First Name 2: ${customer!.fname2}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Last Name 2: ${customer!.lname2}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Home Phone: ${customer!.homePhone2}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Cell Phone: ",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('tel:${customer!.cellPhone2}')),
-                        child: Text(
-                          customer!.cellPhone2,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                  if (customerContact != null) ...[
+                    Row(
+                      children: [
+                        Text(
+                          customerContact?.displayName ?? customer?.lastSoldJobDesignerName ?? 'N/A',
+                          style: TextStyle(fontSize: 16),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Work Phone: ",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('tel:${customer!.workPhone2}')),
-                        child: Text(
-                          customer!.workPhone2,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        GestureDetector(
+                          onTap: () => launchUrl(Uri.parse('msteams:/l/call/0/0?users=${customerContact!.email}')),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.call,
+                              size: 28,
+                              color: Colors.blue,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Email: ",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () => launchUrl(Uri.parse('mailto:${customer!.email2}')),
-                        child: Text(
-                          customer!.email2,
-                          style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+                        GestureDetector(
+                          onTap: () => launchUrl(Uri.parse('msteams:/l/chat/0/0?users=${customerContact!.email}')),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.message,
+                              size: 28,
+                              color: Colors.blue,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () => openMailApp([customerContact!.email]),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.email,
+                              size: 28,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  SizedBox(height: 20), 
                   Text(
-                    "Home Info",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    "Address: ${customer!.address}",
+                    customer?.address ?? 'N/A',
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "City, State: ${customer!.city}, ${customer!.state}",
+                    "${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "Zip, County: ${customer!.zip}, ${customer!.county}",
+                    "Tax ID: ${customer?.taxId ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "Tax ID, Census Tract: ${customer!.taxId}, ${customer!.censusTract}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Estimate, Date of Est.: ${customer!.currHomeEstimate}, ${customer!.currHomeEstimateDate}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Customer Contact: ${customerContact?.firstName ?? ''} ${customerContact?.lastName ?? ''}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    "More Info",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    "Status: ${customer!.status}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Newsletter: ${customer!.newsletter}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Newsletter Method: ${customer!.newsletterMethod}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Use as Reference: ${customer!.useAsReference}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Moved: ${customer!.moved}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                    Text("Date Added: ${customer!.dateCreated}", 
-                    style: TextStyle(fontSize: 16)
-                  ),
-                  Text(
-                    "Customer ID (old): ${customer!.customerId}",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Sharepoint URL: ${customer!.spUrl}",
+                    "Sharepoint Folder Name: ${customer?.spFolderName ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
@@ -276,6 +284,28 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                       style: TextStyle(fontSize: 16),
                     )),
                   ],
+                  // SizedBox(height: 20),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     ElevatedButton.icon(
+                  //       onPressed: () {
+                  //         // Add to one drive
+                  //         APIHelper.post('/customers/:cid/shortcut?${customer!.customerId}', {"userId": userId}, context, mounted);
+                  //       },
+                  //       icon: Icon(Icons.add),
+                  //       label: Text("Add Shortcut to OneDrive"),
+                  //     ),
+                  //     ElevatedButton.icon(
+                  //       onPressed: () {
+                  //         // Logic to open OneDrive
+                  //         launchUrl(Uri.parse('https://onedrive.live.com/'));
+                  //       },
+                  //       icon: Icon(Icons.cloud),
+                  //       label: Text("Open OneDrive"),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
