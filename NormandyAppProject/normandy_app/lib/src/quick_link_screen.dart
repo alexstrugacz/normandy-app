@@ -62,9 +62,9 @@ class QuickLinksScreen extends StatelessWidget {
               localLink: false
             ),
             QuickLinkButton(
-              label: 'Mileage',
+              label: 'Mileage IQ',
               imagePath: 'assets/images/mileage.png',
-              url: 'mileage://',
+              url: 'mileiq://',
               localLink: false
             ),
           ],
