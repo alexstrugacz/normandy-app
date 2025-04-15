@@ -16,13 +16,13 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Teams',
               imagePath: 'assets/images/teams.png',
-              url: 'https://teams.microsoft.com',
+              url: 'msteams://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Outlook',
               imagePath: 'assets/images/outlook.png',
-              url: 'https://outlook.office.com',
+              url: 'ms-outlook://',
               localLink: false
             ),
             QuickLinkButton(
@@ -52,7 +52,7 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Google Translate',
               imagePath: 'assets/images/googleTranslate.png',
-              url: 'https://translate.google.com',
+              url: 'googletranslate://',
               localLink: false
             ),
             QuickLinkButton(
