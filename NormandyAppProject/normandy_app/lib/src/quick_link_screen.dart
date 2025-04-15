@@ -34,19 +34,19 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Home Depot',
               imagePath: 'assets/images/homeDepot.png',
-              url: 'homedepot://',
+              url: 'https://www.homedepot.com',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Menards',
               imagePath: 'assets/images/menards.png',
-              url: 'menards://',
+              url: 'https://www.menards.com',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Hines',
               imagePath: 'assets/images/hines.png',
-              url: 'hines-app://',
+              url: 'https://www.hines.com',
               localLink: false
             ),
             QuickLinkButton(
@@ -58,13 +58,13 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Time Squared',
               imagePath: 'assets/images/timeSquared.png',
-              url: 'timesquared://',
+              url: 'https://timesquared.com',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Mileage',
               imagePath: 'assets/images/mileage.png',
-              url: 'mileage://',
+              url: 'https://www.mileage.com',
               localLink: false
             ),
           ],
