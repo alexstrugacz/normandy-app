@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
         'Upload Image', '/client-choose-image-page', FontAwesomeIcons.upload, false),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link, true),
     _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar, true),
-    _Button('User Settings', '/profile', FontAwesomeIcons.gear, true),
+    _Button('User Settings', '/user-settings', FontAwesomeIcons.gear, true),
     _Button('Customers', '/customers', FontAwesomeIcons.users, true),
     _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock, true),
   ];

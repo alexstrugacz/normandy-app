@@ -38,6 +38,7 @@ class ContributersState extends State<NormandyAppContributers> {
     });
 
     if (response.statusCode == 200) {
+
       final decodedData = jsonDecode(response.body);
       allContributors = List.from(decodedData['contributors']);
     } else {
@@ -52,6 +53,7 @@ class ContributersState extends State<NormandyAppContributers> {
       _loading = false;
       _errorMessage = '';
     });
+
   } 
 
   @override

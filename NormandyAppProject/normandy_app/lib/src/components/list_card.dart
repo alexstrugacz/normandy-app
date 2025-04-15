@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ListCard extends StatelessWidget {
   final String text;
-  final String description;
+  final description;
   final String image;
   final Function()? onTap;
   const ListCard(
@@ -63,7 +63,7 @@ class ListCard extends StatelessWidget {
                         child:  SizedBox(
                             height: 130,
                             child: SingleChildScrollView(
-                              child:Text(description),
+                              child: Text(description.map((item) => '• ${item['message']}').join('\n')),
                           ),
                         ) 
                       )
