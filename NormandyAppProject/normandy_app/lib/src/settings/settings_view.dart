@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:normandy_app/src/settings/settings_service.dart';
 
 import 'settings_controller.dart';
 
@@ -6,12 +7,12 @@ import 'settings_controller.dart';
 ///
 /// When a user changes a setting, the SettingsController is updated and
 /// Widgets that listen to the SettingsController are rebuilt.
-class SettingsView extends StatelessWidget {
-  const SettingsView({super.key, required this.controller});
+class SettingsView extends StatelessWidget { 
+  SettingsView({super.key});
+  final SettingsController controller = SettingsController(SettingsService());
 
   static const routeName = '/settings';
 
-  final SettingsController controller;
 
   @override
   Widget build(BuildContext context) {
