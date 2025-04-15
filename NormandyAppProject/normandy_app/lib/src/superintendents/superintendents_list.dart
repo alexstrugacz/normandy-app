@@ -6,6 +6,7 @@ import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/superintendents/superintendent_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
+import 'package:normandy_app/src/load_contacts.dart';
 
 class SuperintendentsList extends StatefulWidget {
   const SuperintendentsList({super.key});
@@ -32,8 +33,7 @@ class SuperintendentsListState extends State<SuperintendentsList> {
     List<Person> nonFavorites = [];
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> favoritePeople =
-        prefs.getStringList('superintendents') ?? [];
+    List<String> favoritePeople = prefs.getStringList('superintendents') ?? [];
     for (Person person in newPeople) {
       if (favoritePeople.contains(person.id)) {
         person.favorite = true;
@@ -56,6 +56,24 @@ class SuperintendentsListState extends State<SuperintendentsList> {
 
   Future<void> _loadContactsData() async {
     setState(() {
+      _loading = true;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cached = await prefs.getString('contacts');
+    if (cached != null) {
+      List<dynamic> data = json.decode(cached);
+      List<Person> parsed = await sortPeople(data
+          .map((item) => Person.fromJson(Map.castFrom(item)))
+          .where((person) => person.jobTitle == 'Superintendent')
+          .toList());
+      setState(() {
+        _people = parsed;
+        _loading = false;
+      });
+    }
+
+    setState(() {
       _errorMessage = '';
     });
     jwt = await getJwt();
@@ -65,23 +83,14 @@ class SuperintendentsListState extends State<SuperintendentsList> {
       Navigator.pushNamed(context, '/');
     }
 
-    setState(() {
-      _loading = true;
-    });
+    final contacts = await loadContactsData(jwt!);
 
-    final response = await http.get(
-        Uri.parse('https://normandy-backend.azurewebsites.net/api/microsoft-users'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "Authorization": "Bearer $jwt"
-        });
+    if (contacts != null) {
+      List<Person> sortedContacts = await sortPeople(contacts
+          .where((person) => person.jobTitle == 'Superintendent')
+          .toList());
 
-    if (response.statusCode == 201) {
-      List<dynamic> data = json.decode(response.body)['users'];
-      List<Person> people = data.map((item) => Person.fromJson(Map.castFrom(item))).toList();
-      List<Person> sortedContacts = await sortPeople(people.where((person) => person.jobTitle == 'Superintendent').toList());
-
-      setState(() { 
+      setState(() {
         _people = sortedContacts;
         _loading = false;
       });
@@ -105,11 +114,8 @@ class SuperintendentsListState extends State<SuperintendentsList> {
               onPressed: () async {
                 await showSearch(
                     context: context,
-                    delegate: CustomPersonSearchDelegate(
-                      searchTerms: _getSearchTerms(), 
-                      contacts: _people
-                    ));
-                  _refreshContactOrder();
+                    delegate: CustomPersonSearchDelegate(contacts: _people));
+                _refreshContactOrder();
               },
               icon: const Icon(Icons.search))
         ]),
@@ -124,25 +130,22 @@ class SuperintendentsListState extends State<SuperintendentsList> {
           else if (_loading)
             const Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: Center(child: CircularProgressIndicator())
-            )
-          else Expanded(
-              child: RefreshIndicator(
-                onRefresh: _loadContactsData,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: _people.length,
-                  itemBuilder: (context, index) {
-                    return SuperintendentCard(
-                      key: UniqueKey(), 
-                      person: _people[index], 
-                      index: index,
-                      onRefresh: _refreshContactOrder,
-                    );
-                  }
-                )
-                )
-            )
+                child: Center(child: CircularProgressIndicator()))
+          else
+            Expanded(
+                child: RefreshIndicator(
+                    onRefresh: _loadContactsData,
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: _people.length,
+                        itemBuilder: (context, index) {
+                          return SuperintendentCard(
+                            key: UniqueKey(),
+                            person: _people[index],
+                            index: index,
+                            onRefresh: _refreshContactOrder,
+                          );
+                        })))
         ]));
   }
 }

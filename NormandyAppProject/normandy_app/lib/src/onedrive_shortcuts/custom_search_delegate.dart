@@ -17,11 +17,12 @@ class CustomSearchDelegate extends SearchDelegate {
 
   String? jwt;
   String _errorMessage = '';
-  String currQuery = '';
+  String? lastQuery;
+  bool loading = true;
   List<Customer> customers = [];
   Timer? _debounce;
 
-  Future<List<Customer>> _loadCustomers() async {
+  Future<List<Customer>> _loadCustomers(String query) async {
     http.Response? response =
         await APIHelper.get('customers/search?query=^$query', context, mounted);
 
@@ -36,11 +37,6 @@ class CustomSearchDelegate extends SearchDelegate {
       // throw Exception('Failed to load contacts data. Please try again later.');
     }
   }
-  // @override
-  // void _onQueryChanged(String newQuery) {
-  //   if(kDebugMode) print("Query changed: $newQuery");
-  //   _loadCustomers(newQuery);
-  // }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -89,32 +85,44 @@ class CustomSearchDelegate extends SearchDelegate {
     return displayCustomers();
   }
 
+  void _startSearchDebounced(VoidCallback updateUI) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 100), () async {
+      final currQuery = query;
+      lastQuery = currQuery;
+      if (currQuery.isNotEmpty) {
+        loading = true;
+        updateUI();
+        customers = await _loadCustomers(query);
+        if (currQuery == lastQuery) {
+          loading = false;
+          updateUI();
+        }
+      } else {
+        loading = false;
+        customers = [];
+        updateUI();
+      }
+    });
+  }
+
   @override
   Widget buildSuggestions(BuildContext context) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      if (query == currQuery) {
-        return;
+    return StatefulBuilder(builder: (context, setState) {
+      if (lastQuery != query) {
+        lastQuery = query;
+        _startSearchDebounced(() => setState(() {}));
       }
-      customers = [];
-      query = query;
       if (query.isEmpty) {
-        currQuery = query;
-        return;
+        return ListTile(title: Text('Start typing to search'));
       }
-      customers = await _loadCustomers();
-      query = query;
-      currQuery = query;
+      if (loading) {
+        return const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Center(child: CircularProgressIndicator()));
+      }
+      return displayCustomers();
     });
-    if (query.isEmpty) {
-      return ListTile(title: Text('Start typing to search'));
-    }
-    if (query != currQuery) {
-      return const Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: Center(child: CircularProgressIndicator()));
-    }
-    return displayCustomers();
   }
 
   @override

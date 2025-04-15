@@ -212,9 +212,14 @@ class CreateSOFormState extends State<CreateSOForm> {
           "dateAssigned": dateOfRequest.toIso8601String()
         }
       ],
-      'newCellPhone1': ownerWhoCalled == 1 ? newCellPhone : null,
-      'newCellPhone2': ownerWhoCalled == 2 ? newCellPhone : null,
     };
+    if (newCellPhone != null) {
+      if (ownerWhoCalled == 1) {
+        body['newCellPhone1'] = newCellPhone;
+      } else {
+        body['newCellPhone2'] = newCellPhone;
+      }
+    }
 
     if (kDebugMode) print("Request body: $body");
 
@@ -251,7 +256,10 @@ class CreateSOFormState extends State<CreateSOForm> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: const Text('Create New Service Order',
+            title: Text(
+                (selectedCustomer == null)
+                    ? 'Create New Service Order'
+                    : 'Create New Service Order for ${((ownerWhoCalled == 1) ? "${selectedCustomer?.fname1} ${selectedCustomer?.lname1}" : "${selectedCustomer?.fname2} ${selectedCustomer?.lname2}").trim()}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             actions: [
               IconButton(
@@ -407,7 +415,7 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                   decoration:
                                                       const InputDecoration(
                                                     labelText:
-                                                        'Select Owner who Took Call',
+                                                        'Select Owner who Made Call (Is Caller)',
                                                     labelStyle:
                                                         TextStyle(fontSize: 14),
                                                     border:
@@ -431,7 +439,9 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                                 value;
                                                           });
                                                         },
-                                                        keyboardType: TextInputType.number,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
                                                         decoration: const InputDecoration(
                                                             labelText:
                                                                 'Provide a cell number',
@@ -514,7 +524,8 @@ class CreateSOFormState extends State<CreateSOForm> {
                                               width: double
                                                   .infinity, // Spans the width of the screen
                                               child: ElevatedButton(
-                                                onPressed: hasNumber() || newCellPhone != null
+                                                onPressed: hasNumber() ||
+                                                        newCellPhone != null
                                                     ? createServiceOrder
                                                     : null,
                                                 style: ElevatedButton.styleFrom(
