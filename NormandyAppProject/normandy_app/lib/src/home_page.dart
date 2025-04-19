@@ -47,11 +47,7 @@ class HomePage extends StatelessWidget {
           Padding(
             padding:
                 const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
-            child: SvgPicture.asset(
-              'assets/icon.svg',
-              height: 80,
-              width: 80,
-            ),
+            child: Image.asset('assets/images/logo.png', height: 80)
           ),
           Padding(
               // no top padding. only left right and bottom
