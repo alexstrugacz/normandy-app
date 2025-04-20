@@ -13,7 +13,8 @@ import 'package:url_launcher/url_launcher.dart';
 class CustomerDetailPage extends StatefulWidget {
   final String customerId;
 
-  const CustomerDetailPage({Key? key, required this.customerId}) : super(key: key);
+  const CustomerDetailPage({Key? key, required this.customerId})
+      : super(key: key);
 
   @override
   _CustomerDetailPageState createState() => _CustomerDetailPageState();
@@ -33,25 +34,31 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   fetchCustomerDetails() async {
-    var response = await APIHelper.get('customers/${widget.customerId}', context, mounted);
+    var response =
+        await APIHelper.get('customers/${widget.customerId}', context, mounted);
     if (response != null && response.statusCode == 200 && mounted) {
-      
-      var newCustomer = Customer.fromJson(json.decode(response.body)['customer']);
+      var newCustomer =
+          Customer.fromJson(json.decode(response.body)['customer']);
       setState(() {
         customer = newCustomer;
       });
 
-      if(newCustomer.customerContactID != '') {
-        var response2 = await APIHelper.get('users/${newCustomer.customerContactID}', context, mounted);
+      if (newCustomer.customerContactID != '') {
+        var response2 = await APIHelper.get(
+            'users/${newCustomer.customerContactID}', context, mounted);
         if (response2 != null && response2.statusCode == 200) {
-          var newCustomerContact = User.fromJson(json.decode(response2.body)['user']);
+          var newCustomerContact =
+              User.fromJson(json.decode(response2.body)['user']);
           setState(() {
             customerContact = newCustomerContact;
           });
         }
       }
 
-      var response3 = await APIHelper.get('notes?customerId=${widget.customerId}&noteFor=customer', context, mounted);
+      var response3 = await APIHelper.get(
+          'notes?customerId=${widget.customerId}&noteFor=customer',
+          context,
+          mounted);
       if (response3 != null && response3.statusCode == 200) {
         var newNotes = (json.decode(response3.body)['notes'] as List)
             .map((note) => Note.fromJson(note))
@@ -61,7 +68,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         });
       }
 
-      if(kDebugMode) print(customerContact?.email ?? 'No email found');
+      if (kDebugMode) print(customerContact?.email ?? 'No email found');
     }
   }
 
@@ -114,6 +121,33 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     }
   }
 
+  void launchMapUrl(String address) async {
+    final Uri googleMapsUrl = Uri.parse(
+    'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
+    );
+
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl);
+    } else {
+      throw 'Could not open map';
+    }
+  }
+
+  Widget contactButtonsCustomerDetailPage(
+      VoidCallback onTap, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: () => onTap(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          icon,
+          size: 28,
+          color: color,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,140 +164,192 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   SizedBox(height: 5),
                   Row(
                     children: [
-                      Text(
-                        customer?.fname1 ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () => openPhoneApp(customer?.cellPhone1, customer?.homePhone1, customer?.workPhone1),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.phone,
-                            size: 28,
-                            color: (customer?.cellPhone1.isNotEmpty == true || customer?.homePhone1.isNotEmpty == true || customer?.workPhone1.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                      Expanded(
+                        child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                customer?.fname1 ?? '',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Row(
+                                children: [
+                                  contactButtonsCustomerDetailPage(
+                                      () => openPhoneApp(
+                                          customer?.cellPhone1,
+                                          customer?.homePhone1,
+                                          customer?.workPhone1),
+                                      Icons.phone,
+                                      (customer?.cellPhone1.isNotEmpty ==
+                                                  true ||
+                                              customer?.homePhone1.isNotEmpty ==
+                                                  true ||
+                                              customer?.workPhone1.isNotEmpty ==
+                                                  true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                  contactButtonsCustomerDetailPage(
+                                      () => openMessageApp(
+                                          customer?.cellPhone1,
+                                          customer?.homePhone1,
+                                          customer?.workPhone1),
+                                      Icons.message,
+                                      (customer?.cellPhone1.isNotEmpty ==
+                                                  true ||
+                                              customer?.homePhone1.isNotEmpty ==
+                                                  true ||
+                                              customer?.workPhone1.isNotEmpty ==
+                                                  true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                  contactButtonsCustomerDetailPage(
+                                      () =>
+                                          openMailApp([customer?.email ?? '']),
+                                      Icons.email,
+                                      (customer?.email.isNotEmpty == true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => openMessageApp(customer?.cellPhone1, customer?.homePhone1, customer?.workPhone1),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.message,
-                            size: 28,
-                            color: (customer?.cellPhone1.isNotEmpty == true || customer?.homePhone1.isNotEmpty == true || customer?.workPhone1.isNotEmpty == true) ? Colors.blue : Colors.grey,
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                customer?.fname2 ?? '',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Row(
+                                children: [
+                                  contactButtonsCustomerDetailPage(
+                                      () => openPhoneApp(
+                                          customer?.cellPhone2,
+                                          customer?.homePhone2,
+                                          customer?.workPhone2),
+                                      Icons.phone,
+                                      (customer?.cellPhone2.isNotEmpty ==
+                                                  true ||
+                                              customer?.homePhone2.isNotEmpty ==
+                                                  true ||
+                                              customer?.workPhone2.isNotEmpty ==
+                                                  true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                  contactButtonsCustomerDetailPage(
+                                      () => openMessageApp(
+                                          customer?.cellPhone2,
+                                          customer?.homePhone2,
+                                          customer?.workPhone2),
+                                      Icons.message,
+                                      (customer?.cellPhone2.isNotEmpty ==
+                                                  true ||
+                                              customer?.homePhone2.isNotEmpty ==
+                                                  true ||
+                                              customer?.workPhone2.isNotEmpty ==
+                                                  true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                  contactButtonsCustomerDetailPage(
+                                      () =>
+                                          openMailApp([customer?.email2 ?? '']),
+                                      Icons.email,
+                                      (customer?.email2.isNotEmpty == true)
+                                          ? Colors.blue
+                                          : Colors.grey),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () => openMailApp([customer?.email ?? '']),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.email,
-                            size: 28,
-                            color: (customer?.email.isNotEmpty == true) ? Colors.blue : Colors.grey,
-                          ),
-                        ),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Text(
-                        customer?.fname2 ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      GestureDetector(
-                        onTap: () => openPhoneApp(customer?.cellPhone2, customer?.homePhone2, customer?.workPhone2),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.phone,
-                            size: 28,
-                            color: (customer?.cellPhone2.isNotEmpty == true || customer?.homePhone2.isNotEmpty == true || customer?.workPhone2.isNotEmpty == true) ? Colors.blue : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => openMessageApp(customer?.cellPhone2, customer?.homePhone2, customer?.workPhone2),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.message,
-                            size: 28,
-                            color: (customer?.cellPhone2.isNotEmpty == true || customer?.homePhone2.isNotEmpty == true || customer?.workPhone2.isNotEmpty == true) ? Colors.blue : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => openMailApp([customer?.email2 ?? '']),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.email,
-                            size: 28,
-                            color: (customer?.email2.isNotEmpty == true) ? Colors.blue : Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
+                      customer?.email != "" && customer?.email2 != "" && customer?.email != null && customer?.email2 != null
+                        ? SizedBox(
+                            width: 45,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: GestureDetector(
+                                  onTap: () => openMailApp([
+                                        "${customer?.email},${customer?.email2}"
+                                      ]),
+                                  child: Icon(
+                                    Icons.email,
+                                    size: 28,
+                                    color: Colors.blue,
+                                  )),
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                    ]
                   ),
                   SizedBox(height: 5),
                   if (customerContact != null) ...[
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          customerContact?.displayName ?? customer?.lastSoldJobDesignerName ?? 'N/A',
+                          customerContact?.displayName ??
+                              customer?.lastSoldJobDesignerName ??
+                              'N/A',
                           style: TextStyle(fontSize: 16),
                         ),
-                        GestureDetector(
-                          onTap: () => launchUrl(Uri.parse('msteams:/l/call/0/0?users=${customerContact!.email}')),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.call,
-                              size: 28,
-                              color: Colors.blue,
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => launchUrl(Uri.parse(
+                                  'msteams:/l/call/0/0?users=${customerContact!.email}')),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.call,
+                                  size: 28,
+                                  color: Colors.blue,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => launchUrl(Uri.parse('msteams:/l/chat/0/0?users=${customerContact!.email}')),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.message,
-                              size: 28,
-                              color: Colors.blue,
+                            GestureDetector(
+                              onTap: () => launchUrl(Uri.parse(
+                                  'msteams:/l/chat/0/0?users=${customerContact!.email}')),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.message,
+                                  size: 28,
+                                  color: Colors.blue,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => openMailApp([customerContact!.email]),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.email,
-                              size: 28,
-                              color: Colors.blue,
+                            GestureDetector(
+                              onTap: () =>
+                                  openMailApp([customerContact!.email]),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.email,
+                                  size: 28,
+                                  color: Colors.blue,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          ],
+                        )
                       ],
                     ),
                   ],
-                  SizedBox(height: 20), 
-                  Text(
-                    customer?.address ?? 'N/A',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () => launchMapUrl("${customer?.address ?? 'N/A'}, ${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}"),
+                    child: Text(
+                        "${customer?.address ?? 'N/A'}\n${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
+                        style: TextStyle(fontSize: 16, color: Colors.blue),
+
+                      ),
+                  ), 
                   Text(
                     "Tax ID: ${customer?.taxId ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
@@ -276,13 +362,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   if (notes.isNotEmpty) ...[
                     Text(
                       "Notes",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 5),
                     ...notes.map((note) => Text(
-                      "${note.author.displayName} (${note.author.occupation}) | ${DateFormat.yMd().add_jm().format(DateTime.parse(note.postTime))}\n${note.content}",
-                      style: TextStyle(fontSize: 16),
-                    )),
+                          "${note.author.displayName} (${note.author.occupation}) | ${DateFormat.yMd().add_jm().format(DateTime.parse(note.postTime))}\n${note.content}",
+                          style: TextStyle(fontSize: 16),
+                        )),
                   ],
                   // SizedBox(height: 20),
                   // Row(
