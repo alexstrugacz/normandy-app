@@ -41,6 +41,8 @@ class ContributersState extends State<NormandyAppContributers> {
 
       final decodedData = jsonDecode(response.body);
       allContributors = List.from(decodedData['contributors']);
+
+      print(allContributors);
     } else {
       setState(() {
         _loading = false;
