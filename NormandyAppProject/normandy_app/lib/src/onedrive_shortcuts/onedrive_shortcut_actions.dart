@@ -16,7 +16,7 @@ class OnedriveShortcutActions extends StatelessWidget {
           children: const [
             QuickLinkButton(
               label: 'Go to My OneDrive',
-              url: 'https://ndbrcloudcom-my.sharepoint.com/my',
+              url: 'ms-sharepoint://?starturl=https://ndbrcloudcom-my.sharepoint.com/my',
               localLink: false
             ),
             QuickLinkButton(
