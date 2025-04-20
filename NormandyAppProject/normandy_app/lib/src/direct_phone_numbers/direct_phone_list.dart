@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
+import 'package:normandy_app/src/load_contacts.dart';
 
 class DirectPhoneList extends StatefulWidget {
   const DirectPhoneList({super.key});
@@ -55,6 +55,23 @@ class DirectPhoneListState extends State<DirectPhoneList> {
 
   Future<void> _loadContactsData() async {
     setState(() {
+      _loading = true;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //await prefs.remove('contacts');
+    final cached = await prefs.getString('contacts');
+    if (cached != null) {
+      List<dynamic> data = json.decode(cached);
+      List<Person> parsed = await sortPeople(
+          data.map((item) => Person.fromJson(Map.castFrom(item))).toList());
+      setState(() {
+        _people = parsed;
+        _loading = false;
+      });
+    }
+
+    setState(() {
       _errorMessage = '';
     });
     jwt = await getJwt();
@@ -64,22 +81,9 @@ class DirectPhoneListState extends State<DirectPhoneList> {
       Navigator.pushNamed(context, '/');
     }
 
-    setState(() {
-      _loading = true;
-    });
-
-    final response = await http.get(
-        Uri.parse(
-            'https://normandy-backend.azurewebsites.net/api/microsoft-users'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "Authorization": "Bearer $jwt"
-        });
-
-    if (response.statusCode == 201) {
-      List<dynamic> data = json.decode(response.body)['users'];
-      List<Person> sortedContacts = await sortPeople(
-          data.map((item) => Person.fromJson(Map.castFrom(item))).toList());
+    List<Person>? contacts = await loadContactsData(jwt!);
+    if (contacts != null) {
+      List<Person> sortedContacts = await sortPeople(contacts);
 
       setState(() {
         _people = sortedContacts;
@@ -105,8 +109,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
               onPressed: () async {
                 await showSearch(
                     context: context,
-                    delegate: CustomPersonSearchDelegate(
-                        searchTerms: _getSearchTerms(), contacts: _people));
+                    delegate: CustomPersonSearchDelegate(contacts: _people));
                 _refreshContactOrder();
               },
               icon: const Icon(Icons.search))
@@ -144,11 +147,9 @@ class DirectPhoneListState extends State<DirectPhoneList> {
 }
 
 class CustomPersonSearchDelegate extends SearchDelegate {
-  List<String> searchTerms;
   List<Person> contacts;
   @override
-  CustomPersonSearchDelegate(
-      {required this.searchTerms, required this.contacts});
+  CustomPersonSearchDelegate({required this.contacts});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -171,6 +172,12 @@ class CustomPersonSearchDelegate extends SearchDelegate {
         });
   }
 
+  bool match(Person c) {
+    final q = query.toLowerCase().trim();
+    return c.firstName.toLowerCase().startsWith(q) ||
+        c.lastName.toLowerCase().startsWith(q);
+  }
+
   @override
   Widget buildResults(BuildContext context) {
     if (query.isEmpty) {
@@ -180,25 +187,23 @@ class CustomPersonSearchDelegate extends SearchDelegate {
     List<Person> matchedContacts = [];
 
     for (Person person in contacts) {
-      if (person.searchTerm
-          .toLowerCase()
-          .trim()
-          .contains(query.toLowerCase().trim())) {
+      if (match(person)) {
         matchedContacts.add(person);
       }
     }
 
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: matchedContacts.length,
-        itemBuilder: (context, index) {
-          return DirectPhoneCard(
-            key: UniqueKey(), // Ensure each ContactTile has a unique key
-            person: matchedContacts[index],
-            index: index,
-            onRefresh: () {},
-          );
-        });
+    return (matchedContacts.isEmpty)
+        ? const ListTile(title: Text('No matches'))
+        : ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: matchedContacts.length,
+            itemBuilder: (context, index) {
+              return DirectPhoneCard(
+                  key: UniqueKey(), // Ensure each ContactTile has a unique key
+                  person: matchedContacts[index],
+                  index: index,
+                  onRefresh: () {});
+            });
   }
 
   @override
@@ -210,10 +215,7 @@ class CustomPersonSearchDelegate extends SearchDelegate {
     List<Person> matchedContacts = [];
 
     for (Person person in contacts) {
-      if (person.searchTerm
-          .toLowerCase()
-          .trim()
-          .startsWith(query.toLowerCase().trim())) {
+      if (match(person)) {
         matchedContacts.add(person);
       }
     }

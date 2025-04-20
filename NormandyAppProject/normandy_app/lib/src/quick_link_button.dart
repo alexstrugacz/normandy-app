@@ -18,10 +18,42 @@ class QuickLinkButton extends StatelessWidget {
       return;
     } else {
       if (!await launchUrl(Uri.parse(url))) {
-        throw Exception('Could not launch the app.');
+        // ignore: use_build_context_synchronously
+        showAlertDialog(context);
       }
     }
   }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+        title: const Padding(
+            padding: EdgeInsets.only(top: 8, left: 8, right: 8),
+            child: Text("Couldn't open app")),
+        content: const Padding(
+            padding: EdgeInsets.only(top: 0, left: 8, right: 8),
+            child: Text("Make sure the app is downloaded.")),
+        actions: [
+          okButton,
+        ]);
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
