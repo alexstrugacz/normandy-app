@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/choose_image_page.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
-import 'package:normandy_app/src/client_choose_image.dart';
 import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
 import 'package:normandy_app/src/projectupload.dart';
@@ -18,9 +17,10 @@ import 'package:normandy_app/src/so_forms/so_form_options.dart';
 import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/upload_image.dart';
-import 'profile.dart';
+import 'package:normandy_app/src/settings.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
 import 'package:normandy_app/src/customers/customer_search.dart';
+import 'package:normandy_app/src/settings/normandy_app_contributers.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -40,7 +40,8 @@ class MyApp extends StatelessWidget {
           "/home": (context) => HomePage(),
           "/business-contacts-list": (context) => const BusinessContactsList(),
           "/contacts": (context) => const Contacts(),
-          "/profile": (context) => const Profile(),
+          "/user-settings": (context) => const Settings(),
+          "/normandy-app-contributers": (context) =>  NormandyAppContributers(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
           "/employee-list": (context) =>

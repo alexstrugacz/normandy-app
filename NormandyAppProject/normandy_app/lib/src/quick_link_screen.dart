@@ -16,13 +16,19 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Teams',
               imagePath: 'assets/images/teams.png',
-              url: 'https://teams.microsoft.com',
+              url: 'msteams://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Outlook',
               imagePath: 'assets/images/outlook.png',
-              url: 'https://outlook.office.com',
+              url: 'ms-outlook://',
+              localLink: false
+            ),
+            QuickLinkButton(
+              label: 'OneDrive',
+              imagePath: 'assets/images/oneDrive.png',
+              url: 'ms-onedrive://',
               localLink: false
             ),
             QuickLinkButton(
@@ -34,37 +40,37 @@ class QuickLinksScreen extends StatelessWidget {
             QuickLinkButton(
               label: 'Home Depot',
               imagePath: 'assets/images/homeDepot.png',
-              url: 'https://www.homedepot.com',
+              url: 'homedepot://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Menards',
               imagePath: 'assets/images/menards.png',
-              url: 'https://www.menards.com',
+              url: 'menardsmobile://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Hines',
               imagePath: 'assets/images/hines.png',
-              url: 'https://www.hines.com',
+              url: 'https://www.hinessupply.com',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Google Translate',
               imagePath: 'assets/images/googleTranslate.png',
-              url: 'https://translate.google.com',
+              url: 'googletranslate://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Time Squared',
               imagePath: 'assets/images/timeSquared.png',
-              url: 'https://timesquared.com',
+              url: 'timesquared://',
               localLink: false
             ),
             QuickLinkButton(
               label: 'Mileage',
               imagePath: 'assets/images/mileage.png',
-              url: 'https://www.mileage.com',
+              url: 'mileiq://',
               localLink: false
             ),
           ],

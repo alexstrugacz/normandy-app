@@ -9,20 +9,21 @@ class _Button {
   String name;
   String route;
   IconData icon;
-  _Button(this.name, this.route, this.icon);
+  bool enabled;
+  _Button(this.name, this.route, this.icon, this.enabled);
 }
 
 class HomePage extends StatelessWidget {
   // ignore: library_private_types_in_public_api
   final List<_Button> buttons = [
-    _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
+    _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook, true),
     _Button(
-        'Upload Image', '/upload-image', FontAwesomeIcons.upload),
-    _Button('Quick Links', '/quick-links', FontAwesomeIcons.link),
-    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar),
-    _Button('My Profile', '/profile', FontAwesomeIcons.user),
-    _Button('Customers', '/customers', FontAwesomeIcons.users),
-    _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock),
+        'Upload Image', '/upload-image', FontAwesomeIcons.upload, false),
+    _Button('Quick Links', '/quick-links', FontAwesomeIcons.link, true),
+    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar, true),
+    _Button('User Settings', '/user-settings', FontAwesomeIcons.gear, true),
+    _Button('Customers', '/customers', FontAwesomeIcons.users, true),
+    _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock, true),
   ];
 
   String _getCurrentDate() {
@@ -46,11 +47,7 @@ class HomePage extends StatelessWidget {
           Padding(
             padding:
                 const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
-            child: SvgPicture.asset(
-              'assets/icon.svg',
-              height: 80,
-              width: 80,
-            ),
+            child: Image.asset('assets/images/logo.png', height: 80)
           ),
           Padding(
               // no top padding. only left right and bottom
@@ -74,7 +71,7 @@ class HomePage extends StatelessWidget {
                   return HomepageButton(
                       icon: button.icon,
                       text: button.name,
-                      isDisabled: false,
+                      isDisabled: !button.enabled,
                       onTap: () async {
                         if(kDebugMode) print(button.route);
                         if(kDebugMode) print(button.name);
