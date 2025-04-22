@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook),
     _Button(
-        'Upload Image', '/client-choose-image-page', FontAwesomeIcons.upload),
+        'Upload Image', '/upload-image', FontAwesomeIcons.upload),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link),
     _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar),
     _Button('My Profile', '/profile', FontAwesomeIcons.user),

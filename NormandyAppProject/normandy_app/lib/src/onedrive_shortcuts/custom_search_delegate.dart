@@ -93,8 +93,9 @@ class CustomSearchDelegate extends SearchDelegate {
       if (currQuery.isNotEmpty) {
         loading = true;
         updateUI();
-        customers = await _loadCustomers(query);
+        List<Customer> temp = await _loadCustomers(currQuery);
         if (currQuery == lastQuery) {
+          customers = temp;
           loading = false;
           updateUI();
         }

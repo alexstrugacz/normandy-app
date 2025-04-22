@@ -17,6 +17,7 @@ import 'package:normandy_app/src/so_forms/edit_so.dart';
 import 'package:normandy_app/src/so_forms/so_form_options.dart';
 import 'package:normandy_app/src/superintendents/superintendents_list.dart';
 import 'package:normandy_app/src/take_a_photo.dart';
+import 'package:normandy_app/src/upload_image.dart';
 import 'profile.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
 import 'package:normandy_app/src/customers/customer_search.dart';
@@ -63,14 +64,15 @@ class MyApp extends StatelessWidget {
           "/so-forms": (context) => const SOFormOptions(),
           "/create-so-form": (context) => const CreateSOForm(),
           "/edit-so-form": (context) => const EditSOForm(),
-          '/project-upload': (context) => const ProjectUpload(),
+          '/upload-image': (context) => const UploadImage(),
+          //'/project-upload': (context) => const ProjectUpload(),
           '/project-upload/page': (context) => const ProjectUploadPage(),
           '/project-upload/photo': (context) => ProjectUploadPhoto(),
           '/project-upload/gallery': (context) => ProjectUploadGallery(),
           '/coming-soon': (context) => ComingSoon(),
-          '/client-choose-image-page': (context) => ClientChooseImagePage(
-                header: 'Client Image Upload',
-              ),
+          // '/client-choose-image-page': (context) => ClientChooseImagePage(
+          //       header: 'Client Image Upload',
+          //     ),
           '/customers': (context) => CustomerSearchPage(),
         });
   }

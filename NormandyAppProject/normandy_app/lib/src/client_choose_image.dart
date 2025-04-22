@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,20 +9,19 @@ import 'package:permission_handler/permission_handler.dart';
 import 'env.dart';
 
 class ClientChooseImagePage extends StatefulWidget {
-  final String header;
-
-  const ClientChooseImagePage({super.key, required this.header});
+  final String name;
+  const ClientChooseImagePage({super.key, required this.name});
 
   @override
-  ClientChooseImagePageState createState() => ClientChooseImagePageState();
+  ClientChooseImagePageState createState() =>
+      ClientChooseImagePageState(name: name);
 }
 
 class ClientChooseImagePageState extends State<ClientChooseImagePage> {
+  final String name;
   List<File> _selectedImages = [];
-  String? clientId;
-  String? clientSCRT;
-  String? tenantId;
-  String? _clientProjectsDriveId;
+  String? _clientProjectsDriveId =
+      "b!jAiYPxrRjUCBK5ovip7ZEQNDPo7LyL1OgeHRWtDKCLbYuzyahUg6R4iIfPdyhxQk";
   String? _selectedUploadType;
   String? _selectedClientFolderId;
 
@@ -44,37 +44,35 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         '08. Salesperson Documents/Misc/Client File Share'
   };
 
+  ClientChooseImagePageState({required this.name});
+
   @override
   void initState() {
     super.initState();
-    _initializeEnvVariables();
   }
 
-  void _initializeEnvVariables() {
-    try {
-      clientId = CLIENT_ID;
-      clientSCRT = CLIENT_SCRT;
-      tenantId = TENANT_ID;
-    } catch (e) {
-      if(kDebugMode) print('Error accessing environment variables: $e');
+  Future<List<XFile>> _pickImageCamera() async {
+    List<XFile> files = [];
+    while (true) {
+      XFile? file = await ImagePicker().pickImage(source: ImageSource.camera);
+      if (file == null) break;
+      files.add(file);
     }
+    return files;
   }
 
-  Future<void> _pickImage() async {
-    if (await Permission.storage.request().isGranted) {
-      final ImagePicker picker = ImagePicker();
-      final List<XFile> pickedFiles = await picker.pickMultiImage();
+  Future<void> _pickImage({bool camera = false}) async {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> pickedFiles =
+        await (camera ? _pickImageCamera() : picker.pickMultiImage());
 
-      if (pickedFiles.isNotEmpty) {
-        setState(() {
-          _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
-        });
-        if(kDebugMode) print('Selected images: ${_selectedImages.length}');
-      } else {
-        if(kDebugMode) print('No images picked');
-      }
+    if (pickedFiles.isNotEmpty) {
+      setState(() {
+        _selectedImages += pickedFiles.map((file) => File(file.path)).toList();
+      });
+      if (kDebugMode) print('Selected images: ${_selectedImages.length}');
     } else {
-      if(kDebugMode) print('Storage permission denied');
+      if (kDebugMode) print('No images picked');
     }
   }
 
@@ -82,23 +80,26 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      if(kDebugMode) print('Failed to get access token');
+      if (kDebugMode) print('Failed to get access token');
       return;
     }
+    await _selectClientFolder(accessToken);
 
     if (_clientProjectsDriveId == null) {
-      if(kDebugMode) print('Drive named "Client Projects Active" not found');
+      if (kDebugMode) print('Drive named "Client Projects Active" not found');
       return;
     }
 
     if (_selectedClientFolderId == null) {
-      if(kDebugMode) print('No client folder selected');
+      if (kDebugMode) print('No client folder selected');
       return;
     }
 
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
-      final String fileName = '${(i + 1).toString().padLeft(4, '0')}.jpg';
+      final String date =
+          DateFormat('yyyyMMddTHHmmssSSS').format(DateTime.now());
+      final String fileName = '$date-${(i + 1).toString().padLeft(4, '0')}.jpg';
       final String folderPath = folderPaths[_selectedUploadType] ?? '';
       final String url =
           'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/items/$_selectedClientFolderId:/$folderPath/$fileName:/content';
@@ -116,25 +117,25 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         );
 
         if (response.statusCode == 201) {
-          if(kDebugMode) print('File uploaded successfully: $fileName');
+          if (kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          if(kDebugMode) print('File upload failed: ${response.body}');
+          if (kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        if(kDebugMode) print('Error uploading file: $e');
+        if (kDebugMode) print('Error uploading file: $e');
       }
     }
   }
 
   Future<String?> _getAccessToken() async {
     final String url =
-        'https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token';
+        'https://login.microsoftonline.com/$TENANT_ID/oauth2/v2.0/token';
 
     final Map<String, String> body = {
-      'client_id': clientId ?? '',
+      'client_id': CLIENT_ID,
       'scope': 'https://graph.microsoft.com/.default',
-      'client_secret': clientSCRT ?? '',
+      'client_secret': CLIENT_SCRT,
       'grant_type': 'client_credentials',
     };
 
@@ -148,20 +149,23 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       );
 
       if (response.statusCode == 200) {
+        print("getting access token");
+        print(response.body);
         final Map<String, dynamic> responseData = json.decode(response.body);
-        if(kDebugMode) print('Access token retrieved');
+        if (kDebugMode) print('Access token retrieved');
         return responseData['access_token'];
       } else {
-        if(kDebugMode) print('Failed to get access token: ${response.body}');
+        if (kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting access token: $e');
+      if (kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
 
   Future<void> getAllDrives(String accessToken) async {
+    /*
     final String sitesUrl = 'https://graph.microsoft.com/v1.0/sites';
 
     try {
@@ -206,30 +210,35 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
               setState(() {
                 _clientProjectsDriveId = drive['id'] as String?;
               });
-              if(kDebugMode) print('Client Projects Active/Documents drive found');
+              if (kDebugMode)
+                print('Client Projects Active/Documents drive found');
             } else {
-              if(kDebugMode) print('Drive named "Documents" not found.');
+              if (kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
+            if (kDebugMode)
+              print('Failed to get drives: ${drivesResponse.body}');
           }
         } else {
-          if(kDebugMode) print('Site named "Client Projects Active" not found.');
+          if (kDebugMode)
+            print('Site named "Client Projects Active" not found.');
         }
       } else {
-        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
+        if (kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting sites or drives: $e');
+      if (kDebugMode) print('Error getting sites or drives: $e');
     }
+  */
   }
 
   Future<void> _selectClientFolder(String accessToken) async {
+    print("selecting client folder id");
     final String url =
-        'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/root:/Documents:/children';
+        'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/root:/$name';
 
     try {
-      final http.Response response = await http.get(
+      http.Response response = await http.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $accessToken',
@@ -237,40 +246,35 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       );
 
       if (response.statusCode == 200 && mounted) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> folders = data['value'];
-
-        if(kDebugMode) print('Retrieved ${folders.length} client folders');
-
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Select Client Folder'),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: folders.map((folder) {
-                    return ListTile(
-                      title: Text(folder['name']),
-                      onTap: () {
-                        setState(() {
-                          _selectedClientFolderId = folder['id'];
-                        });
-                        Navigator.of(context).pop();
-                        if(kDebugMode) print('Selected folder: ${folder['name']}');
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            );
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        _selectedClientFolderId = responseData['id'];
+        print(_selectedClientFolderId);
+      } else if (response.statusCode == 404 && mounted) {
+        print('creating new folder');
+        String create =
+            'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/root/children';
+        response = await http.post(
+          Uri.parse(create),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+          body: {
+            "name": name,
+            "folder": {},
+            "@microsoft.graph.conflictBehavior": "fail"
           },
         );
+        if (response.statusCode != 201) {
+          throw "Failed to create folder";
+        }
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        _selectedClientFolderId = responseData['id'];
+        print(_selectedClientFolderId);
       } else {
-        if(kDebugMode) print('Failed to get client folders: ${response.body}');
+        if (kDebugMode) print('Failed to get client folders: ${response.body}');
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting client folders: $e');
+      if (kDebugMode) print('Error getting client folders: $e');
     }
   }
 
@@ -296,70 +300,62 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.header),
-      ),
-      body: Column(
-        children: [
-          DropdownButton<String>(
-            value: _selectedUploadType,
-            hint: Text('Select Upload Type'),
-            items: uploadTypes.map((type) {
-              return DropdownMenuItem<String>(
-                value: type,
-                child: Text(type),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedUploadType = value;
-              });
-              if(kDebugMode) print('Selected upload type: $value');
-            },
-          ),
-          Expanded(
-            child: _selectedImages.isEmpty
-                ? Center(child: Text('No images selected'))
-                : GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemCount: _selectedImages.length,
-                    itemBuilder: (context, index) {
-                      return Image.file(_selectedImages[index]);
-                    },
+    print("client choose image");
+    print(_selectedImages.length);
+    print(_selectedClientFolderId);
+    return Column(
+      children: [
+        DropdownButton<String>(
+          value: _selectedUploadType,
+          hint: Text('Select Upload Type'),
+          items: uploadTypes.map((type) {
+            return DropdownMenuItem<String>(
+              value: type,
+              child: Text(type),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedUploadType = value;
+            });
+            if (kDebugMode) print('Selected upload type: $value');
+          },
+        ),
+        Expanded(
+          child: _selectedImages.isEmpty
+              ? Center(child: Text('No images selected'))
+              : GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
                   ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              FloatingActionButton.extended(
-                onPressed: _pickImage,
-                label: Text('Pick Images'),
-                icon: Icon(Icons.photo_library),
-              ),
-              FloatingActionButton.extended(
-                onPressed: () async {
-                  final String? accessToken = await _getAccessToken();
-                  if (accessToken != null) {
-                    if(kDebugMode) print('Fetching client folders...');
-                    _selectClientFolder(accessToken);
-                  }
-                },
-                label: Text('Select Client Folder'),
-                icon: Icon(Icons.folder_open),
-              ),
-              if (_selectedImages.isNotEmpty && _selectedClientFolderId != null)
-                FloatingActionButton.extended(
-                  onPressed: _uploadToOneDrive,
-                  label: Text('Upload Images'),
-                  icon: Icon(Icons.cloud_upload),
+                  itemCount: _selectedImages.length,
+                  itemBuilder: (context, index) {
+                    return Image.file(_selectedImages[index]);
+                  },
                 ),
-            ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            FloatingActionButton.extended(
+              onPressed: _pickImage,
+              label: Text('Gallery'),
+              icon: Icon(Icons.photo_library),
+            ),
+            FloatingActionButton.extended(
+              onPressed: () => _pickImage(camera: true),
+              label: Text('Camera'),
+              icon: Icon(Icons.camera_alt),
+            ),
+          ],
+        ),
+        if (_selectedImages.isNotEmpty)
+          FloatingActionButton.extended(
+            onPressed: _uploadToOneDrive,
+            label: Text('Upload Images'),
+            icon: Icon(Icons.cloud_upload),
           ),
-        ],
-      ),
+      ],
     );
   }
 }
