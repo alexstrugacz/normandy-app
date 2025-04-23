@@ -30,7 +30,7 @@ class ContributersState extends State<NormandyAppContributers> {
     });
     final prefs = await SharedPreferences.getInstance();
 
-    final URL = Uri.parse("http://localhost:4000/api/contributors");
+    final URL = Uri.parse("https://normandy-backend.azurewebsites.net/api/contributors");
     final response = await http.get(URL, headers: {
       'Authorization':
           'Bearer ${prefs.getString("jwt")}',
