@@ -36,10 +36,10 @@ class Settings extends StatelessWidget {
               ), 
               GridCard(
                 icon: FontAwesomeIcons.peopleGroup,
-                text: "Contributers",
+                text: "Contributors",
                 onTap: () async {
                   Navigator.pushNamed(
-                    context, '/normandy-app-contributers'
+                    context, '/normandy-app-contributors'
                   );
                 },
               ),
