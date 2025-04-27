@@ -57,14 +57,19 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       XFile? file = await ImagePicker().pickImage(source: ImageSource.camera);
       if (file == null) break;
       files.add(file);
+      await Future.delayed(Duration(milliseconds: 300)); // tiny delay helps
     }
     return files;
   }
 
   Future<void> _pickImage({bool camera = false}) async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile> pickedFiles =
-        await (camera ? _pickImageCamera() : picker.pickMultiImage());
+    List<XFile> pickedFiles = [];
+    if (camera) {
+      pickedFiles = await _pickImageCamera();
+    } else {
+      pickedFiles = await picker.pickMultiImage();
+    }
 
     if (pickedFiles.isNotEmpty) {
       setState(() {
