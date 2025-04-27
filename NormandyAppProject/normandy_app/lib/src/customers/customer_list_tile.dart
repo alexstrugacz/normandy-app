@@ -3,12 +3,14 @@ import 'package:normandy_app/src/customers/customer_detail_page.dart';
 
 class CustomerListTile extends StatefulWidget {
   final List<Map<String, dynamic>> searchResults;
-  final VoidCallback nextPage; // New required parameter
+  final VoidCallback nextPage;
+  final bool anotherPage; // New required parameter
 
   const CustomerListTile({
     Key? key,
     required this.searchResults,
-    required this.nextPage, // Add to constructor
+    required this.nextPage,
+    required this.anotherPage,
   }) : super(key: key);
 
   @override
@@ -30,14 +32,17 @@ class _CustomerListTileState extends State<CustomerListTile> {
           ? widget.searchResults.length + 1
           : 0, // Add 1 for the button if results exist
       itemBuilder: (context, index) {
-        if (index == widget.searchResults.length) {
-          // Handle the extra item (e.g., a button)
+        if (index == widget.searchResults.length && widget.anotherPage) {
           return Center(
             child: ElevatedButton(
               onPressed: widget.nextPage, // Use the passed function
               child: Text('Next Page'),
             ),
           );
+        } else if(index == widget.searchResults.length) {
+          if (index >= widget.searchResults.length) {
+            return Container(); // Return an empty container if no more results
+          }
         }
 
         var customer = widget.searchResults[index];

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Note {
   final String content;
   final Author author;
@@ -14,14 +16,26 @@ class Note {
       return Note(
         content: 'Blank note',
         author: Author(displayName: 'Unknown', occupation: 'Unknown'),
-        postTime: 'Unknown',
+        postTime: DateFormat('yyyy-MM-dd').format(DateTime.now()),
       );
     }
     return Note(
       content: json['content'] ?? 'Blank note',
       author: Author.fromJson(json['author'] as Map<String, dynamic>?),
-      postTime: json['postTime'] ?? 'Unknown',
+      postTime: _validateDate(json['postTime']),
     );
+  }
+
+  static String _validateDate(String? date) {
+    if (date == null || date.isEmpty) {
+      return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    }
+    try {
+      DateTime.parse(date);
+      return date;
+    } catch (e) {
+      return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    }
   }
 }
 

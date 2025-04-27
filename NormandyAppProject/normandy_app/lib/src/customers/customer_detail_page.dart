@@ -1,13 +1,13 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
+import 'package:normandy_app/src/customers/appointment_view.dart';
+import 'package:normandy_app/src/customers/appointments_type.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailPage extends StatefulWidget {
@@ -24,6 +24,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   Customer? customer;
   User? customerContact;
   List<Note> notes = [];
+  List<Appointment> appointments = [];
   // String userId = '';
 
   @override
@@ -33,7 +34,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     // fetchUserId();
   }
 
-  fetchCustomerDetails() async {
+  void fetchCustomerDetails() async {
     var response =
         await APIHelper.get('customers/${widget.customerId}', context, mounted);
     if (response != null && response.statusCode == 200 && mounted) {
@@ -55,16 +56,29 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         }
       }
 
-      var response3 = await APIHelper.get(
+      var notesResponse = await APIHelper.get(
           'notes?customerId=${widget.customerId}&noteFor=customer',
           context,
           mounted);
-      if (response3 != null && response3.statusCode == 200) {
-        var newNotes = (json.decode(response3.body)['notes'] as List)
+      if (notesResponse != null && notesResponse.statusCode == 200) {
+        var newNotes = (json.decode(notesResponse.body)['notes'] as List)
             .map((note) => Note.fromJson(note))
             .toList();
         setState(() {
           notes = newNotes;
+        });
+      }
+
+      var appointmentsResponse = await APIHelper.get(
+          'appointments?customerId=${widget.customerId}',
+          context,
+          mounted);
+      if (appointmentsResponse != null && appointmentsResponse.statusCode == 200) {
+        var newAppointments = (json.decode(appointmentsResponse.body)['appointments'] as List)
+            .map((appointment) => Appointment.fromJson(appointment))
+            .toList();
+        setState(() {
+          appointments = newAppointments;
         });
       }
 
@@ -122,22 +136,25 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   void launchMapUrl(String address) async {
-     final query = Uri.encodeComponent(address);
-    final googleMapsUrl =
-        'https://www.google.com/maps/search/?api=1&query=$query';
-    final appUrl = 'geo:0,0?q=$query';
+    final Uri appleURL = Uri.parse(
+    'https://maps.apple.com/?q=${Uri.encodeComponent(address)}',
+    );
 
-    if (await canLaunchUrl(Uri.parse(appUrl))) {
-      await launchUrl(Uri.parse(appUrl));
-    } else if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-      await launchUrl(Uri.parse(googleMapsUrl),
-          mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(appleURL)) {
+      await launchUrl(appleURL);
     } else {
-      throw 'Could not open map';
+      final Uri googleURL = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
+      );
+      if (await canLaunchUrl(googleURL)) {
+        await launchUrl(googleURL);
+      } else {
+        throw 'Could not launch $address';
+      }
     }
   }
 
-  Widget contactButtonsCustomerDetailPage(
+  Widget customerButtons(
       VoidCallback onTap, IconData icon, Color color) {
     return GestureDetector(
       onTap: () => onTap(),
@@ -215,7 +232,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
       appBar: AppBar(
         title: Text(customer?.lname1 ?? 'Customer Details'),
       ),
-      body: customer == null
+      body: (customer == null) 
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -237,7 +254,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               ),
                               Row(
                                 children: [
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () => openPhoneApp(
                                           customer?.cellPhone1,
                                           customer?.homePhone1,
@@ -251,7 +268,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                                   true)
                                           ? Colors.blue
                                           : Colors.grey),
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () => openMessageApp(
                                           customer?.cellPhone1,
                                           customer?.homePhone1,
@@ -265,7 +282,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                                   true)
                                           ? Colors.blue
                                           : Colors.grey),
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () =>
                                           openMailApp([customer?.email ?? '']),
                                       Icons.email,
@@ -286,7 +303,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               ),
                               Row(
                                 children: [
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () => openPhoneApp(
                                           customer?.cellPhone2,
                                           customer?.homePhone2,
@@ -300,7 +317,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                                   true)
                                           ? Colors.blue
                                           : Colors.grey),
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () => openMessageApp(
                                           customer?.cellPhone2,
                                           customer?.homePhone2,
@@ -314,7 +331,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                                   true)
                                           ? Colors.blue
                                           : Colors.grey),
-                                  contactButtonsCustomerDetailPage(
+                                  customerButtons(
                                       () =>
                                           openMailApp([customer?.email2 ?? '']),
                                       Icons.email,
@@ -433,6 +450,30 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           style: TextStyle(fontSize: 16),
                         )),
                   ],
+                  SizedBox(height: 20),
+                  Text(
+                    "Appointments",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 5),
+                  ...appointments.map((appointment) => GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AppointmentView(
+                              appointment: appointment,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            "${appointment.lname} - ${appointment.city}",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          trailing: Icon(Icons.chevron_right),
+                        )
+                    )
+                  ),
                   // SizedBox(height: 20),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
