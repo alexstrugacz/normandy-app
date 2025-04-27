@@ -20,7 +20,7 @@ class HomepageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isDisabled ? null : onTap,
+      onTap: onTap,
       child: Opacity(
         opacity: (isGrey ?? isDisabled) ? 0.4 : 1,
         child: Card(

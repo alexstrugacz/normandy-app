@@ -5,14 +5,14 @@ import '../components/list_card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class NormandyAppContributers extends StatefulWidget {
-  const NormandyAppContributers({super.key});
+class NormandyAppContributors extends StatefulWidget {
+  const NormandyAppContributors({super.key});
 
   @override
-  ContributersState createState() => ContributersState();
+  ContributorsState createState() => ContributorsState();
 }
 
-class ContributersState extends State<NormandyAppContributers> {
+class ContributorsState extends State<NormandyAppContributors> {
   @override
   void initState() {
     super.initState();
@@ -30,7 +30,7 @@ class ContributersState extends State<NormandyAppContributers> {
     });
     final prefs = await SharedPreferences.getInstance();
 
-    final URL = Uri.parse("http://localhost:4000/api/contributors");
+    final URL = Uri.parse("https://normandy-backend.azurewebsites.net/api/contributors");
     final response = await http.get(URL, headers: {
       'Authorization':
           'Bearer ${prefs.getString("jwt")}',
@@ -41,8 +41,6 @@ class ContributersState extends State<NormandyAppContributers> {
 
       final decodedData = jsonDecode(response.body);
       allContributors = List.from(decodedData['contributors']);
-
-      print(allContributors);
     } else {
       setState(() {
         _loading = false;
@@ -60,11 +58,6 @@ class ContributersState extends State<NormandyAppContributers> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: Center(child: CircularProgressIndicator()));
-    }
 
     if (_errorMessage != "") {
       return Text(_errorMessage);
@@ -72,15 +65,21 @@ class ContributersState extends State<NormandyAppContributers> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Normandy App Contributers'),
+          title: const Text('Contributors'),
         ),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(16), 
             child: Column( 
               children: [
-              Text("These contributors helped create the Normandy App and website.", textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Color.fromRGBO(0, 0, 0, 0.6), fontWeight: FontWeight.bold)),
+              Text("These contributors helped create the Normandy App and web app.", textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Color.fromRGBO(0, 0, 0, 0.6), fontWeight: FontWeight.bold)),
               SizedBox(height: 3),
-              ListView.builder(
+              _loading ? (
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Center(child: CircularProgressIndicator()))
+              ) : (
+                SingleChildScrollView(
+                child: ListView.builder(
                 itemCount: allContributors.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -95,6 +94,8 @@ class ContributersState extends State<NormandyAppContributers> {
                     ],
                   );
                 },
+              ),
+              )
               )
             ]
             )

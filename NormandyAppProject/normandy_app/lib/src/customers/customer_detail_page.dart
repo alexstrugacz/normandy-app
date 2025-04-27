@@ -122,12 +122,16 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   void launchMapUrl(String address) async {
-    final Uri googleMapsUrl = Uri.parse(
-    'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
-    );
+     final query = Uri.encodeComponent(address);
+    final googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$query';
+    final appUrl = 'geo:0,0?q=$query';
 
-    if (await canLaunchUrl(googleMapsUrl)) {
-      await launchUrl(googleMapsUrl);
+    if (await canLaunchUrl(Uri.parse(appUrl))) {
+      await launchUrl(Uri.parse(appUrl));
+    } else if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      await launchUrl(Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not open map';
     }
@@ -148,6 +152,63 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     );
   }
 
+  Widget sendMultipleEmails(String? email1, String? email2) {
+    if (email1?.isNotEmpty == true && email2?.isNotEmpty == true) {
+      return GestureDetector(
+          onTap: () => openMailApp([email1 ?? "", email2 ?? ""]),
+          child: SizedBox(
+            width: 45,
+            child: Align(
+                alignment: Alignment.center,
+                child: Stack(
+                  children: [
+                    Icon(Icons.email, color: Colors.blue, size: 28),
+                    Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.group,
+                            color: Colors.blue,
+                            size: 10,
+                          ),
+                        )),
+                  ],
+                )),
+          ));
+    }
+    return SizedBox(
+      width: 45,
+      child: Align(
+          alignment: Alignment.center,
+          child: Stack(
+            children: [
+              Icon(Icons.email, color: Colors.grey, size: 28),
+              Positioned(
+                  right: -2,
+                  bottom: -2,
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.group,
+                      color: Colors.grey,
+                      size: 10,
+                    ),
+                  )),
+            ],
+          )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,10 +223,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
+                  Row(children: [
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -267,26 +327,27 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           ),
                         ],
                       ),
-                      ),
-                      customer?.email != "" && customer?.email2 != "" && customer?.email != null && customer?.email2 != null
-                        ? SizedBox(
-                            width: 45,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: GestureDetector(
-                                  onTap: () => openMailApp([
-                                        "${customer?.email},${customer?.email2}"
-                                      ]),
-                                  child: Icon(
-                                    Icons.email,
-                                    size: 28,
-                                    color: Colors.blue,
-                                  )),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                    ]
-                  ),
+                    ),
+                    // customer?.email != "" && customer?.email2 != "" && customer?.email != null && customer?.email2 != null
+                    //   ? SizedBox(
+                    //       width: 45,
+                    //       child: Align(
+                    //         alignment: Alignment.center,
+                    //         child: GestureDetector(
+                    //             onTap: () => openMailApp([
+                    //                   "${customer?.email},${customer?.email2}"
+                    //                 ]),
+                    //             child: Icon(
+                    //               Icons.email,
+                    //               size: 28,
+                    //               color: Colors.blue,
+                    //             )),
+                    //       ),
+                    //     )
+                    //   : SizedBox.shrink(),
+
+                    sendMultipleEmails(customer?.email, customer?.email2)
+                  ]),
                   SizedBox(height: 5),
                   if (customerContact != null) ...[
                     Row(
@@ -336,6 +397,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                 ),
                               ),
                             ),
+                            SizedBox(width: 45)
                           ],
                         )
                       ],
@@ -343,13 +405,13 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   ],
                   SizedBox(height: 20),
                   GestureDetector(
-                    onTap: () => launchMapUrl("${customer?.address ?? 'N/A'}, ${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}"),
+                    onTap: () => launchMapUrl(
+                        "${customer?.address ?? 'N/A'}, ${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}"),
                     child: Text(
-                        "${customer?.address ?? 'N/A'}\n${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
-                        style: TextStyle(fontSize: 16, color: Colors.blue),
-
-                      ),
-                  ), 
+                      "${customer?.address ?? 'N/A'}\n${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
+                      style: TextStyle(fontSize: 16, color: Colors.blue),
+                    ),
+                  ),
                   Text(
                     "Tax ID: ${customer?.taxId ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
