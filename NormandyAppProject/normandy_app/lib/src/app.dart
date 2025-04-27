@@ -20,7 +20,7 @@ import 'package:normandy_app/src/upload_image.dart';
 import 'package:normandy_app/src/settings.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
 import 'package:normandy_app/src/customers/customer_search.dart';
-import 'package:normandy_app/src/settings/normandy_app_contributers.dart';
+import 'package:normandy_app/src/settings/normandy_app_contributors.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           "/business-contacts-list": (context) => const BusinessContactsList(),
           "/contacts": (context) => const Contacts(),
           "/user-settings": (context) => const Settings(),
-          "/normandy-app-contributers": (context) =>  NormandyAppContributers(),
+          "/normandy-app-contributors": (context) =>  NormandyAppContributors(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
           "/employee-list": (context) =>
