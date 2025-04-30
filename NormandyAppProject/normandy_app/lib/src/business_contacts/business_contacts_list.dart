@@ -44,7 +44,14 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   void initState() {
     super.initState();
     generatePageTitle();
-    _loadContactsData();
+    _loadContactsData().then((_) {
+      // wait for contacts to load before opening search delegate
+      if (_contacts.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: _getSearchTerms(), contacts: _contacts));
+        });
+      }
+    });
   }
 
   Future<List<Contact>> sortContacts(List<Contact> newContacts) async {
