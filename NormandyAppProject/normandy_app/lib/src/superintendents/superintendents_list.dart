@@ -24,7 +24,14 @@ class SuperintendentsListState extends State<SuperintendentsList> {
   @override
   void initState() {
     super.initState();
-    _loadContactsData();
+    _loadContactsData().then((_) {
+      // wait for contacts to load before opening search delegate
+      if (_people.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showSearch(context: context, delegate: CustomPersonSearchDelegate(contacts: _people));
+        });
+      }
+    });
   }
 
   Future<List<Person>> sortPeople(List<Person> newPeople) async {

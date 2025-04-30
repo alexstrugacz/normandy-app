@@ -51,6 +51,12 @@ class CreateSOFormState extends State<CreateSOForm> {
   void initState() {
     super.initState();
     selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+          showSearch(context: context, delegate: CustomSearchDelegate(
+              context: context,
+              mounted: mounted,
+              onSelectCustomer: handleSelectCustomer));
+    });
   }
 
   Future<void> handleSelectCustomer(Customer customer) async {

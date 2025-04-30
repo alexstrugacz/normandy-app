@@ -69,9 +69,9 @@ class CustomerSearchPageState extends State<CustomerSearchPage> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   showSearch(context: context, delegate: CustomerSearchDelegate(context: context));
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSearch(context: context, delegate: CustomerSearchDelegate(context: context));
+    });
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
-import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
@@ -23,7 +22,14 @@ class DirectPhoneListState extends State<DirectPhoneList> {
   @override
   void initState() {
     super.initState();
-    _loadContactsData();
+    _loadContactsData().then((_) {
+      // wait for contacts to load before opening search delegate
+      if (_people.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showSearch(context: context, delegate: CustomPersonSearchDelegate(contacts: _people));
+        });
+      }
+    });
   }
 
   Future<List<Person>> sortPeople(List<Person> newPeople) async {
@@ -168,7 +174,7 @@ class CustomPersonSearchDelegate extends SearchDelegate {
     return IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          close(context, null);
+          Navigator.pop(context, true);
         });
   }
 
