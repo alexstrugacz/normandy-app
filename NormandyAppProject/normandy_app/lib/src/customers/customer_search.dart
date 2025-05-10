@@ -6,7 +6,7 @@ import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/customers/customer_list_tile.dart';
 
 class SearchUtils {
-  static Future<List<Map<String, dynamic>>> handleSearch({
+  static Future<Map<String, dynamic>> handleSearch({
     required String searchTerm,
     required String searchByField,
     required int page,
@@ -14,8 +14,9 @@ class SearchUtils {
     required bool mounted,
   }) async {
     if (searchTerm.isEmpty) {
-      return [];
+      return {'results': [], 'anotherPage': false};
     }
+    var anotherPage = false;
     var response = await APIHelper.get(
         'customers?mode=1&searchTerm=$searchTerm&limit=50&searchByField=$searchByField&page=$page',
         context,
@@ -46,10 +47,14 @@ class SearchUtils {
       return 0;
     });
 
+    if(newResults.length == 50) {
+      anotherPage = true;
+    }
+
     newResults =
         newResults.where((customer) => customer['status'] != 'Inquiry').toList();
 
-    return newResults;
+    return {'results': newResults, 'anotherPage': anotherPage};
   }
 }
 
@@ -79,7 +84,7 @@ class CustomerSearchPageState extends State<CustomerSearchPage> {
     return Scaffold(
       // placeholder
       appBar: AppBar(
-        title: Text('Customer Search'),
+        title: Text('Customers'),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -88,6 +93,9 @@ class CustomerSearchPageState extends State<CustomerSearchPage> {
             },
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: ListTile(title: Text('Start typing to search')),
       ),
     );
   }
@@ -166,12 +174,13 @@ class CustomerSearchDelegate extends SearchDelegate {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data == null || (snapshot.data as List).isEmpty) {
+        if (!snapshot.hasData || snapshot.data == null || (snapshot.data as Map<String, dynamic>)['results'].isEmpty) {
           return Center(child: Text('No results found.'));
         }
-        var results = snapshot.data as List<Map<String, dynamic>>;
-        searchResults = results;
-        return CustomerListTile(searchResults: searchResults, nextPage: increasePage);
+        var results = (snapshot.data as Map<String, dynamic>);
+        searchResults = results['results'] as List<Map<String, dynamic>>;
+        var anotherPage = results['anotherPage'] as bool;
+        return CustomerListTile(searchResults: searchResults, nextPage: increasePage, anotherPage: anotherPage);
       },
     );
   }
@@ -202,9 +211,10 @@ class CustomerSearchDelegate extends SearchDelegate {
         if (!snapshot.hasData || snapshot.data == null) {
           return Center(child: Text('No results found.'));
         }
-        var results = snapshot.data as List<Map<String, dynamic>>;
-        searchResults = results;
-        return CustomerListTile(searchResults: searchResults, nextPage: increasePage);
+        var results = (snapshot.data as Map<String, dynamic>);
+        searchResults = results['results'] as List<Map<String, dynamic>>;
+        var anotherPage = results['anotherPage'] as bool;
+        return CustomerListTile(searchResults: searchResults, nextPage: increasePage, anotherPage: anotherPage);
       },
     );
   }

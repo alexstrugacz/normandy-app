@@ -84,7 +84,7 @@ class DirectPhoneItemDetailsState extends State<DirectPhoneItemDetails> {
                         IconButton(
                           icon: const Icon(Icons.call),
                           onPressed: () {
-                            handlePhoneCall(widget.person.cellPhone);
+                            handleLaunchTeamsCall(widget.person.cellPhone);
                           },
                         ),
                         IconButton(

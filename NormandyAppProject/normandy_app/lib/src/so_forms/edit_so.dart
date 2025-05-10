@@ -40,6 +40,12 @@ class EditSOFormState extends State<EditSOForm> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+          showSearch(context: context, delegate: CustomSearchDelegate(
+              context: context,
+              mounted: mounted,
+              onSelectCustomer: handleSelectCustomer));
+    });
   }
 
   Future<void> loadProjects() async {
