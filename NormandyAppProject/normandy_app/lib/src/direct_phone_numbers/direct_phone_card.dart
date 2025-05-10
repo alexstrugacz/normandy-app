@@ -16,7 +16,7 @@ class DirectPhoneCard extends StatelessWidget {
         child: Text(person.initials),
       ),
       title: Text('${person.firstName} ${person.lastName}'),
-      subtitle: Text(person.directOffice),
+      subtitle: Text(person.cellPhone),
       trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
