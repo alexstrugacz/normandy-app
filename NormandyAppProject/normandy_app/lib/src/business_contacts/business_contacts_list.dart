@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/business_contacts/contact_list_tile.dart';
 import 'package:normandy_app/src/business_contacts/contacts_class.dart';
+import 'package:normandy_app/src/business_contacts/usercontacts_class.dart';
 import 'package:normandy_app/src/api/get_jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/helpers/load_favorite_contacts.dart';
@@ -14,8 +15,13 @@ class BusinessContactsList extends StatefulWidget {
   final bool? isEmployee;
   final bool? isFavorite;
 
-  const BusinessContactsList({super.key, this.isActiveTrades, this.category, this.isEmployee, this.isFavorite });
-  
+  const BusinessContactsList(
+      {super.key,
+      this.isActiveTrades,
+      this.category,
+      this.isEmployee,
+      this.isFavorite});
+
   @override
   BusinessContactsListState createState() => BusinessContactsListState();
 }
@@ -39,7 +45,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -48,7 +53,10 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       // wait for contacts to load before opening search delegate
       if (_contacts.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(context: context, delegate: CustomSearchDelegate(searchTerms: _getSearchTerms(), contacts: _contacts));
+          showSearch(
+              context: context,
+              delegate: CustomSearchDelegate(
+                  searchTerms: _getSearchTerms(), contacts: _contacts));
         });
       }
     });
@@ -97,13 +105,15 @@ class BusinessContactsListState extends State<BusinessContactsList> {
     });
 
     String url = 'rolodex';
+    String key = 'rolodex';
     if (widget.isActiveTrades == true) {
       url += '?isActiveTrades=true';
       if (widget.category != null) {
         url += '&category=${widget.category}';
       }
     } else if (widget.isEmployee == true) {
-      url += '?isEmployee=true';
+      url = 'users';
+      key = 'users';
     } else if (widget.isFavorite == true) {
       url += '?isFavorite=true';
       List<String> favoriteContactIds = await loadFavoriteContacts();
@@ -111,23 +121,25 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
-    
+    print(url);
+
     http.Response? response;
 
-    if(mounted) {
-      response = await APIHelper.get(
-        url,
-        context,
-        mounted
-      );
+    if (mounted) {
+      response = await APIHelper.get(url, context, mounted);
     }
 
-    if ((response != null) && response.statusCode == 201) {
-      List<dynamic> data = json.decode(response.body)['rolodex'];
-      List<Contact> sortedContacts = await sortContacts(
-          data.map((item) => Contact.fromJson(Map.castFrom(item))).toList());
+    if ((response != null) &&
+        200 <= response.statusCode &&
+        response.statusCode < 300) {
+      List<dynamic> data = json.decode(response.body)[key];
+      List<Contact> sortedContacts = await sortContacts(data
+          .map((item) => (key == 'users')
+              ? UserContact.fromJson(Map.castFrom(item))
+              : Contact.fromJson(Map.castFrom(item)))
+          .toList());
 
-      setState(() { 
+      setState(() {
         _contacts = sortedContacts;
         _loading = false;
       });
@@ -152,10 +164,8 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                 await showSearch(
                     context: context,
                     delegate: CustomSearchDelegate(
-                      searchTerms: _getSearchTerms(), 
-                      contacts: _contacts
-                    ));
-                  _refreshContactOrder();
+                        searchTerms: _getSearchTerms(), contacts: _contacts));
+                _refreshContactOrder();
               },
               icon: const Icon(Icons.search))
         ]),
@@ -170,8 +180,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
           else if (_loading)
             const Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: Center(child: CircularProgressIndicator())
-            )
+                child: Center(child: CircularProgressIndicator()))
           else if (_contacts.isEmpty)
             const Padding(
                 padding: EdgeInsets.all(16.0),
@@ -179,23 +188,23 @@ class BusinessContactsListState extends State<BusinessContactsList> {
                   "No contacts found.",
                   style: TextStyle(color: Colors.black, fontSize: 14),
                 ))
-          else Expanded(
-              child: RefreshIndicator(
-                onRefresh: _loadContactsData,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: _contacts.length,
-                  itemBuilder: (context, index) {
-                    return ContactTile(
-                      key: UniqueKey(), // Ensure each ContactTile has a unique key
-                      contact: _contacts[index], 
-                      index: index,
-                      onRefresh: _refreshContactOrder,
-                    );
-                  },
-                )
-                )
-            )
+          else
+            Expanded(
+                child: RefreshIndicator(
+                    onRefresh: _loadContactsData,
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: _contacts.length,
+                      itemBuilder: (context, index) {
+                        return ContactTile(
+                          key:
+                              UniqueKey(), // Ensure each ContactTile has a unique key
+                          contact: _contacts[index],
+                          index: index,
+                          onRefresh: _refreshContactOrder,
+                        );
+                      },
+                    )))
         ]));
   }
 }
@@ -229,7 +238,6 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-
     if (query.isEmpty) {
       return const ListTile(title: Text('Start typing to search'));
     }
@@ -237,7 +245,10 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
-      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+      if (contact.searchTerm
+          .toLowerCase()
+          .trim()
+          .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
       }
     }
@@ -248,7 +259,7 @@ class CustomSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) {
         return ContactTile(
           key: UniqueKey(), // Ensure each ContactTile has a unique key
-          contact: matchedContacts[index], 
+          contact: matchedContacts[index],
           index: index,
           onRefresh: () {},
         );
@@ -265,22 +276,25 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
-      if (contact.searchTerm.toLowerCase().trim().contains(query.toLowerCase().trim())) {
+      if (contact.searchTerm
+          .toLowerCase()
+          .trim()
+          .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
       }
     }
 
     return ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: matchedContacts.length,
-        itemBuilder: (context, index) {
-          return ContactTile(
-            key: UniqueKey(), // Ensure each ContactTile has a unique key
-            contact: matchedContacts[index], 
-            index: index,
-            onRefresh: () {},
-          );
-        },
-      );
+      scrollDirection: Axis.vertical,
+      itemCount: matchedContacts.length,
+      itemBuilder: (context, index) {
+        return ContactTile(
+          key: UniqueKey(), // Ensure each ContactTile has a unique key
+          contact: matchedContacts[index],
+          index: index,
+          onRefresh: () {},
+        );
+      },
+    );
   }
 }

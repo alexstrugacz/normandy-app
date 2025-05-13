@@ -224,7 +224,7 @@ class DirectPhoneItemDetailsState extends State<DirectPhoneItemDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Company',
+                            'Address',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
