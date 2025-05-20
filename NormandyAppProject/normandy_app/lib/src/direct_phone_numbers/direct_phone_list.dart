@@ -49,6 +49,16 @@ class DirectPhoneListState extends State<DirectPhoneList> {
       }
     }
 
+    int compar(Person a, Person b) {
+      var res = a.firstName.compareTo(b.firstName);
+      if (res == 0) {
+        res = a.lastName.compareTo(b.lastName);
+      }
+      return res;
+    }
+
+    favoriteContacts.sort(compar);
+    nonFavorites.sort(compar);
     return favoriteContacts + nonFavorites;
   }
 

@@ -81,6 +81,17 @@ class BusinessContactsListState extends State<BusinessContactsList> {
       }
     }
 
+    int compar(Contact a, Contact b) {
+      var res = a.firstName.compareTo(b.firstName);
+      if (res == 0) {
+        res = a.lastName.compareTo(b.lastName);
+      }
+      return res;
+    }
+
+    favoriteContacts.sort(compar);
+    nonFavoriteContacts.sort(compar);
+
     return favoriteContacts + nonFavoriteContacts;
   }
 

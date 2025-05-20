@@ -51,6 +51,16 @@ class SuperintendentsListState extends State<SuperintendentsList> {
       }
     }
 
+    int compar(Person a, Person b) {
+      var res = a.firstName.compareTo(b.firstName);
+      if (res == 0) {
+        res = a.lastName.compareTo(b.lastName);
+      }
+      return res;
+    }
+
+    favoriteSuperintendents.sort(compar);
+    nonFavorites.sort(compar);
     return favoriteSuperintendents + nonFavorites;
   }
 
