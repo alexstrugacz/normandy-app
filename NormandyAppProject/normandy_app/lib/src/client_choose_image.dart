@@ -263,12 +263,13 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
           Uri.parse(create),
           headers: {
             'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
           },
-          body: {
+          body: jsonEncode({
             "name": name,
             "folder": {},
             "@microsoft.graph.conflictBehavior": "fail"
-          },
+          }),
         );
         if (response.statusCode != 201) {
           throw "Failed to create folder";
@@ -279,8 +280,11 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       } else {
         if (kDebugMode) print('Failed to get client folders: ${response.body}');
       }
-    } catch (e) {
-      if (kDebugMode) print('Error getting client folders: $e');
+    } catch (e, s) {
+      if (kDebugMode) {
+        print('Error getting client folders: $e');
+        print(s.toString());
+      }
     }
   }
 
