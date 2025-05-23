@@ -1,18 +1,14 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
 
-Future<List<Person>?> loadContactsData(String jwt) async {
-  final response = await http.get(
-      Uri.parse(
-          'https://normandy-backend.azurewebsites.net/api/microsoft-users'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer $jwt"
-      });
+Future<List<Person>?> loadContactsData(String jwt, BuildContext context, bool mounted) async {
+  final response = await APIHelper.get('microsoft-users', context, mounted);
 
-  if (response.statusCode == 201) {
+  if (response != null && response.statusCode == 201) {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<dynamic> data = json.decode(response.body)['users'];
     await prefs.setString('contacts', json.encode(data));

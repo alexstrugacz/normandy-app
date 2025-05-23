@@ -22,27 +22,17 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
   List<File> _selectedImages = [];
   String? _clientProjectsDriveId =
       "b!jAiYPxrRjUCBK5ovip7ZEQNDPo7LyL1OgeHRWtDKCLbYuzyahUg6R4iIfPdyhxQk";
-  String? _selectedUploadType;
+  int? _selectedUploadType;
   String? _selectedClientFolderId;
 
-  final List<String> uploadTypes = [
-    'Upload Client Photos',
-    'Upload After Photos',
-    'Upload Site Visits',
-    'Upload Service',
-    'Upload Job Ready Documents',
-    'Upload Plat/Existing Home Docs'
+  final List<String> folderPaths = [
+    '10. Photos',
+    '10. Photos/After Photos',
+    '10. Photos/Site Visits',
+    '70. Service',
+    '45. Job Ready Documents',
+    '08. Salesperson Documents/Misc/Client File Share',
   ];
-
-  final Map<String, String> folderPaths = {
-    'Upload Client Photos': '10. Photos',
-    'Upload After Photos': '10. Photos/After Photos',
-    'Upload Site Visits': '10. Photos/Site Visits',
-    'Upload Service': '70. Service',
-    'Upload Job Ready Documents': '45. Job Ready Documents',
-    'Upload Plat/Existing Home Docs':
-        '08. Salesperson Documents/Misc/Client File Share'
-  };
 
   ClientChooseImagePageState({required this.name});
 
@@ -101,12 +91,17 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       return;
     }
 
+    if (_selectedUploadType == null) {
+      if (kDebugMode) print('No upload type selected');
+      return;
+    }
+
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
       final String date =
           DateFormat('yyyyMMddTHHmmssSSS').format(DateTime.now());
       final String fileName = '$date-${(i + 1).toString().padLeft(4, '0')}.jpg';
-      final String folderPath = folderPaths[_selectedUploadType] ?? '';
+      final String folderPath = folderPaths[_selectedUploadType!];
       final String url =
           'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/items/$_selectedClientFolderId:/$folderPath/$fileName:/content';
 
@@ -315,15 +310,15 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     print(_selectedClientFolderId);
     return Column(
       children: [
-        DropdownButton<String>(
+        DropdownButton<int>(
           value: _selectedUploadType,
-          hint: Text('Select Upload Type'),
-          items: uploadTypes.map((type) {
-            return DropdownMenuItem<String>(
-              value: type,
-              child: Text(type),
+          hint: Text('Select Upload Folder'),
+          items: List.generate(folderPaths.length, (index) {
+            return DropdownMenuItem<int>(
+              value: index,
+              child: Text(folderPaths[index]),
             );
-          }).toList(),
+          }),
           onChanged: (value) {
             setState(() {
               _selectedUploadType = value;

@@ -97,7 +97,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
       Navigator.pushNamed(context, '/');
     }
 
-    List<Person>? contacts = await loadContactsData(jwt!);
+    List<Person>? contacts = await loadContactsData(jwt!, context, mounted);
     if (contacts != null) {
       List<Person> sortedContacts = await sortPeople(contacts);
 

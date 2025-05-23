@@ -100,7 +100,7 @@ class SuperintendentsListState extends State<SuperintendentsList> {
       Navigator.pushNamed(context, '/');
     }
 
-    final contacts = await loadContactsData(jwt!);
+    final contacts = await loadContactsData(jwt!, context, mounted);
 
     if (contacts != null) {
       List<Person> sortedContacts = await sortPeople(contacts
