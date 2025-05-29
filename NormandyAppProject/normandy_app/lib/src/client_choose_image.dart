@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 import 'env.dart';
+import 'camera_screen.dart';
 
 class ClientChooseImagePage extends StatefulWidget {
   final String name;
@@ -41,34 +42,35 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     super.initState();
   }
 
-  Future<List<XFile>> _pickImageCamera() async {
-    List<XFile> files = [];
+  // DEPRECATED
+  Future<void> _pickImageCamera() async {
     final ImagePicker imagePicker = ImagePicker();
     while (true) {
       XFile? file = await imagePicker.pickImage(source: ImageSource.camera);
       if (file == null) break;
-      files.add(file);
+      setState(() {
+        _selectedImages.add(File(file.path));
+      });
       await Future.delayed(Duration(milliseconds: 500)); // tiny delay helps
     }
-    return files;
   }
 
+  // DEPRECATED camera is always false
   Future<void> _pickImage({bool camera = false}) async {
     final ImagePicker picker = ImagePicker();
-    List<XFile> pickedFiles = [];
     if (camera) {
-      pickedFiles = await _pickImageCamera();
+      await _pickImageCamera();
     } else {
-      pickedFiles = await picker.pickMultiImage();
-    }
-
-    if (pickedFiles.isNotEmpty) {
-      setState(() {
-        _selectedImages += pickedFiles.map((file) => File(file.path)).toList();
-      });
-      if (kDebugMode) print('Selected images: ${_selectedImages.length}');
-    } else {
-      if (kDebugMode) print('No images picked');
+      List<XFile> pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles.isNotEmpty) {
+        setState(() {
+          _selectedImages +=
+              pickedFiles.map((file) => File(file.path)).toList();
+        });
+        if (kDebugMode) print('Selected images: ${_selectedImages.length}');
+      } else {
+        if (kDebugMode) print('No images picked');
+      }
     }
   }
 
@@ -335,7 +337,19 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
                   ),
                   itemCount: _selectedImages.length,
                   itemBuilder: (context, index) {
-                    return Image.file(_selectedImages[index]);
+                    return Image(
+                      image: FileImage(_selectedImages[index]),
+                      frameBuilder:
+                          (context, child, frame, wasSynchronouslyLoaded) {
+                        if (wasSynchronouslyLoaded || frame != null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: Icon(Icons.image, color: Colors.grey),
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
         ),
@@ -348,13 +362,22 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
               icon: Icon(Icons.photo_library),
             ),
             FloatingActionButton.extended(
-              onPressed: () => _pickImage(camera: true),
+              //onPressed: () => _pickImage(camera: true),
+              onPressed: () async {
+                final newFiles = await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CameraScreen()));
+                if (newFiles != null) {
+                  setState(() {
+                    _selectedImages += newFiles;
+                  });
+                }
+              },
               label: Text('Camera'),
               icon: Icon(Icons.camera_alt),
             ),
           ],
         ),
-        if (_selectedImages.isNotEmpty)
+        if (_selectedImages.isNotEmpty && _selectedUploadType != null)
           FloatingActionButton.extended(
             onPressed: _uploadToOneDrive,
             label: Text('Upload Images'),

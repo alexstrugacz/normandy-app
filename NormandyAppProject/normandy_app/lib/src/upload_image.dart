@@ -21,7 +21,6 @@ class UploadImageState extends State<UploadImage> {
   Customer? selectedCustomer;
   String? selectedProject;
 
-  bool _loading = false;
   String _errorMessage = '';
 
   @override
@@ -89,23 +88,15 @@ class UploadImageState extends State<UploadImage> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18))),
-                              if (_loading)
-                                const Column(children: [
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 20),
-                                      child: Center(
-                                          child: CircularProgressIndicator())),
-                                  SizedBox(height: 6)
-                                ])
-                              else if (selectedCustomer != null)
+                              if (selectedCustomer != null)
                                 GestureDetector(
                                   onTap: () {
                                     FocusScope.of(context)
                                         .unfocus(); // Unfocus any focused text fields
                                   },
                                   child: SizedBox(
-                                    height: 400,
+                                    // TODO fill rest instead of hard coding
+                                    height: 600,
                                     child: ClientChooseImagePage(
                                         name: selectedCustomer!.folderName),
                                   ),
