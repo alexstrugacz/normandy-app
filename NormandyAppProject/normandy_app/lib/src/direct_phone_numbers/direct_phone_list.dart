@@ -22,14 +22,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
   @override
   void initState() {
     super.initState();
-    _loadContactsData().then((_) {
-      // wait for contacts to load before opening search delegate
-      if (_people.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(context: context, delegate: CustomPersonSearchDelegate(contacts: _people));
-        });
-      }
-    });
+    _loadContactsData();
   }
 
   Future<List<Person>> sortPeople(List<Person> newPeople) async {
