@@ -220,16 +220,15 @@ class DirectPhoneItemDetailsState extends State<DirectPhoneItemDetails> {
                       padding: const EdgeInsets.all(8.0),
                       color: Colors.grey[200],
                       width: MediaQuery.of(context).size.width,
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Address',
+                          const Text(
+                            'Home Address',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                          Text('Normandy Remodeling'),
-                          Text('440 E Ogden Ave, Hinsdale, IL 60521'),
+                          Text(widget.person.homeAddress),
                         ],
                       ),
                     ),

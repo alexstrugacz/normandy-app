@@ -8,6 +8,7 @@ import 'package:normandy_app/src/customers/appointments_type.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailPage extends StatefulWidget {
@@ -136,6 +137,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   void launchMapUrl(String address) async {
+
+    
     final Uri appleURL = Uri.parse(
     'https://maps.apple.com/?q=${Uri.encodeComponent(address)}',
     );
@@ -150,6 +153,52 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         await launchUrl(googleURL);
       } else {
         throw 'Could not launch $address';
+      }
+    }
+  }
+
+  void addShortcutToOneDrive() async {
+    if(!mounted) return;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('userId') ?? '';
+    if (userId.isEmpty) {
+      if (kDebugMode) {
+        print("User ID is empty. Cannot add shortcut to OneDrive.");
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("User ID is not available. Cannot add shortcut."),
+        ),
+      );
+      return;
+    }
+    try {
+      var res = await APIHelper.post(
+        "customers/${customer!.id}/shortcut", 
+        {
+          "userData": {
+            "userId": userId
+          }
+        }, 
+        context, 
+        mounted
+      );
+      if (res != null && res.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Shortcut added to OneDrive successfully."),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to add shortcut to OneDrive."),
+          ),
+        );
+      }
+    } catch(error) {
+      if (kDebugMode) {
+        print("Error adding shortcut to OneDrive: $error");
       }
     }
   }
@@ -436,6 +485,39 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   Text(
                     "Sharepoint Folder Name: ${customer?.spFolderName ?? 'N/A'}",
                     style: TextStyle(fontSize: 16),
+                  ),
+                  InkWell(
+                    child: Text(
+                      "Sharepoint Folder Link",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
+                      ),
+                    ),
+                    onTap: () {
+                      if (customer?.spUrl != null &&
+                          customer!.spUrl.isNotEmpty) {
+                        launchUrl(Uri.parse(customer!.spUrl));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("No Sharepoint link available."),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  InkWell(
+                    child: Text(
+                      "Add shortcut to OneDrive",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
+                      ),
+                    ),
+                    onTap: () {
+                      addShortcutToOneDrive();
+                    },
                   ),
                   SizedBox(height: 20),
                   if (notes.isNotEmpty) ...[

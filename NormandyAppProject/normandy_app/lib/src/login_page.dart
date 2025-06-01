@@ -60,8 +60,10 @@ class LoginPageState extends State<LoginPage> {
       if ((response != null) && response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final String jwt = data['token'];
+        final String id = data['id'];
         _prefs?.setString("jwt", jwt);
         _prefs?.setString("email", username);
+        _prefs?.setString("userId", id);
         if (!mounted) return;
         setState(() {
           _loading = false;
