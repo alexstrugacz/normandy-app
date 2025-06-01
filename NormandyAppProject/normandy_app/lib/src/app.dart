@@ -4,6 +4,7 @@ import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
 import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
+import 'package:normandy_app/src/direct_phone_numbers/inactive_employees.dart';
 import 'package:normandy_app/src/projectupload.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
@@ -75,6 +76,7 @@ class MyApp extends StatelessWidget {
           //       header: 'Client Image Upload',
           //     ),
           '/customers': (context) => CustomerSearchPage(),
+          '/inactive-employees': (context) => const InactiveEmployeesList(),
         });
   }
 }

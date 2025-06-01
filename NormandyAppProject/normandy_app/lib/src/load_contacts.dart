@@ -17,3 +17,16 @@ Future<List<Person>?> loadContactsData(String jwt, BuildContext context, bool mo
     return null;
   }
 }
+
+Future<List<Person>?> loadInactiveContacts(String jwt, BuildContext context, bool mounted) async {
+  final response = await APIHelper.get('microsoft-users/inactive', context, mounted);
+  print(response?.body);
+  if (response != null && response.statusCode == 201) {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<dynamic> data = json.decode(response.body)['inactiveUsers'];
+    await prefs.setString('inactiveEmployees', json.encode(data));
+    return data.map((item) => Person.fromJson(Map.castFrom(item))).toList();
+  } else {
+    return null;
+  }
+}
