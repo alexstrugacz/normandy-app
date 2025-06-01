@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'appointments_type.dart';
 
 class AppointmentView extends StatelessWidget {
@@ -16,9 +17,8 @@ class AppointmentView extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            _buildDetailRow('Date of Request', appointment.dateOfRequest?.toIso8601String()),
-            _buildDetailRow('Date Run', appointment.dateRun?.toIso8601String()),
-            _buildDetailRow('Date Run Text', appointment.dateRunTxt),
+            _buildDetailRow('Date of Request', appointment.dateOfRequest != null ? DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now()) : "N/A"),
+            _buildDetailRow('Date Run', appointment.dateRun != null ? DateFormat.yMd().format(appointment.dateRun ?? DateTime.now()) : "N/A"),
             _buildDetailRow('Designer', appointment.designerName),
             _buildDetailRow("Designer 2", appointment.designerName2), // Handle getting name from ID
             _buildDetailRow("Designer in Training", appointment.designerInTrainingId),

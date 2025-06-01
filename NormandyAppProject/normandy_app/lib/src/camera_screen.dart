@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
+// import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
-import 'package:normandy_app/main.dart';
+// import 'package:normandy_app/main.dart';
 
 class CameraScreen extends StatefulWidget {
   CameraScreen({super.key});
@@ -18,16 +18,16 @@ class _CameraScreenState extends State<CameraScreen> {
   List<File> files = [];
   double _overlayOpacity = 0.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = CameraController(
-      cameras[0], // usually back camera
-      ResolutionPreset.max,
-      enableAudio: false,
-    );
-    _initializeControllerFuture = _controller.initialize();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _controller = CameraController(
+  //     cameras[0], // usually back camera
+  //     ResolutionPreset.max,
+  //     enableAudio: false,
+  //   );
+  //   _initializeControllerFuture = _controller.initialize();
+  // }
 
   @override
   void dispose() {
