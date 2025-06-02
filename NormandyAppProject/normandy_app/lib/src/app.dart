@@ -76,7 +76,6 @@ class MyApp extends StatelessWidget {
           //       header: 'Client Image Upload',
           //     ),
           '/customers': (context) => CustomerSearchPage(),
-          '/inactive-employees': (context) => const InactiveEmployeesList(),
         });
   }
 }
