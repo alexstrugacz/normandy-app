@@ -157,8 +157,16 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     }
   }
 
+  void openSharepointFolder() {
+    if (customer?.spUrl != null && customer!.spUrl.isNotEmpty) {
+      launchUrl(Uri.parse(customer!.spUrl));
+    } else {
+      return;
+    }
+  }
+
   void addShortcutToOneDrive() async {
-    if(!mounted) return;
+    if(!mounted || customer?.spUrl == null || customer!.spUrl.isEmpty) return;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getString('userId') ?? '';
     if (userId.isEmpty) {
@@ -479,11 +487,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     ),
                   ),
                   Text(
-                    "Tax ID: ${customer?.taxId ?? 'N/A'}",
+                    "Tax ID: ${customer?.taxId == "" ? 'N/A' : customer!.taxId}",
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "Sharepoint Folder Name: ${customer?.spFolderName ?? 'N/A'}",
+                    "Sharepoint Folder Name: ${customer?.spFolderName == "" ? 'N/A' : customer!.spFolderName}",
                     style: TextStyle(fontSize: 16),
                   ),
                   InkWell(
@@ -491,20 +499,13 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                       "Sharepoint Folder Link",
                       style: TextStyle(
                           fontSize: 16,
-                          color: Colors.blue,
+                          color: (customer?.spUrl != null && customer!.spUrl.isNotEmpty)
+                              ? Colors.blue
+                              : Colors.grey
                       ),
                     ),
                     onTap: () {
-                      if (customer?.spUrl != null &&
-                          customer!.spUrl.isNotEmpty) {
-                        launchUrl(Uri.parse(customer!.spUrl));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("No Sharepoint link available."),
-                          ),
-                        );
-                      }
+                      openSharepointFolder();
                     },
                   ),
                   InkWell(
@@ -512,7 +513,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                       "Add shortcut to OneDrive",
                       style: TextStyle(
                           fontSize: 16,
-                          color: Colors.blue,
+                          color: (customer?.spUrl != null && customer!.spUrl.isNotEmpty)
+                              ? Colors.blue
+                              : Colors.grey
                       ),
                     ),
                     onTap: () {
@@ -556,6 +559,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         )
                     )
                   ),
+                  if(appointments.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "No appointments found.",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
                   // SizedBox(height: 20),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
