@@ -122,7 +122,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
-    print(url);
 
     http.Response? response;
 
@@ -139,9 +138,19 @@ class BusinessContactsListState extends State<BusinessContactsList> {
               ? UserContact.fromJson(Map.castFrom(item))
               : Contact.fromJson(Map.castFrom(item)))
           .toList());
+      // Filter out contacts that are employees or zInactive
+      List<Contact> filteredContacts = sortedContacts.where((contact) {
+        if (contact.company == "zInactive") {
+          return false; // Exclude inactive contacts
+        }
+        if (contact.company == "Normandy Remodeling") {
+          return false; // Exclude Normandy Remodeling contacts
+        }
+        return true;
+      }).toList();
 
       setState(() {
-        _contacts = sortedContacts;
+        _contacts = filteredContacts;
         _loading = false;
       });
     } else {

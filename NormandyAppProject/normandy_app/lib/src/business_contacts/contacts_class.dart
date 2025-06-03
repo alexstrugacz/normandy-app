@@ -26,6 +26,7 @@ class Contact {
   String id;
   bool favorite = false;
   String searchTerm = "";
+  String nickname = "";
 
   Contact({
     required this.anniversary,
@@ -53,6 +54,7 @@ class Contact {
     required this.activeTrade,
     required this.active,
     required this.id,
+    required this.nickname,
   }) {
     searchTerm = _generateSearchTerm();
   }
@@ -121,6 +123,7 @@ class Contact {
       activeTrade: json['ActiveTrade'] ?? false,
       active: json['Active'] ?? false,
       id: json['_id'] ?? '',
+      nickname: json['Nickname'] ?? '',
     );
   }
 }

@@ -258,6 +258,13 @@ class ContactDetailViewState extends State<ContactDetailView> {
           style: const TextStyle(fontSize: 18, color: Colors.grey),
         ));
       }
+
+      if (widget.contact.nickname.isNotEmpty) {
+        textList.add(Text(
+          widget.contact.nickname,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ));
+      }
       return textList;
     }
   }
