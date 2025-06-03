@@ -136,9 +136,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     }
   }
 
-  void launchMapUrl(String address) async {
-
-    
+  void launchMapUrl(String address) async { 
     final Uri appleURL = Uri.parse(
     'https://maps.apple.com/?q=${Uri.encodeComponent(address)}',
     );
@@ -156,13 +154,18 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
       }
     }
   }
-
-  void openSharepointFolder() {
+  
+  void openSharepointFolder() async {
+    // This might work; it needs to be tested.
     if (customer?.spUrl != null && customer!.spUrl.isNotEmpty) {
-      String spUrl = 'ms-onedrive://shared/path=${customer!.spUrl}';
-      launchUrl(Uri.parse(spUrl));
-    } else {
-      return;
+      final Uri spUri = Uri.parse(customer!.spUrl);
+      if (await canLaunchUrl(spUri)) {
+        await launchUrl(spUri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open SharePoint folder.')),
+        );
+      }
     }
   }
 
