@@ -159,7 +159,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
 
   void openSharepointFolder() {
     if (customer?.spUrl != null && customer!.spUrl.isNotEmpty) {
-      launchUrl(Uri.parse(customer!.spUrl));
+      String spUrl = 'ms-onedrive://shared/path=${customer!.spUrl}';
+      launchUrl(Uri.parse(spUrl));
     } else {
       return;
     }
