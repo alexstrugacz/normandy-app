@@ -148,6 +148,18 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         }
         return true;
       }).toList();
+      // sort the contacts alphabetically
+      // If first name is empty, use company name, if company is also empty, use last name
+      filteredContacts.sort((a, b) {
+        String aName = a.firstName.isNotEmpty
+            ? a.firstName
+            : (a.company.isNotEmpty ? a.company : a.lastName);
+        String bName = b.firstName.isNotEmpty
+            ? b.firstName
+            : (b.company.isNotEmpty ? b.company : b.lastName);
+        int res = aName.compareTo(bName);
+        return res;
+      });
 
       setState(() {
         _contacts = filteredContacts;
@@ -275,6 +287,19 @@ class CustomSearchDelegate extends SearchDelegate {
       }
     }
 
+    // sort the contacts alphabetically
+    // If first name is empty, use company name, if company is also empty, use last name
+    matchedContacts.sort((a, b) {
+      String aName = a.firstName.isNotEmpty
+          ? a.firstName
+          : (a.company.isNotEmpty ? a.company : a.lastName);
+      String bName = b.firstName.isNotEmpty
+          ? b.firstName
+          : (b.company.isNotEmpty ? b.company : b.lastName);
+      int res = aName.compareTo(bName);
+      return res;
+    });
+
     return ListView.builder(
       scrollDirection: Axis.vertical,
       itemCount: matchedContacts.length,
@@ -317,6 +342,19 @@ class CustomSearchDelegate extends SearchDelegate {
         }
       }
     }
+
+    // sort the contacts alphabetically
+    // If first name is empty, use company name, if company is also empty, use last name
+    matchedContacts.sort((a, b) {
+      String aName = a.firstName.isNotEmpty
+          ? a.firstName
+          : (a.company.isNotEmpty ? a.company : a.lastName);
+      String bName = b.firstName.isNotEmpty
+          ? b.firstName
+          : (b.company.isNotEmpty ? b.company : b.lastName);
+      int res = aName.compareTo(bName);
+      return res;
+    });
 
     return ListView.builder(
       scrollDirection: Axis.vertical,

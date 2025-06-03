@@ -48,8 +48,12 @@ class ContactTile extends StatelessWidget {
   }
   
   String? _generateSubtitleText() {
-    if (contact.nickname.isNotEmpty) {
+    if (contact.nickname.isNotEmpty && contact.company.isNotEmpty) {
+      return "${contact.nickname.trim() } / ${contact.company.trim()}";
+    } else if (contact.nickname.isNotEmpty) {
       return contact.nickname.trim();
+    } else if (contact.company.isNotEmpty) {
+      return contact.company.trim();
     }
 
     // Most likely will remove this in the future
