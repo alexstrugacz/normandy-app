@@ -255,11 +255,23 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
 
@@ -286,11 +298,23 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
 
