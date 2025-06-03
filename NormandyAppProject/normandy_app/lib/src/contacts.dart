@@ -66,13 +66,6 @@ class Contacts extends StatelessWidget {
                   Navigator.pushNamed(context, "/favorites");
                 },
               ),
-              GridCard(
-                icon: FontAwesomeIcons.userSlash,
-                text: "Inactive Employees",
-                onTap: () async {
-                  Navigator.pushNamed(context, "/inactive-employees");
-                },
-              ),
             ]),
       ),
     );

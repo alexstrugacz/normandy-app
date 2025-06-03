@@ -122,7 +122,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
-    print(url);
 
     http.Response? response;
 
@@ -139,9 +138,19 @@ class BusinessContactsListState extends State<BusinessContactsList> {
               ? UserContact.fromJson(Map.castFrom(item))
               : Contact.fromJson(Map.castFrom(item)))
           .toList());
+      // Filter out contacts that are employees or zInactive
+      List<Contact> filteredContacts = sortedContacts.where((contact) {
+        if (contact.company == "zInactive") {
+          return false; // Exclude inactive contacts
+        }
+        if (contact.company == "Normandy Remodeling") {
+          return false; // Exclude Normandy Remodeling contacts
+        }
+        return true;
+      }).toList();
 
       setState(() {
-        _contacts = sortedContacts;
+        _contacts = filteredContacts;
         _loading = false;
       });
     } else {
@@ -246,11 +255,23 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
 
@@ -277,11 +298,23 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
 
