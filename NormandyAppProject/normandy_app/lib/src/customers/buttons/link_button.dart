@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -6,6 +7,7 @@ class LinkButton extends StatelessWidget {
   final String url;
   final IconData? icon;
   final bool? openInApp;
+  final Color? overrideColor;
 
   const LinkButton({
     super.key,
@@ -13,19 +15,36 @@ class LinkButton extends StatelessWidget {
     required this.url,
     this.icon,
     this.openInApp,
+    this.overrideColor,
   });
 
   bool isValid() {
     return (url.isNotEmpty && Uri.tryParse(url)?.hasScheme == true);
   }
 
+  String? getOneDriveAppUrl() {
+    if (!url.contains('sharepoint.com')) return null;
+    final encodedUrl = Uri.encodeComponent(url);
+    return 'ms-onedrive://open?url=$encodedUrl';
+  }
+
   // opens link in the browser or app
   Future<void> openLink() async {
     if(!isValid()) return;
     final Uri uri = Uri.parse(url);
+    if (openInApp == true && url.contains('sharepoint.com')) {
+      final oneDriveUrl = getOneDriveAppUrl();
+      if (oneDriveUrl != null) {
+        final Uri oneDriveUri = Uri.parse(oneDriveUrl);
+        if (await canLaunchUrl(oneDriveUri)) {
+          await launchUrl(oneDriveUri, mode: LaunchMode.externalNonBrowserApplication);
+          return;
+        }
+      }
+    }
     if (await canLaunchUrl(uri)) {
       if (openInApp == true) {
-        // Open in the app
+        // Open in the app (if possible)
         await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
       } else {
         // Open in the browser
@@ -54,13 +73,13 @@ class LinkButton extends StatelessWidget {
               child: Icon(
                 icon,
                 size: 16,
-                color: (isValid() ? Colors.blue : Colors.grey),
+                color: (overrideColor ?? (isValid() ? Colors.blue : Colors.grey)),
               ),
             ),
           Text(
             text,
             style: TextStyle(
-              color: (isValid() ? Colors.blue : Colors.grey),
+              color: (overrideColor ?? (isValid() ? Colors.blue : Colors.grey)),
               fontSize: 16,
             ),
           ),

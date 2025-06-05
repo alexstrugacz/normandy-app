@@ -214,7 +214,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   SizedBox(height: 20),
                   AddShortcutToOneDrive(text: "Add Shortcut to OneDrive", customer: customer, mounted: mounted, icon: Icons.cloud),
                   SizedBox(height: 5),
-                  LinkButton(text: "Open Client Active Folders", url: customer!.spUrl, icon: Icons.folder, openInApp: true),
+                  LinkButton(text: "Open Client Active Folders", url: customer!.spUrl, icon: Icons.folder, openInApp: true, overrideColor: Colors.grey),
                   SizedBox(height: 20),
                   if (notes.isNotEmpty) ...[
                     Text(
