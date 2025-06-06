@@ -50,6 +50,7 @@ class Customer {
   final String spFolderId;
   final String spFolderName;
   final String spParentId;
+  final String folderName;
 
   Customer({
     required this.id,
@@ -102,9 +103,10 @@ class Customer {
     required this.spFolderId,
     required this.spFolderName,
     required this.spParentId,
+    required this.folderName
   });
 
-  factory Customer.fromJson(Map<String, dynamic> json) {
+  factory Customer.fromJson(dynamic json) {
     return Customer(
       id: json['_id'] ?? '',
       lname1: json['lname1'] ?? '',
@@ -156,6 +158,7 @@ class Customer {
       spFolderId: json['spFolderId'] ?? '',
       spFolderName: json['spFolderName'] ?? '',
       spParentId: json['spParentId'] ?? '',
+      folderName: json['folderName'] ?? ''
     );
   }
 }
