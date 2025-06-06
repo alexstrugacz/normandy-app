@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/alert_helper.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
-import 'package:normandy_app/src/customers/customer_type.dart'; 
+import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +20,6 @@ class CreateSOForm extends StatefulWidget {
 class CreateSOFormState extends State<CreateSOForm> {
   String? jwt;
   Customer? selectedCustomer;
-  bool hasDecidedCustomer = false;
   String? selectedProject;
   String? selectedServiceProvider;
   String? newCellPhone;
@@ -28,7 +27,6 @@ class CreateSOFormState extends State<CreateSOForm> {
   String problemDescription = '';
   DateTime dateOfRequest = DateTime.now();
   DateTime dateAssigned = DateTime.now();
- 
 
   List<DropdownMenuItem<String>> _projects = [];
   List<DropdownMenuItem<String>> _serviceProviders = [];
@@ -55,18 +53,20 @@ class CreateSOFormState extends State<CreateSOForm> {
   void initState() {
     super.initState();
     selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
+    
     if (widget.selectedCustomer != null) {
       selectedCustomer = widget.selectedCustomer;
-      hasDecidedCustomer = true;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(context: context, delegate: CustomSearchDelegate(
+      showSearch(
+          context: context,
+          delegate: CustomSearchDelegate(
               context: context,
               mounted: mounted,
               onSelectCustomer: handleSelectCustomer));
-      });
-    }  
-  } 
+    });
+    }
+  }
 
   Future<void> handleSelectCustomer(Customer customer) async {
     http.Response? response =
@@ -203,7 +203,7 @@ class CreateSOFormState extends State<CreateSOForm> {
         _loading = false;
       });
       return;
-    } 
+    }
 
     if (selectedServiceProvider == null) {
       setState(() {
@@ -277,8 +277,7 @@ class CreateSOFormState extends State<CreateSOForm> {
                     : 'Create New Service Order for ${((ownerWhoCalled == 1) ? "${selectedCustomer?.fname1} ${selectedCustomer?.lname1}" : "${selectedCustomer?.fname2} ${selectedCustomer?.lname2}").trim()}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             actions: [
-              (hasDecidedCustomer == false) ?
-                IconButton(
+              IconButton(
                   onPressed: () async {
                     await showSearch(
                         context: context,
@@ -287,9 +286,8 @@ class CreateSOFormState extends State<CreateSOForm> {
                             mounted: mounted,
                             onSelectCustomer: handleSelectCustomer));
                   },
-                  icon: const Icon(Icons.search)) : Text("")
-            ]
-            ),
+                  icon: const Icon(Icons.search))
+            ]),
         body: SingleChildScrollView(
             // Wrap the body in SingleChildScrollView
             padding: const EdgeInsets.all(16),

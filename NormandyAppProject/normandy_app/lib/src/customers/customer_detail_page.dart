@@ -495,12 +495,13 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           MaterialPageRoute(
                             builder: (context) => AppointmentView(
                               appointment: appointment,
+                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
                             ),
                           ),
                         ),
                         child: ListTile(
                           title: Text(
-                            "${appointment.lname} - ${appointment.city} - Started ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
+                            "${appointment.lname} - ${appointment.city}\nStarted ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
                             style: TextStyle(fontSize: 16),
                           ),
                           trailing: Icon(Icons.chevron_right),
@@ -525,7 +526,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         // ),
                         child: ListTile(
                           title: Text(
-                            "${job.lname} - ${job.jobCity} - Completed ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}",
+                            '${job.lname} - ${job.jobCity}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
                             style: TextStyle(fontSize: 16),
                           ),
                           trailing: Icon(Icons.chevron_right),
@@ -564,7 +565,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         // ),
                         child: ListTile(
                           title: Text(
-                            "${serviceOrder.name} - ${serviceOrder.city} - Request Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
+                            "${serviceOrder.name} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
                             style: TextStyle(fontSize: 16),
                           ),
                           trailing: Icon(Icons.chevron_right),

@@ -106,9 +106,9 @@ class Customer {
     required this.folderName
   });
 
-  factory Customer.fromJson(Map<String, dynamic> json) {
+  factory Customer.fromJson(dynamic json) {
     return Customer(
-      id: json['id'] ?? '',
+      id: json['_id'] ?? '',
       lname1: json['lname1'] ?? '',
       fname1: json['fname1'] ?? '',
       lname2: json['lname2'] ?? '',
