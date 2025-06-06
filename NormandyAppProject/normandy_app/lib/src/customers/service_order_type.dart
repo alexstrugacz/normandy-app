@@ -1,6 +1,3 @@
-
-
-
 class ServiceHandler {
   String? id;
   String? customServiceHandler;
@@ -82,24 +79,25 @@ class ServiceOrder {
 
   factory ServiceOrder.fromJson(Map<String, dynamic> json) {
     try {
+      String? asString(dynamic v) => v?.toString();
       return ServiceOrder(
-        id: json['id'] as String?,
+        id: asString(json['id']),
         dateOfRequest: json['dateOfRequest'] != null && json['dateOfRequest'] is String
             ? DateTime.tryParse(json['dateOfRequest'])
             : null,
         dateClosed: json['dateClosed'] != null && json['dateClosed'] is String
             ? DateTime.tryParse(json['dateClosed'])
             : null,
-        description: json['description'] as String?,
-        solution: json['solution'] as String?,
-        tookCall: json['tookCall'] as String?,
-        customerId: json['customerId'] as String?,
-        name: json['name'] as String?,
-        address: json['address'] as String?,
-        city: json['city'] as String?,
-        homePhone: json['homePhone'] as String?,
-        workPhone: json['workPhone'] as String?,
-        projectId: json['projectId'] as String?,
+        description: asString(json['description']),
+        solution: asString(json['solution']),
+        tookCall: asString(json['tookCall']),
+        customerId: asString(json['customerId']),
+        name: asString(json['name']),
+        address: asString(json['address']),
+        city: asString(json['city']),
+        homePhone: asString(json['homePhone']),
+        workPhone: asString(json['workPhone']),
+        projectId: asString(json['projectId']),
         dateJobCompleted: json['dateJobCompleted'] != null && json['dateJobCompleted'] is String
             ? DateTime.tryParse(json['dateJobCompleted'])
             : null,
@@ -108,7 +106,7 @@ class ServiceOrder {
               .map((e) => ServiceHandler.fromJson(e))
               .toList()
           : null,
-        tookCallName: json['tookCallName'] as String?
+        tookCallName: asString(json['tookCallName'])
       );
     } catch (e) {
       throw FormatException('Error parsing ServiceOrder: $e');
