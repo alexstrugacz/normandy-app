@@ -2,14 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/alert_helper.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
-import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
+import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class CreateSOForm extends StatefulWidget {
-  const CreateSOForm({super.key});
+  final Customer? selectedCustomer;
+
+  const CreateSOForm({super.key, this.selectedCustomer});
 
   @override
   CreateSOFormState createState() => CreateSOFormState();
@@ -51,12 +53,19 @@ class CreateSOFormState extends State<CreateSOForm> {
   void initState() {
     super.initState();
     selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(context: context, delegate: CustomSearchDelegate(
+    
+    if (widget.selectedCustomer != null) {
+      selectedCustomer = widget.selectedCustomer;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSearch(
+          context: context,
+          delegate: CustomSearchDelegate(
               context: context,
               mounted: mounted,
               onSelectCustomer: handleSelectCustomer));
     });
+    }
   }
 
   Future<void> handleSelectCustomer(Customer customer) async {

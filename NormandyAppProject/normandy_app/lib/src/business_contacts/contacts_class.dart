@@ -26,6 +26,7 @@ class Contact {
   String id;
   bool favorite = false;
   String searchTerm = "";
+  String nickname = "";
 
   Contact({
     required this.anniversary,
@@ -53,10 +54,10 @@ class Contact {
     required this.activeTrade,
     required this.active,
     required this.id,
+    required this.nickname,
   }) {
     searchTerm = _generateSearchTerm();
   }
-
 
   String _generateSearchTerm() {
     if (firstName.isNotEmpty && lastName.isNotEmpty) {
@@ -72,14 +73,11 @@ class Contact {
     }
   }
 
-
   void updateFavorite(bool isFavorite) {
     favorite = isFavorite;
   }
 
-  
   factory Contact.fromJson(dynamic json) {
-
     String initials;
     try {
       if ((json['FirstName']?.isEmpty ?? true) && (json['LastName']?.isEmpty ?? true)) {
@@ -121,6 +119,71 @@ class Contact {
       activeTrade: json['ActiveTrade'] ?? false,
       active: json['Active'] ?? false,
       id: json['_id'] ?? '',
+      nickname: json['Nickname'] ?? '',
     );
+  }
+
+  dynamic operator [](String key) {
+    switch (key) {
+      case 'Anniversary':
+        return anniversary;
+      case 'Birthday':
+        return birthday;
+      case 'BusinessCity':
+        return businessCity;
+      case 'BusinessCountryRegion':
+        return businessCountryRegion;
+      case 'BusinessPhone':
+        return businessPhone;
+      case 'BusinessPostalCode':
+        return businessPostalCode;
+      case 'BusinessState':
+        return businessState;
+      case 'BusinessStreet':
+        return businessStreet;
+      case 'Company':
+        return company;
+      case 'EmailAddress':
+        return emailAddress;
+      case 'EmailDisplayName':
+        return emailDisplayName;
+      case 'EmailType':
+        return emailType;
+      case 'FirstName':
+        return firstName;
+      case 'Gender':
+        return gender;
+      case 'Initials':
+        return initials;
+      case 'JobTitle':
+        return jobTitle;
+      case 'LastName':
+        return lastName;
+      case 'Notes':
+        return notes;
+      case 'Priority':
+        return priority;
+      case 'Private':
+        return private;
+      case 'Sensitivity':
+        return sensitivity;
+      case 'Categories':
+        return categories;
+      case 'ActiveTrade':
+        return activeTrade;
+      case 'Active':
+        return active;
+      case 'Id':
+      case '_id':
+        return id;
+      case 'Favorite':
+        return favorite;
+      case 'SearchTerm':
+        return searchTerm;
+      case 'Nickname':
+        return nickname;
+      default:
+        return null;
+    }
   }
 }

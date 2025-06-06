@@ -67,50 +67,51 @@ class Appointment {
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
     try {
+      String? asString(dynamic v) => v?.toString();
       return Appointment(
-        id: json['id'] as String?,
+        id: asString(json['id']),
         leadIdOld: json['leadIdOld'] as int?,
-        customerId: json['customerId'] as String?,
-        leadSourceId: json['leadSourceId'] as String?,
-        leadSource2Id: json['leadSource2Id'] as String?,
-        projectDescription: json['projectDescription'] as String?,
-        referredById: json['referredById'] as String?,
+        customerId: asString(json['customerId']),
+        leadSourceId: asString(json['leadSourceId']),
+        leadSource2Id: asString(json['leadSource2Id']),
+        projectDescription: asString(json['projectDescription']),
+        referredById: asString(json['referredById']),
         dateOfRequest: json['dateOfRequest'] != null && json['dateOfRequest'] is String
             ? DateTime.tryParse(json['dateOfRequest'])
             : null,
-        timeSet: json['timeSet'] as String?,
+        timeSet: asString(json['timeSet']),
         dateRun: json['dateRun'] != null && json['dateRun'] is String
             ? DateTime.tryParse(json['dateRun'])
             : null,
-        dateRunTxt: json['dateRunTxt'] as String?,
-        designerId: json['designerId'] as String?,
-        designerId2: json['designerId2'] as String?,
-        designerInTrainingId: json['designerInTrainingId'] as String?,
+        dateRunTxt: asString(json['dateRunTxt']),
+        designerId: asString(json['designerId']),
+        designerId2: asString(json['designerId2']),
+        designerInTrainingId: asString(json['designerInTrainingId']),
         soldJob: json['soldJob'] is bool ? json['soldJob'] as bool? : null,
         dateSoldJob: json['dateSoldJob'] != null && json['dateSoldJob'] is String
             ? DateTime.tryParse(json['dateSoldJob'])
             : null,
-        takenById: json['takenById'] as String?,
-        jobId: json['jobId'] as String?,
+        takenById: asString(json['takenById']),
+        jobId: asString(json['jobId']),
         confirmationLetterSent: json['confirmationLetterSent'] is bool
             ? json['confirmationLetterSent'] as bool?
             : null,
-        firstContactId: json['firstContactId'] as String?,
+        firstContactId: asString(json['firstContactId']),
         yearBuilt: json['yearBuilt'] as int?,
         goBack: json['goBack'] != null && json['goBack'] is String
             ? DateTime.tryParse(json['goBack'])
             : null,
-        goBackScheduled: json['goBackScheduled'] as String?,
-        lname: json['lname'] as String?,
-        city: json['city'] as String?,
-        designerName: json['designerName'] as String?,
-        designerName2: json['designerName2'] as String?,
+        goBackScheduled: asString(json['goBackScheduled']),
+        lname: asString(json['lname']),
+        city: asString(json['city']),
+        designerName: asString(json['designerName']),
+        designerName2: asString(json['designerName2']),
         estimatedJobValue: json['estimatedJobValue'] is num
             ? (json['estimatedJobValue'] as num).toDouble()
             : null,
         qualityOfAppointment: json['qualityOfAppointment'] as int?,
-        thankYouSent: json['thankYouSent'] as String?,
-        referredBy: json['referredBy'] as String?,
+        thankYouSent: asString(json['thankYouSent']),
+        referredBy: asString(json['referredBy']),
       );
     } catch (e) {
       throw FormatException('Error parsing Appointment: $e');

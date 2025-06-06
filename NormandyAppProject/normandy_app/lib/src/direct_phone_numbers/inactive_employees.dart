@@ -6,14 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
 import 'package:normandy_app/src/load_contacts.dart';
 
-class DirectPhoneList extends StatefulWidget {
-  const DirectPhoneList({super.key});
+class InactiveEmployeesList extends StatefulWidget {
+  const InactiveEmployeesList({super.key});
 
   @override
   DirectPhoneListState createState() => DirectPhoneListState();
 }
 
-class DirectPhoneListState extends State<DirectPhoneList> {
+class DirectPhoneListState extends State<InactiveEmployeesList> {
   String? jwt;
   String _errorMessage = '';
   List<Person> _people = [];
@@ -69,7 +69,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //await prefs.remove('contacts');
-    final cached = await prefs.getString('contacts');
+    final cached = await prefs.getString('inactiveEmployees');
     if (cached != null) {
       List<dynamic> data = json.decode(cached);
       List<Person> parsed = await sortPeople(
@@ -90,7 +90,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
       Navigator.pushNamed(context, '/');
     }
 
-    List<Person>? contacts = await loadContactsData(jwt!, context, mounted);
+    List<Person>? contacts = await loadInactiveContacts(jwt!, context, mounted);
     if (contacts != null) {
       List<Person> sortedContacts = await sortPeople(contacts);
 
@@ -113,7 +113,7 @@ class DirectPhoneListState extends State<DirectPhoneList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Employee Direct Phone Numbers'), actions: [
+        appBar: AppBar(title: const Text('Inactive Employees'), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(

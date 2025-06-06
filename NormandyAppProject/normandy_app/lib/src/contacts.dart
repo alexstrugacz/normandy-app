@@ -22,7 +22,7 @@ class Contacts extends StatelessWidget {
             children: <Widget>[
               GridCard(
                 icon: FontAwesomeIcons.phone,
-                text: "Direct Phone Numbers",
+                text: "Employee Direct Phone Numbers",
                 onTap: () async {
                   Navigator.pushNamed(
                     context, '/direct-phone-list'
@@ -45,13 +45,13 @@ class Contacts extends StatelessWidget {
                   Navigator.pushNamed(context, "/business-contacts-list");
                 },
               ),
-              GridCard(
-                icon: FontAwesomeIcons.user,
-                text: "Employees",
-                onTap: () async {
-                  Navigator.pushNamed(context, "/employee-list");
-                },
-              ),
+              // GridCard(
+              //   icon: FontAwesomeIcons.user,
+              //   text: "Employees",
+              //   onTap: () async {
+              //     Navigator.pushNamed(context, "/employee-list");
+              //   },
+              // ),
               GridCard(
                 icon: FontAwesomeIcons.suitcase,
                 text: "Active Trades",
