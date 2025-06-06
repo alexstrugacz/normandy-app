@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:permission_handler/permission_handler.dart';
 import 'env.dart';
 import 'camera_screen.dart';
 
@@ -98,6 +97,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       return;
     }
 
+    var failures = [];
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
       final String date =
@@ -121,13 +121,28 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
         if (response.statusCode == 201) {
           if (kDebugMode) print('File uploaded successfully: $fileName');
-          _showUploadSuccessDialog();
         } else {
           if (kDebugMode) print('File upload failed: ${response.body}');
+          failures.add(i);
         }
       } catch (e) {
         if (kDebugMode) print('Error uploading file: $e');
       }
+    }
+    if (failures.length == 0) {
+      _showUploadSuccessDialog();
+      setState(() {
+        _selectedImages = [];
+      });
+    } else {
+      _showUploadFailureDialog();
+      List<File> newSelected = [];
+      for (final i in failures) {
+        newSelected.add(_selectedImages[i]);
+      }
+      setState(() {
+        _selectedImages = newSelected;
+      });
     }
   }
 
@@ -292,6 +307,25 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         return AlertDialog(
           title: Text('Upload Successful'),
           content: Text('All images have been uploaded successfully.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showUploadFailureDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Some Uploads Failed'),
+          content: Text('The failed images are the ones still remaining.'),
           actions: [
             TextButton(
               child: Text('OK'),

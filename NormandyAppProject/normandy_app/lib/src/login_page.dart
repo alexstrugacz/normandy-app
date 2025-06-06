@@ -28,6 +28,9 @@ class LoginPageState extends State<LoginPage> {
   Future<void> _initializePreferences() async {
     WidgetsFlutterBinding.ensureInitialized();
     _prefs = await SharedPreferences.getInstance();
+    if (_prefs?.getString("email") != null) {
+      _usernameController.text = (_prefs?.getString("email"))!;
+    }
     if(_prefs?.getString("jwt") != null && mounted) {
       Navigator.pushReplacementNamed(context, '/home');
     }
