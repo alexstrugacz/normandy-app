@@ -5,13 +5,19 @@ import 'package:intl/intl.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:normandy_app/src/customers/appointment_view.dart';
 import 'package:normandy_app/src/customers/appointments_type.dart';
+import 'package:normandy_app/src/customers/buttons/add_shortcut.dart';
+import 'package:normandy_app/src/customers/buttons/call_button.dart';
+import 'package:normandy_app/src/customers/buttons/link_button.dart';
+import 'package:normandy_app/src/customers/buttons/send_email.dart';
+import 'package:normandy_app/src/customers/buttons/send_message.dart';
+import 'package:normandy_app/src/customers/buttons/send_multiple_emails.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/customers/jobs_type.dart';
 import 'package:normandy_app/src/customers/service_order_type.dart';
 import 'package:normandy_app/src/so_forms/create_so.dart';
+import 'package:normandy_app/src/customers/customer_utils.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailPage extends StatefulWidget {
   final String customerId;
@@ -35,11 +41,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   @override
   void initState() {
     super.initState();
-    fetchCustomerDetails();
+    _fetchCustomerDetails();
     // fetchUserId();
   }
 
-  void fetchCustomerDetails() async {
+  void _fetchCustomerDetails() async {
     var response =
         await APIHelper.get('customers/${widget.customerId}', context, mounted);
     if (response != null && response.statusCode == 200 && mounted) {
@@ -118,146 +124,6 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     }
   }
 
-  // void fetchUserId() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   if(prefs.getString('email') == null) {
-  //     return;
-  //   }
-  //   var response = await APIHelper.get('users/:email/?${prefs.getString('email')}', context, mounted);
-  //   if (response != null && response.statusCode == 200) {
-  //     print(response.body);
-  //     var user = User.fromJson(json.decode(response.body)['user']);
-  //     setState(() {
-  //       userId = user.userId ?? '';
-  //     });
-  //   }
-  // }
-
-  void openMailApp(List<String> emails) {
-    if (emails.isEmpty || emails.every((email) => email.isEmpty)) return;
-    final emailString = emails.where((email) => email.isNotEmpty).join(',');
-    launchUrl(Uri.parse('mailto:$emailString'));
-  }
-
-  void openPhoneApp(String? phone1, String? phone2, String? phone3) {
-    final phone = phone1?.isNotEmpty == true
-        ? phone1
-        : phone2?.isNotEmpty == true
-            ? phone2
-            : phone3?.isNotEmpty == true
-                ? phone3
-                : null;
-
-    if (phone != null) {
-      launchUrl(Uri.parse('tel:$phone'));
-    }
-  }
-
-  void openMessageApp(String? phone1, String? phone2, String? phone3) {
-    final phone = phone1?.isNotEmpty == true
-        ? phone1
-        : phone2?.isNotEmpty == true
-            ? phone2
-            : phone3?.isNotEmpty == true
-                ? phone3
-                : null;
-
-    if (phone != null) {
-      launchUrl(Uri.parse('sms:$phone'));
-    }
-  }
-
-  void launchMapUrl(String address) async {
-    final Uri appleURL = Uri.parse(
-    'https://maps.apple.com/?q=${Uri.encodeComponent(address)}',
-    );
-
-    if (await canLaunchUrl(appleURL)) {
-      await launchUrl(appleURL);
-    } else {
-      final Uri googleURL = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
-      );
-      if (await canLaunchUrl(googleURL)) {
-        await launchUrl(googleURL);
-      } else {
-        throw 'Could not launch $address';
-      }
-    }
-  }
-
-  Widget customerButtons(
-      VoidCallback onTap, IconData icon, Color color) {
-    return GestureDetector(
-      onTap: () => onTap(),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(
-          icon,
-          size: 28,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  Widget sendMultipleEmails(String? email1, String? email2) {
-    if (email1?.isNotEmpty == true && email2?.isNotEmpty == true) {
-      return GestureDetector(
-          onTap: () => openMailApp([email1 ?? "", email2 ?? ""]),
-          child: SizedBox(
-            width: 45,
-            child: Align(
-                alignment: Alignment.center,
-                child: Stack(
-                  children: [
-                    Icon(Icons.email, color: Colors.blue, size: 28),
-                    Positioned(
-                        right: -2,
-                        bottom: -2,
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.group,
-                            color: Colors.blue,
-                            size: 10,
-                          ),
-                        )),
-                  ],
-                )),
-          ));
-    }
-    return SizedBox(
-      width: 45,
-      child: Align(
-          alignment: Alignment.center,
-          child: Stack(
-            children: [
-              Icon(Icons.email, color: Colors.grey, size: 28),
-              Positioned(
-                  right: -2,
-                  bottom: -2,
-                  child: Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.group,
-                      color: Colors.grey,
-                      size: 10,
-                    ),
-                  )),
-            ],
-          )),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,41 +153,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               ),
                               Row(
                                 children: [
-                                  customerButtons(
-                                      () => openPhoneApp(
-                                          customer?.cellPhone1,
-                                          customer?.homePhone1,
-                                          customer?.workPhone1),
-                                      Icons.phone,
-                                      (customer?.cellPhone1.isNotEmpty ==
-                                                  true ||
-                                              customer?.homePhone1.isNotEmpty ==
-                                                  true ||
-                                              customer?.workPhone1.isNotEmpty ==
-                                                  true)
-                                          ? Colors.blue
-                                          : Colors.grey),
-                                  customerButtons(
-                                      () => openMessageApp(
-                                          customer?.cellPhone1,
-                                          customer?.homePhone1,
-                                          customer?.workPhone1),
-                                      Icons.message,
-                                      (customer?.cellPhone1.isNotEmpty ==
-                                                  true ||
-                                              customer?.homePhone1.isNotEmpty ==
-                                                  true ||
-                                              customer?.workPhone1.isNotEmpty ==
-                                                  true)
-                                          ? Colors.blue
-                                          : Colors.grey),
-                                  customerButtons(
-                                      () =>
-                                          openMailApp([customer?.email ?? '']),
-                                      Icons.email,
-                                      (customer?.email.isNotEmpty == true)
-                                          ? Colors.blue
-                                          : Colors.grey),
+                                  CallButton(phoneNumbers: [
+                                      customer?.cellPhone1 ?? '',
+                                      customer?.homePhone1 ?? '',
+                                      customer?.workPhone1 ?? ''
+                                  ]),
+                                  SendMessageButton(phoneNumbers: [
+                                      customer?.cellPhone1 ?? '',
+                                      customer?.homePhone1 ?? '',
+                                      customer?.workPhone1 ?? ''
+                                  ]),
+                                  EmailButton(email: customer?.email ?? ''),
                                 ],
                               )
                             ],
@@ -336,41 +178,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               ),
                               Row(
                                 children: [
-                                  customerButtons(
-                                      () => openPhoneApp(
-                                          customer?.cellPhone2,
-                                          customer?.homePhone2,
-                                          customer?.workPhone2),
-                                      Icons.phone,
-                                      (customer?.cellPhone2.isNotEmpty ==
-                                                  true ||
-                                              customer?.homePhone2.isNotEmpty ==
-                                                  true ||
-                                              customer?.workPhone2.isNotEmpty ==
-                                                  true)
-                                          ? Colors.blue
-                                          : Colors.grey),
-                                  customerButtons(
-                                      () => openMessageApp(
-                                          customer?.cellPhone2,
-                                          customer?.homePhone2,
-                                          customer?.workPhone2),
-                                      Icons.message,
-                                      (customer?.cellPhone2.isNotEmpty ==
-                                                  true ||
-                                              customer?.homePhone2.isNotEmpty ==
-                                                  true ||
-                                              customer?.workPhone2.isNotEmpty ==
-                                                  true)
-                                          ? Colors.blue
-                                          : Colors.grey),
-                                  customerButtons(
-                                      () =>
-                                          openMailApp([customer?.email2 ?? '']),
-                                      Icons.email,
-                                      (customer?.email2.isNotEmpty == true)
-                                          ? Colors.blue
-                                          : Colors.grey),
+                                  CallButton(phoneNumbers: [
+                                      customer?.cellPhone2 ?? '',
+                                      customer?.homePhone2 ?? '',
+                                      customer?.workPhone2 ?? ''
+                                  ], email: customer?.email2),
+                                  SendMessageButton(phoneNumbers: [
+                                      customer?.cellPhone2 ?? '',
+                                      customer?.homePhone2 ?? '',
+                                      customer?.workPhone2 ?? ''
+                                  ], email: customer?.email2),
+                                  EmailButton(email: customer?.email2 ?? ''),
                                 ],
                               )
                             ],
@@ -378,25 +196,10 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         ],
                       ),
                     ),
-                    // customer?.email != "" && customer?.email2 != "" && customer?.email != null && customer?.email2 != null
-                    //   ? SizedBox(
-                    //       width: 45,
-                    //       child: Align(
-                    //         alignment: Alignment.center,
-                    //         child: GestureDetector(
-                    //             onTap: () => openMailApp([
-                    //                   "${customer?.email},${customer?.email2}"
-                    //                 ]),
-                    //             child: Icon(
-                    //               Icons.email,
-                    //               size: 28,
-                    //               color: Colors.blue,
-                    //             )),
-                    //       ),
-                    //     )
-                    //   : SizedBox.shrink(),
-
-                    sendMultipleEmails(customer?.email, customer?.email2)
+                    SendMultipleEmailsButton(
+                      email1: customer?.email ?? '', 
+                      email2: customer?.email2 ?? ''
+                    ),
                   ]),
                   SizedBox(height: 5),
                   if (customerContact != null) ...[
@@ -411,42 +214,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         ), 
                         Row(
                           children: [
-                            GestureDetector(
-                              onTap: () => launchUrl(Uri.parse(
-                                  'msteams:/l/call/0/0?users=${customerContact!.email}')),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.call,
-                                  size: 28,
-                                  color: Colors.blue,
-                                ),
-                              ),
+                            CallButton(
+                              phoneNumbers: [], 
+                              email: customerContact!.email),
+                            SendMessageButton(
+                              phoneNumbers: [], 
+                              email: customerContact!.email
                             ),
-                            GestureDetector(
-                              onTap: () => launchUrl(Uri.parse(
-                                  'msteams:/l/chat/0/0?users=${customerContact!.email}')),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.message,
-                                  size: 28,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  openMailApp([customerContact!.email]),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.email,
-                                  size: 28,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
+                            EmailButton(email: customerContact!.email),
                             SizedBox(width: 45)
                           ],
                         )
@@ -455,21 +230,24 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   ],
                   SizedBox(height: 20),
                   GestureDetector(
-                    onTap: () => launchMapUrl(
-                        "${customer?.address ?? 'N/A'}, ${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}"),
+                    onTap: () => CustomerUtils.launchMapUrl(customer),
                     child: Text(
-                      "${customer?.address ?? 'N/A'}\n${customer?.city ?? 'N/A'}, ${customer?.state ?? 'N/A'} ${customer?.zip ?? 'N/A'}",
+                      CustomerUtils.generateCustomerAddress(customer),
                       style: TextStyle(fontSize: 16, color: Colors.blue),
                     ),
                   ),
                   Text(
-                    "Tax ID: ${customer?.taxId ?? 'N/A'}",
+                    "Tax ID: ${customer?.taxId == "" ? 'N/A' : customer!.taxId}",
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "Sharepoint Folder Name: ${customer?.spFolderName ?? 'N/A'}",
+                    "Sharepoint Folder Name: ${customer?.spFolderName == "" ? 'N/A' : customer!.spFolderName}",
                     style: TextStyle(fontSize: 16),
                   ),
+                  SizedBox(height: 20),
+                  AddShortcutToOneDrive(text: "Add Shortcut to OneDrive", customer: customer, mounted: mounted, icon: Icons.cloud),
+                  SizedBox(height: 5),
+                  LinkButton(text: "Open Client Active Folders", url: customer!.spUrl, icon: Icons.folder, openInApp: true, overrideColor: Colors.grey),
                   SizedBox(height: 20),
                   if (notes.isNotEmpty) ...[
                     Text(

@@ -9,6 +9,7 @@ class Person {
   String email;
   String jobTitle;
   String department;
+  String homeAddress = "";
   String id;
   String microsoftId;
   bool favorite;
@@ -25,6 +26,7 @@ class Person {
     required this.email,
     required this.jobTitle,
     required this.department,
+    this.homeAddress = "",
     required this.id,
     required this.microsoftId,
     required this.favorite,
@@ -90,6 +92,7 @@ class Person {
       email: (json['email'] ?? ''),
       jobTitle: (json['jobTitle'] ?? ''),
       department: (json['deparpment'] ?? ''),
+      homeAddress: (json['homeAddress'] ?? ''),
       id: (json['_id'] ?? ''),
       microsoftId: (json['microsoftId'] ?? ''),
       favorite: false,

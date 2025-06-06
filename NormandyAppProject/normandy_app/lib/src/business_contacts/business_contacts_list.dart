@@ -49,17 +49,7 @@ class BusinessContactsListState extends State<BusinessContactsList> {
   void initState() {
     super.initState();
     generatePageTitle();
-    _loadContactsData().then((_) {
-      // wait for contacts to load before opening search delegate
-      if (_contacts.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(
-              context: context,
-              delegate: CustomSearchDelegate(
-                  searchTerms: _getSearchTerms(), contacts: _contacts));
-        });
-      }
-    });
+    _loadContactsData();
   }
 
   Future<List<Contact>> sortContacts(List<Contact> newContacts) async {
@@ -132,7 +122,6 @@ class BusinessContactsListState extends State<BusinessContactsList> {
         url += '&favoriteIds=${favoriteContactIds.join(',')}';
       }
     }
-    print(url);
 
     http.Response? response;
 
@@ -149,9 +138,31 @@ class BusinessContactsListState extends State<BusinessContactsList> {
               ? UserContact.fromJson(Map.castFrom(item))
               : Contact.fromJson(Map.castFrom(item)))
           .toList());
+      // Filter out contacts that are employees or zInactive
+      List<Contact> filteredContacts = sortedContacts.where((contact) {
+        if (contact.company == "zInactive") {
+          return false; // Exclude inactive contacts
+        }
+        if (contact.company == "Normandy Remodeling") {
+          return false; // Exclude Normandy Remodeling contacts
+        }
+        return true;
+      }).toList();
+      // sort the contacts alphabetically
+      // If first name is empty, use company name, if company is also empty, use last name
+      filteredContacts.sort((a, b) {
+        String aName = a.firstName.isNotEmpty
+            ? a.firstName
+            : (a.company.isNotEmpty ? a.company : a.lastName);
+        String bName = b.firstName.isNotEmpty
+            ? b.firstName
+            : (b.company.isNotEmpty ? b.company : b.lastName);
+        int res = aName.compareTo(bName);
+        return res;
+      });
 
       setState(() {
-        _contacts = sortedContacts;
+        _contacts = filteredContacts;
         _loading = false;
       });
     } else {
@@ -256,13 +267,38 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
+
+    // sort the contacts alphabetically
+    // If first name is empty, use company name, if company is also empty, use last name
+    matchedContacts.sort((a, b) {
+      String aName = a.firstName.isNotEmpty
+          ? a.firstName
+          : (a.company.isNotEmpty ? a.company : a.lastName);
+      String bName = b.firstName.isNotEmpty
+          ? b.firstName
+          : (b.company.isNotEmpty ? b.company : b.lastName);
+      int res = aName.compareTo(bName);
+      return res;
+    });
 
     return ListView.builder(
       scrollDirection: Axis.vertical,
@@ -287,13 +323,38 @@ class CustomSearchDelegate extends SearchDelegate {
     List<Contact> matchedContacts = [];
 
     for (Contact contact in contacts) {
+      const constantSearchTerms = ['FirstName', 'LastName', 'Company', 'Nickname'];
+      // searchTerm is either "Fname Lname", "Fname", "Lname", or "Company" (In that order of priority)
       if (contact.searchTerm
           .toLowerCase()
           .trim()
           .contains(query.toLowerCase().trim())) {
         matchedContacts.add(contact);
+        continue; // Prevent adding the same contact multiple times
+      }
+      for (String term in constantSearchTerms) {
+        // NOTE: To access a value using contact['key'] syntax, you need to implement the [] operator in the class
+        // See: contacts_class.dart for operator [] implementation
+        if(contact[term] == null) continue;
+        if(contact[term].toLowerCase().trim().contains(query.toLowerCase().trim())) {
+          matchedContacts.add(contact);
+          break;
+        }
       }
     }
+
+    // sort the contacts alphabetically
+    // If first name is empty, use company name, if company is also empty, use last name
+    matchedContacts.sort((a, b) {
+      String aName = a.firstName.isNotEmpty
+          ? a.firstName
+          : (a.company.isNotEmpty ? a.company : a.lastName);
+      String bName = b.firstName.isNotEmpty
+          ? b.firstName
+          : (b.company.isNotEmpty ? b.company : b.lastName);
+      int res = aName.compareTo(bName);
+      return res;
+    });
 
     return ListView.builder(
       scrollDirection: Axis.vertical,
