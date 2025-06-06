@@ -1,5 +1,3 @@
-
-
 class Job {
   String? id;
   bool? isMaster;
@@ -69,18 +67,20 @@ class Job {
 
   factory Job.fromJson(Map<String, dynamic> json) {
     try {
+      String? asString(dynamic v) => v?.toString(); // Converts Any to String or null
+      // as String? throws an error if the conversion fails
       return Job(
-        id: json['id'] as String?,
+        id: asString(json['id']),
         isMaster: json['isMaster'] as bool?,
-        jobNumber: json['jobNumber'] as String?,
-        jobAddress: json['jobAddress'] as String?,
-        jobCity: json['jobCity'] as String?,
-        jobDescription: json['jobDescription'] as String?,
+        jobNumber: asString(json['jobNumber']),
+        jobAddress: asString(json['jobAddress']),
+        jobCity: asString(json['jobCity']),
+        jobDescription: asString(json['jobDescription']),
         shareDesigner1: json['shareDesigner1'] as int?,
         shareDesigner2: json['shareDesigner2'] as int?,
-        designFee: json['designFee'] as String?,
+        designFee: asString(json['designFee']),
         salePrice: json['salePrice'] as int?,
-        letterAfterSale: json['letterAfterSale'] as String?,
+        letterAfterSale: asString(json['letterAfterSale']),
         autoSchedule: json['autoSchedule'] as bool?,
         contingency: json['contingency'] as bool?,
         bondBalance: json['bondBalance'] as int?,
@@ -94,19 +94,19 @@ class Job {
         jobStateDate: json['jobStateDate'] != null && json['jobStateDate'] is String
             ? DateTime.tryParse(json['jobStateDate'])
             : null,
-        substantialCompleted: json['substantialCompleted'] as String?,
-        finalInspection: json['finalInspection'] as String?,
+        substantialCompleted: asString(json['substantialCompleted']),
+        finalInspection: asString(json['finalInspection']),
         finalPrice: json['finalPrice'] as int?,
-        customerId: json['customerId'] as String?,
-        designerId: json['designerId'] as String?,
-        designerId2: json['designerId2'] as String?,
-        superId: json['superId'] as String?,
-        jobStateId: json['jobStateId'] as String?,
-        jobSubId: json['jobSubId'] as String?,
-        jobtypeId: json['jobtypeId'] as String?,
-        lname: json['lname'] as String?,
-        lname2: json['lname2'] as String?,
-        jobStateName: json['jobStateName'] as String?
+        customerId: asString(json['customerId']),
+        designerId: asString(json['designerId']),
+        designerId2: asString(json['designerId2']),
+        superId: asString(json['superId']),
+        jobStateId: asString(json['jobStateId']),
+        jobSubId: asString(json['jobSubId']),
+        jobtypeId: asString(json['jobtypeId']),
+        lname: asString(json['lname']),
+        lname2: asString(json['lname2']),
+        jobStateName: asString(json['jobStateName'])
       );
     } catch (e) {
       throw FormatException('Error parsing Job: $e');
