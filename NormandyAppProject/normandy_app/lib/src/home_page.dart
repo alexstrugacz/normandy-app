@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:normandy_app/src/homepage_button.dart';
@@ -18,7 +17,7 @@ class HomePage extends StatelessWidget {
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook, true),
     _Button(
-        'Upload Image', '/upload-image', FontAwesomeIcons.upload, false),
+        'Upload Image', '/upload-image', FontAwesomeIcons.upload, true),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link, true),
     _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar, true),
     _Button('User Settings', '/user-settings', FontAwesomeIcons.gear, true),

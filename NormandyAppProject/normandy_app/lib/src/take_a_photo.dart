@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'env.dart';
 import 'package:flutter/foundation.dart';
 
+// DEPRECATED ??
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
