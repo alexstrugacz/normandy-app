@@ -55,7 +55,7 @@ class CreateSOFormState extends State<CreateSOForm> {
     selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
     
     if (widget.selectedCustomer != null) {
-      selectedCustomer = widget.selectedCustomer;
+      handleSelectCustomer(widget.selectedCustomer as Customer);
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
       showSearch(

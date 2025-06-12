@@ -28,7 +28,7 @@ class _AppointmentViewState extends State<AppointmentView> {
 
   void fetchAppointmentDetails() async {
     var appointmentsResponse = await APIHelper.get(
-          'appointments/64fbd9d447778bcd6c1cc007/format',
+          'appointments/${widget.appointment.id}/format',
           context,
           mounted);
       if (appointmentsResponse != null && appointmentsResponse.statusCode == 200) {
@@ -52,19 +52,19 @@ class _AppointmentViewState extends State<AppointmentView> {
           children: [
             Align(alignment: Alignment.center, child: Text(widget.nameAndCity)),
             SizedBox(height: 15),
-            _buildDetailRow('Date of Request', widget.appointment.dateOfRequest != null ? DateFormat.yMd().format(widget.appointment.dateOfRequest as DateTime ?? DateTime.now()) : "N/A"),
-            _buildDetailRow('Date Run', widget.appointment.dateRun != null ? DateFormat.yMd().format(widget.appointment.dateRun as DateTime ?? DateTime.now()) : "N/A"),
+            _buildDetailRow('Date of Request', widget.appointment.dateOfRequest != null ? DateFormat.yMd().format(widget.appointment.dateOfRequest as DateTime) : "N/A"),
+            _buildDetailRow('Date Run', widget.appointment.dateRun != null ? DateFormat.yMd().format(widget.appointment.dateRun as DateTime) : "N/A"),
             _buildDetailRow('Designer', appointmentDetails['Designer'] ?? "N/A"),
             _buildDetailRow("Designer 2", appointmentDetails['Designer2'] ?? "N/A"),
-            _buildDetailRow("Designer in Training", widget.appointment.designerInTrainingId ?? "N/A"), // Handle getting designerInTraining from id
+            _buildDetailRow("Designer in Training", appointmentDetails['DesignerInTraining'] ?? "N/A"),
             _buildDetailRow("Type of Work", widget.appointment.projectDescription ?? "N/A"),
-            _buildDetailRow("Year Built", widget.appointment.dateOfRequest != null ? DateFormat.yMd().format(widget.appointment.dateOfRequest as DateTime ?? DateTime.now()) : "N/A"),
-            _buildDetailRow("Confirmation Sent", appointmentDetails['ConfLetterSent']?.toString() ?? "N/A"),
+            _buildDetailRow("Year Built", appointmentDetails['YearBuilt'] != null ? DateFormat.yMd().format(appointmentDetails['YearBuilt'] as DateTime) : "N/A"),
+            _buildDetailRow("Confirmation Sent", widget.appointment.confirmationLetterSent == true ? "Yes" : "No"),
             _buildDetailRow("Taken By", appointmentDetails['TakenBy'] ?? "N/A"),
             _buildDetailRow("Time Set", widget.appointment.timeSet ?? "N/A"),
-            _buildDetailRow("Source 1", widget.appointment.leadSourceId ?? "N/A"), // Handle getting lead source name from ID
-            _buildDetailRow("Source 2", widget.appointment.leadSource2Id ?? "N/A"), // Handle getting lead source 2 name from ID
-            _buildDetailRow("Refered by (Known)", appointmentDetails['ReferredByKnown'] ?? "N/A"),
+            _buildDetailRow("Source 1", appointmentDetails['LeadSource'] ?? "N/A"),
+            _buildDetailRow("Source 2", appointmentDetails['LeadSource2'] ?? "N/A"),
+            _buildDetailRow("Referred by (Known)", appointmentDetails['ReferredByKnown'] ?? "N/A"),
             _buildDetailRow("Referred by (Unknown)", appointmentDetails['ReferredByUnknown'] ?? "N/A"),
           ],
         ),

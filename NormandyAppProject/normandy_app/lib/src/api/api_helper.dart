@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIHelper {
-  static String baseUrl = "https://normandy-backend.azurewebsites.net/api/";
+  // static String baseUrl = "https://normandy-backend.azurewebsites.net/api/";
 
   // Only uncomment this in development, and ensure your NormandyBackend copy is running on Port 4000
-  // static String baseUrl = "http://localhost:4000/api/";
+  static String baseUrl = "http://localhost:4000/api/";
 
   static bool isTokenExpired(String token) {
     try {
