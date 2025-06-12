@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:normandy_app/src/customers/customer_type.dart';
+import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:normandy_app/src/api/api_helper.dart';
