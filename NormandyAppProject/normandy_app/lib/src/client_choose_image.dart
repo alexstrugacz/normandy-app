@@ -31,7 +31,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     '10. Photos/Site Visits',
     '70. Service',
     '45. Job Ready Documents',
-    '08. Salesperson Documents/Misc/Client File Share',
+    '08. Sal...ents/Misc/Client File Share',
   ];
 
   ClientChooseImagePageState({required this.name});
