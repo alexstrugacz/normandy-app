@@ -12,8 +12,10 @@ import 'package:normandy_app/src/customers/buttons/send_email.dart';
 import 'package:normandy_app/src/customers/buttons/send_message.dart';
 import 'package:normandy_app/src/customers/buttons/send_multiple_emails.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
+import 'package:normandy_app/src/customers/job_view.dart';
 import 'package:normandy_app/src/customers/jobs_type.dart';
 import 'package:normandy_app/src/customers/service_order_type.dart';
+import 'package:normandy_app/src/customers/service_order_view.dart';
 import 'package:normandy_app/src/so_forms/create_so.dart';
 import 'package:normandy_app/src/customers/customer_utils.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
@@ -294,14 +296,15 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   ),
                   SizedBox(height: 5), 
                   ...jobs.map((job) => GestureDetector(
-                        // onTap: () => Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => AppointmentView(
-                        //       appointment: job,
-                        //     ),
-                        //   ),
-                        // ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobView(
+                              job: job,
+                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
+                            ),
+                          ),
+                        ),
                         child: ListTile(
                           title: Text(
                             '${job.lname} - ${job.jobCity}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
@@ -333,14 +336,15 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   ),
                   SizedBox(height: 5),  
                   ...serviceOrders.map((serviceOrder) => GestureDetector(
-                        // onTap: () => Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => AppointmentView(
-                        //       appointment: job,
-                        //     ),
-                        //   ),
-                        // ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ServiceOrderView(
+                              serviceOrder: serviceOrder,
+                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
+                            ),
+                          ),
+                        ),
                         child: ListTile(
                           title: Text(
                             "${serviceOrder.name} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
