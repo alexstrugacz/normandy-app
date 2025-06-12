@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/onedrive_shortcuts/customer_class.dart';
+import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:normandy_app/src/client_choose_image.dart';
 
