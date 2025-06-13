@@ -319,6 +319,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       },
     );
   }
+
   void _showUploadFailureDialog() {
     showDialog(
       context: context,
@@ -344,6 +345,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     print("client choose image");
     print(_selectedImages.length);
     print(_selectedClientFolderId);
+    final canUpload = _selectedImages.isNotEmpty && _selectedUploadType != null;
     return Column(
       children: [
         DropdownButton<int>(
@@ -409,14 +411,15 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
               label: Text('Camera'),
               icon: Icon(Icons.camera_alt),
             ),
+            FloatingActionButton.extended(
+              onPressed: canUpload ? _uploadToOneDrive : null,
+              backgroundColor: canUpload ? null : Colors.grey.shade400,
+              foregroundColor: canUpload ? null : Colors.grey.shade800,
+              label: Text('Upload'),
+              icon: Icon(Icons.cloud_upload),
+            ),
           ],
         ),
-        if (_selectedImages.isNotEmpty && _selectedUploadType != null)
-          FloatingActionButton.extended(
-            onPressed: _uploadToOneDrive,
-            label: Text('Upload Images'),
-            icon: Icon(Icons.cloud_upload),
-          ),
       ],
     );
   }

@@ -16,10 +16,10 @@ class HomePage extends StatelessWidget {
   // ignore: library_private_types_in_public_api
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook, true),
-    _Button(
-        'Upload Image', '/upload-image', FontAwesomeIcons.upload, true),
+    _Button('Upload Image', '/upload-image', FontAwesomeIcons.upload, false),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link, true),
-    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar, true),
+    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar,
+        true),
     _Button('User Settings', '/user-settings', FontAwesomeIcons.gear, true),
     _Button('Customers', '/customers', FontAwesomeIcons.users, true),
     _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock, true),
@@ -44,10 +44,9 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
-            child: Image.asset('assets/images/logo.png', height: 80)
-          ),
+              padding:
+                  const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 4),
+              child: Image.asset('assets/images/logo.png', height: 80)),
           Padding(
               // no top padding. only left right and bottom
               padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
@@ -72,10 +71,10 @@ class HomePage extends StatelessWidget {
                       text: button.name,
                       isDisabled: !button.enabled,
                       onTap: () async {
-                        if(kDebugMode) print(button.route);
-                        if(kDebugMode) print(button.name);
+                        if (kDebugMode) print(button.route);
+                        if (kDebugMode) print(button.name);
 
-                        if(kDebugMode) print("URL ${button.route}");
+                        if (kDebugMode) print("URL ${button.route}");
                         Navigator.pushNamed(context, button.route);
                       });
                 }).toList(),
