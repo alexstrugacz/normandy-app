@@ -19,7 +19,12 @@ class DropdownOption {
 }
 
 class EditSOForm extends StatefulWidget {
-  const EditSOForm({super.key});
+  final Customer? customer;
+  final String? serviceOrderId;
+  final String? nameAndCity;
+  final String? projectId;
+
+  const EditSOForm({super.key, this.customer, this.serviceOrderId, this.nameAndCity, this.projectId});
 
   @override
   EditSOFormState createState() => EditSOFormState();
@@ -30,6 +35,7 @@ class EditSOFormState extends State<EditSOForm> {
   Customer? selectedCustomer;
   String? selectedProject;
   String? selectedServiceOrder;
+  bool canShowSearch = true;
 
   List<DropdownMenuItem<String>> _projects = [];
   List<DropdownMenuItem<String>> _serviceOrders = [];
@@ -40,12 +46,20 @@ class EditSOFormState extends State<EditSOForm> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-          showSearch(context: context, delegate: CustomSearchDelegate(
-              context: context,
-              mounted: mounted,
-              onSelectCustomer: handleSelectCustomer));
-    });
+
+     if (widget.customer != null) {
+      handleSelectCustomer(widget.customer as Customer);
+      canShowSearch = false;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showSearch(
+            context: context,
+            delegate: CustomSearchDelegate(
+                context: context,
+                mounted: mounted,
+                onSelectCustomer: handleSelectCustomer));
+      });
+    }
   }
 
   Future<void> loadProjects() async {
@@ -69,21 +83,33 @@ class EditSOFormState extends State<EditSOForm> {
         Map<String, String> projectsMap = {};
 
         for (var project in data) {
-          projects.add(DropdownMenuItem<String>(
-            value: project['_id'],
-            child: Text(
-              project['projectName'],       
-              style: const TextStyle(fontSize: 12)
-            ),
-          ));
-          projectsMap[project['projectName']] = project['_id'];
+          if (widget.customer == null) {
+            projects.add(DropdownMenuItem<String>(
+              value: project['_id'],
+              child: Text(project['projectName'],
+                  style: const TextStyle(fontSize: 12)),
+            ));
+            projectsMap[project['projectName']] = project['_id'];
+          } else {
+            if (project['_id'] == widget.projectId) {
+              setState(() {
+                selectedProject = project['_id'];
+                handleLoadServiceOrders();
+              });
+            }
+          }
         }
 
-        setState(() {
-          _projects = projects;
+        if (widget.customer == null) {
+          setState(() {
+            _projects = projects;
+            selectedServiceOrder = null;
+            _loading = false;
+          });
+        } else {
           selectedServiceOrder = null;
-          _loading = false;
-        });
+          handleLoadServiceOrders();
+        }
       } else {
         setState(() {
           _errorMessage = 'An error occurred while fetching projects. Please try again.';
@@ -110,44 +136,66 @@ class EditSOFormState extends State<EditSOForm> {
       context,
       mounted
     );
+
     if ((response != null) && (response.statusCode == 200)) {
       List<dynamic> data = json.decode(response.body)['serviceOrders'];
       List<DropdownMenuItem<String>> serviceOrders = [];
 
       for (var serviceOrder in data) {
-        serviceOrders.add(DropdownMenuItem<String>(
-          value: serviceOrder['_id'],
-          child: Text(
-            serviceOrder['optionName'],
-            style: const TextStyle(fontSize: 12),
-            overflow: TextOverflow.ellipsis
-          )
-        ));
+        if (widget.customer == null) {
+          serviceOrders.add(DropdownMenuItem<String>(
+              value: serviceOrder['_id'],
+              child: Text(serviceOrder['optionName'],
+                  style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis)));
+        } else {
+          if (serviceOrder['_id'] == widget.serviceOrderId) {
+            selectedServiceOrder = serviceOrder['_id'];
+          }
+        }
       }
-      setState(() {
-        _serviceOrders = serviceOrders;
-        selectedServiceOrder = null;
-        _loading = false;
-      });
+
+      if (widget.customer == null) {
+        setState(() {
+          _serviceOrders = serviceOrders;
+          selectedServiceOrder = null;
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _loading = false;
+        });
+      }
     } else {
       setState(() {
         _errorMessage = 'An error occurred while fetching service orders. Please try again.';
         selectedServiceOrder = null;
         _loading = false;
       });
-
     }
   }
 
   Future<void> handleSelectCustomer(Customer customer) async {
     setState(() {
+      _loading = true;
+    });
+    setState(() {
       selectedCustomer = customer;
     });
     loadProjects();
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading == true) {
+      return const Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -155,15 +203,19 @@ class EditSOFormState extends State<EditSOForm> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
         ),
         actions: [
-          IconButton(
-              onPressed: () async {
-                await showSearch(
-                  context: context,
-                  delegate: CustomSearchDelegate(context: context, mounted: mounted, onSelectCustomer: handleSelectCustomer)
-                );
-              },
-              icon: const Icon(Icons.search))
-        ]
+              canShowSearch
+                  ? (IconButton(
+                      onPressed: () async {
+                        await showSearch(
+                            context: context,
+                            delegate: CustomSearchDelegate(
+                                context: context,
+                                mounted: mounted,
+                                onSelectCustomer: handleSelectCustomer));
+                      },
+                      icon: const Icon(Icons.search)))
+                  : Text("")
+            ]
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -196,13 +248,20 @@ class EditSOFormState extends State<EditSOForm> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          selectedCustomer != null ? selectedCustomer!.folderName : 'No customer selected',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
-                        )
-                      ),
+                      if (widget.customer == null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(selectedCustomer != null ? selectedCustomer!.folderName : "Could not find customer",
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+                          )
+                        ),
+                      if (widget.customer != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(widget.nameAndCity ?? "Could not find customer",
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+                          )
+                        ),
                       if (_loading)
                         const Column(children: [
                           Padding(
@@ -212,49 +271,54 @@ class EditSOFormState extends State<EditSOForm> {
                           SizedBox(height: 6)
                         ])
                       else
-                        Column(
+                      Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Project Dropdown
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: DropdownButtonFormField<String>(
-                                value: selectedProject,
-                                isExpanded: true,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedProject = value;
-                                  });
-                                  handleLoadServiceOrders();
-                                },
-                                items: _projects,
-                                decoration: const InputDecoration(
-                                  labelText: 'Select Project',
-                                  labelStyle: TextStyle(fontSize: 14),
-                                  border: OutlineInputBorder(),
-                                )
+                            if (widget.customer == null) 
+                              Column(
+                                children: [
+                                  // Project Dropdown
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: DropdownButtonFormField<String>(
+                                      value: selectedProject,
+                                      isExpanded: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedProject = value;
+                                        });
+                                        handleLoadServiceOrders();
+                                      },
+                                      items: _projects,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Select Project',
+                                        labelStyle: TextStyle(fontSize: 14),
+                                        border: OutlineInputBorder(),
+                                      )
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  // Select Service Order
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: DropdownButtonFormField<String>(
+                                      value: selectedServiceOrder,
+                                      isExpanded: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedServiceOrder = value;
+                                        });
+                                      },
+                                      items: _serviceOrders,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Select Service Order',
+                                        labelStyle: TextStyle(fontSize: 14),
+                                        border: OutlineInputBorder(),
+                                      )
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 5),
-                            // Select Service Order
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: DropdownButtonFormField<String>(
-                                value: selectedServiceOrder,
-                                isExpanded: true,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedServiceOrder = value;
-                                  });
-                                },
-                                items: _serviceOrders,
-                                decoration: const InputDecoration(
-                                  labelText: 'Select Service Order',
-                                  labelStyle: TextStyle(fontSize: 14),
-                                  border: OutlineInputBorder(),
-                                )
-                              ),
-                            ),
                             
                             if (selectedServiceOrder != null)
                               SelectedSOForm(serviceOrderId: selectedServiceOrder!),

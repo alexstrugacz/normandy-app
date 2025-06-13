@@ -81,7 +81,7 @@ class ServiceOrder {
     try {
       String? asString(dynamic v) => v?.toString();
       return ServiceOrder(
-        id: asString(json['id']),
+        id: asString(json['_id']),
         dateOfRequest: json['dateOfRequest'] != null && json['dateOfRequest'] is String
             ? DateTime.tryParse(json['dateOfRequest'])
             : null,

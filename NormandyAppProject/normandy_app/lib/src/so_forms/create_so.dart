@@ -9,9 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class CreateSOForm extends StatefulWidget {
-  final Customer? selectedCustomer;
+  final Customer? customer;
 
-  const CreateSOForm({super.key, this.selectedCustomer});
+  const CreateSOForm({super.key, this.customer});
 
   @override
   CreateSOFormState createState() => CreateSOFormState();
@@ -24,6 +24,7 @@ class CreateSOFormState extends State<CreateSOForm> {
   String? selectedServiceProvider;
   String? newCellPhone;
   int ownerWhoCalled = 1;
+  bool canShowSearch = true;
   String problemDescription = '';
   DateTime dateOfRequest = DateTime.now();
   DateTime dateAssigned = DateTime.now();
@@ -52,10 +53,14 @@ class CreateSOFormState extends State<CreateSOForm> {
   @override
   void initState() {
     super.initState();
-    selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
     
-    if (widget.selectedCustomer != null) {
-      handleSelectCustomer(widget.selectedCustomer as Customer);
+    selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik 
+
+    
+    
+    if (widget.customer != null) {
+      handleSelectCustomer(widget.customer as Customer);
+      canShowSearch = false;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
       showSearch(
@@ -69,6 +74,9 @@ class CreateSOFormState extends State<CreateSOForm> {
   }
 
   Future<void> handleSelectCustomer(Customer customer) async {
+    setState(() {
+      _loading = true;
+    });
     http.Response? response =
         await APIHelper.get('customers/${customer.id}', context, mounted);
 
@@ -86,6 +94,9 @@ class CreateSOFormState extends State<CreateSOForm> {
       }
     });
     loadProjects();
+    setState(() {
+      _loading = false;
+    });
   }
 
   Future<void> loadServiceProviders() async {
@@ -265,10 +276,16 @@ class CreateSOFormState extends State<CreateSOForm> {
     setState(() {
       _loading = false;
     });
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
+    if (_loading == true) {
+      return const Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
         appBar: AppBar(
             title: Text(
@@ -277,7 +294,8 @@ class CreateSOFormState extends State<CreateSOForm> {
                     : 'Create New Service Order for ${((ownerWhoCalled == 1) ? "${selectedCustomer?.fname1} ${selectedCustomer?.lname1}" : "${selectedCustomer?.fname2} ${selectedCustomer?.lname2}").trim()}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             actions: [
-              IconButton(
+              canShowSearch ? (
+                IconButton(
                   onPressed: () async {
                     await showSearch(
                         context: context,
@@ -287,6 +305,7 @@ class CreateSOFormState extends State<CreateSOForm> {
                             onSelectCustomer: handleSelectCustomer));
                   },
                   icon: const Icon(Icons.search))
+              ) : Text("")
             ]),
         body: SingleChildScrollView(
             // Wrap the body in SingleChildScrollView
