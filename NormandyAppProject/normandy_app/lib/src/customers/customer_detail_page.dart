@@ -18,6 +18,7 @@ import 'package:normandy_app/src/customers/service_order_type.dart';
 import 'package:normandy_app/src/customers/service_order_view.dart';
 import 'package:normandy_app/src/so_forms/create_so.dart';
 import 'package:normandy_app/src/customers/customer_utils.dart';
+import 'package:normandy_app/src/so_forms/edit_so.dart';
 import 'package:normandy_app/src/so_forms/user_class.dart';
 import 'package:normandy_app/src/customers/note_type.dart';
 
@@ -36,6 +37,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   User? customerContact;
   List<Note> notes = [];
   List<Appointment> appointments = [];
+  bool _loading = false;
   List<Job> jobs = [];
   List<ServiceOrder> serviceOrders = [];
   // String userId = '';
@@ -48,6 +50,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   void _fetchCustomerDetails() async {
+    _loading = true;
+
     var response =
         await APIHelper.get('customers/${widget.customerId}', context, mounted);
     if (response != null && response.statusCode == 200 && mounted) {
@@ -106,28 +110,35 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         setState(() {
           jobs = newJobs;
         });
-      }
+      } 
 
       var serviceOrdersResponse = await APIHelper.get(
           'service-orders?customerId=${widget.customerId}',
           context,
           mounted);
+          
       if (serviceOrdersResponse != null && serviceOrdersResponse.statusCode == 200) {
         var newServiceOrders = (json.decode(serviceOrdersResponse.body)['serviceOrders'] as List)
             .map((serviceOrder) => ServiceOrder.fromJson(serviceOrder))
             .toList();
         setState(() {
           serviceOrders = newServiceOrders;
-          print(serviceOrders);
         });
       }
 
       if (kDebugMode) print(customerContact?.email ?? 'No email found');
     }
+    _loading = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading == true) {
+      return const Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("${customer?.lname1} - ${customer?.city}"),
@@ -327,7 +338,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreateSOForm(selectedCustomer: customer)
+                            builder: (context) => CreateSOForm(customer: customer)
                           ),
                         ),
                         child: Icon(Icons.add),
@@ -339,15 +350,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ServiceOrderView(
-                              serviceOrder: serviceOrder,
+                            builder: (context) => EditSOForm(
+                              customer: customer,
+                              serviceOrderId: serviceOrder.id,
+                              projectId: serviceOrder.projectId,
                               nameAndCity: "${customer?.lname1} - ${customer?.city}"
                             ),
                           ),
                         ),
                         child: ListTile(
                           title: Text(
-                            "${serviceOrder.name} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
+                            "${serviceOrder.name ?? customer?.lname1} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
                             style: TextStyle(fontSize: 16),
                           ),
                           trailing: Icon(Icons.chevron_right),
