@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:normandy_app/src/api/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:normandy_app/src/employee-list/employee_class.dart';
 
-Future<List<Person>?> loadContactsData(String jwt, BuildContext context, bool mounted) async {
+Future<List<Person>?> loadContactsData(
+    String jwt, BuildContext context, bool mounted) async {
   final response = await APIHelper.get('microsoft-users', context, mounted);
 
   if (response != null && response.statusCode == 201) {
@@ -17,9 +19,13 @@ Future<List<Person>?> loadContactsData(String jwt, BuildContext context, bool mo
   }
 }
 
-Future<List<Person>?> loadInactiveContacts(String jwt, BuildContext context, bool mounted) async {
-  final response = await APIHelper.get('microsoft-users/inactive', context, mounted);
-  print(response?.body);
+Future<List<Person>?> loadInactiveContacts(
+    String jwt, BuildContext context, bool mounted) async {
+  final response =
+      await APIHelper.get('microsoft-users/inactive', context, mounted);
+  if (kDebugMode) {
+    print(response?.body);
+  }
   if (response != null && response.statusCode == 201) {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<dynamic> data = json.decode(response.body)['inactiveUsers'];

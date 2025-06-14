@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/onedrive_shortcuts/custom_search_delegate.dart';
 import 'package:normandy_app/src/client_choose_image.dart';
@@ -23,9 +24,11 @@ class UploadImageState extends State<UploadImage> {
   }
 
   void handleSelectCustomer(Customer customer) {
-    print(customer.folderName);
-    print(customer.fname1);
-    print(customer.lname1);
+    if (kDebugMode) {
+      print(customer.folderName);
+      print(customer.fname1);
+      print(customer.lname1);
+    }
     /*
     String folderName = customer.folderName;
     http.Response? response =

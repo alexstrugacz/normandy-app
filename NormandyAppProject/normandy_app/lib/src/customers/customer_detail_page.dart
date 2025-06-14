@@ -118,7 +118,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
             .toList();
         setState(() {
           serviceOrders = newServiceOrders;
-          print(serviceOrders);
+          if (kDebugMode) print(serviceOrders);
         });
       }
 
