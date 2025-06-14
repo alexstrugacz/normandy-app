@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:normandy_app/main.dart';
+import 'package:flutter/foundation.dart';
 
 class CameraScreen extends StatefulWidget {
-  CameraScreen({super.key});
+  const CameraScreen({super.key});
 
   @override
-  _CameraScreenState createState() => _CameraScreenState();
+  State<CameraScreen> createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
@@ -16,6 +18,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   List<File> files = [];
   double _overlayOpacity = 0.0;
+  bool _isCapturing = false;
 
   @override
   void initState() {
@@ -37,6 +40,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> _takePicture() async {
     try {
       await _initializeControllerFuture;
+      final image = await _controller.takePicture();
       setState(() {
         _overlayOpacity =
             0.5; // Start the shutter effect (semi-transparent black)
@@ -49,11 +53,13 @@ class _CameraScreenState extends State<CameraScreen> {
         _overlayOpacity = 0.0; // Fade it back out
       });
 
-      final image = await _controller.takePicture();
       // TODO photos taken in landscape are sideways
       files.add(File(image.path));
     } catch (e) {
-      print('Error taking picture: $e');
+      if (kDebugMode) {
+        print('Error taking picture: $e');
+      }
+      // consider rethrow, but we don't want to stop at errors I think
     }
   }
 
@@ -91,30 +97,39 @@ class _CameraScreenState extends State<CameraScreen> {
                     color: Colors.black,
                   ),
                 ),
-                Positioned(
-                  bottom: isLandscape ? 0 : 30,
-                  top: isLandscape ? 0 : null,
-                  left: isLandscape ? null : 0,
-                  right: isLandscape ? 30 : 0,
-                  child: Center(
-                    child: FloatingActionButton(
-                      child: Icon(Icons.camera_alt),
-                      onPressed: _takePicture,
+                if (!_isCapturing)
+                  Positioned(
+                    bottom: isLandscape ? 0 : 30,
+                    top: isLandscape ? 0 : null,
+                    left: isLandscape ? null : 0,
+                    right: isLandscape ? 30 : 0,
+                    child: Center(
+                      child: FloatingActionButton(
+                        onPressed: () async {
+                          setState(() {
+                            _isCapturing = true;
+                          });
+                          await _takePicture();
+                          setState(() {
+                            _isCapturing = false;
+                          });
+                        },
+                        child: Icon(Icons.camera_alt),
+                      ),
                     ),
                   ),
-                ),
                 Positioned(
                   bottom: isLandscape ? 20 : 30,
                   left: isLandscape ? null : 20,
                   right: isLandscape ? 30 : null,
                   child: Center(
                     child: FloatingActionButton(
-                      child: Icon(Icons.arrow_back, color: Colors.white),
                       mini: true,
-                      backgroundColor: Colors.black.withOpacity(0.5),
+                      backgroundColor: Colors.black.withValues(alpha: 0.5),
                       onPressed: () {
                         Navigator.pop(context, files);
                       },
+                      child: Icon(Icons.arrow_back, color: Colors.white),
                     ),
                   ),
                 ),

@@ -36,9 +36,9 @@ class CreateSOFormState extends State<CreateSOForm> {
 
   bool hasNumber() {
     return ownerWhoCalled == 1 &&
-            (selectedCustomer?.cellPhone1?.isNotEmpty ?? false) ||
+            (selectedCustomer?.cellPhone1.isNotEmpty ?? false) ||
         ownerWhoCalled == 2 &&
-            (selectedCustomer?.cellPhone2?.isNotEmpty ?? false);
+            (selectedCustomer?.cellPhone2.isNotEmpty ?? false);
   }
 
   String cellPhoneRepr(String s) {
@@ -53,18 +53,18 @@ class CreateSOFormState extends State<CreateSOForm> {
   void initState() {
     super.initState();
     selectedServiceProvider = "64fbd743fe8f92f08172b11a"; // Kenney Kozik
-    
+
     if (widget.selectedCustomer != null) {
       handleSelectCustomer(widget.selectedCustomer as Customer);
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-      showSearch(
-          context: context,
-          delegate: CustomSearchDelegate(
-              context: context,
-              mounted: mounted,
-              onSelectCustomer: handleSelectCustomer));
-    });
+        showSearch(
+            context: context,
+            delegate: CustomSearchDelegate(
+                context: context,
+                mounted: mounted,
+                onSelectCustomer: handleSelectCustomer));
+      });
     }
   }
 
@@ -78,8 +78,8 @@ class CreateSOFormState extends State<CreateSOForm> {
     setState(() {
       selectedCustomer =
           Customer.fromJson(json.decode(response.body)['customer']);
-      if ((selectedCustomer?.cellPhone1?.isEmpty ?? true) &&
-          (selectedCustomer?.cellPhone2?.isNotEmpty ?? false)) {
+      if ((selectedCustomer?.cellPhone1.isEmpty ?? true) &&
+          (selectedCustomer?.cellPhone2.isNotEmpty ?? false)) {
         ownerWhoCalled = 2;
       } else {
         ownerWhoCalled = 1;
@@ -405,8 +405,9 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                   onChanged: (value) {
                                                     setState(() {
                                                       newCellPhone = null;
-                                                      if (value != null)
+                                                      if (value != null) {
                                                         ownerWhoCalled = value;
+                                                      }
                                                     });
                                                   },
                                                   items: [
@@ -440,42 +441,36 @@ class CreateSOFormState extends State<CreateSOForm> {
                                                       fontSize: 12,
                                                       color: Colors.black)),
                                             ),
-                                            ...(!hasNumber()
-                                                ? [
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 8),
-                                                      child: TextFormField(
-                                                        maxLines: 1,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            newCellPhone =
-                                                                value;
-                                                          });
-                                                        },
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        decoration: const InputDecoration(
-                                                            labelText:
-                                                                'Provide a cell number',
-                                                            border:
-                                                                OutlineInputBorder(),
-                                                            labelStyle:
-                                                                TextStyle(
-                                                                    fontSize:
-                                                                        14)),
-                                                        style: const TextStyle(
-                                                            fontSize: 12),
-                                                        onTapOutside: (event) {
-                                                          FocusScope.of(context)
-                                                              .unfocus();
-                                                        },
-                                                      ),
-                                                    )
-                                                  ]
-                                                : []),
+                                            if (!hasNumber()) ...[
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8),
+                                                child: TextFormField(
+                                                  maxLines: 1,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      newCellPhone = value;
+                                                    });
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration: const InputDecoration(
+                                                      labelText:
+                                                          'Provide a cell number',
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                      labelStyle: TextStyle(
+                                                          fontSize: 14)),
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                  onTapOutside: (event) {
+                                                    FocusScope.of(context)
+                                                        .unfocus();
+                                                  },
+                                                ),
+                                              )
+                                            ],
                                             const SizedBox(height: 5),
                                             // Service Provider Dropdown
                                             Padding(
