@@ -10,12 +10,11 @@ environment:
   sdk: ">=3.2.3 <4.0.0"
 
 dependencies:
-  intl: 0.19.0
+  intl: 0.20.2
   flutter:
     sdk: flutter
   camera: ^0.11.0+2
   permission_handler: ^11.3.1
-  google_mlkit_text_recognition: ^0.14.0
   image_picker: ^1.0.7
   path_provider: ^2.0.11
   flutter_localizations:
@@ -25,12 +24,16 @@ dependencies:
   http: ^1.0.0
   shared_preferences: ^2.0.7
   url_launcher: ^6.0.20
-  google_ml_kit: ^0.19.0
+  # We only need text recognition, so don't pull in all of ml_kit
+  # Also not being used right now, so don't include yet
+  # google_mlkit_text_recognition: ^0.14.0
+  # google_ml_kit: ^0.19.0
   flutter_onedrive: ^1.4.2
   flutter_secure_storage: ^9.0.0
   flutter_dotenv: ^5.0.2
   flutter_inappwebview: ^6.1.0+1
   firebase_core: ^3.8.0
+  gal: ^2.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

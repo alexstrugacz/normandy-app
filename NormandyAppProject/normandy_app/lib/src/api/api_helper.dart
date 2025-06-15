@@ -44,8 +44,6 @@ class APIHelper {
       "Authorization": "Bearer $jwt",
     });
 
-    print(response.statusCode);
-
     return response;
   }
 

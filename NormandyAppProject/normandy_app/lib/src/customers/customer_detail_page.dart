@@ -15,7 +15,6 @@ import 'package:normandy_app/src/customers/customer_type.dart';
 import 'package:normandy_app/src/customers/job_view.dart';
 import 'package:normandy_app/src/customers/jobs_type.dart';
 import 'package:normandy_app/src/customers/service_order_type.dart';
-import 'package:normandy_app/src/customers/service_order_view.dart';
 import 'package:normandy_app/src/so_forms/create_so.dart';
 import 'package:normandy_app/src/customers/customer_utils.dart';
 import 'package:normandy_app/src/so_forms/edit_so.dart';
@@ -25,11 +24,10 @@ import 'package:normandy_app/src/customers/note_type.dart';
 class CustomerDetailPage extends StatefulWidget {
   final String customerId;
 
-  const CustomerDetailPage({Key? key, required this.customerId})
-      : super(key: key);
+  const CustomerDetailPage({super.key, required this.customerId});
 
   @override
-  _CustomerDetailPageState createState() => _CustomerDetailPageState();
+  State<CustomerDetailPage> createState() => _CustomerDetailPageState();
 }
 
 class _CustomerDetailPageState extends State<CustomerDetailPage> {
@@ -87,19 +85,19 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
       }
 
       var appointmentsResponse = await APIHelper.get(
-          'appointments?customerId=${widget.customerId}',
-          context,
-          mounted);
-      if (appointmentsResponse != null && appointmentsResponse.statusCode == 200) {
-        var newAppointments = (json.decode(appointmentsResponse.body)['appointments'] as List)
-            .map((appointment) => Appointment.fromJson(appointment))
-            .toList();
+          'appointments?customerId=${widget.customerId}', context, mounted);
+      if (appointmentsResponse != null &&
+          appointmentsResponse.statusCode == 200) {
+        var newAppointments =
+            (json.decode(appointmentsResponse.body)['appointments'] as List)
+                .map((appointment) => Appointment.fromJson(appointment))
+                .toList();
         setState(() {
           appointments = newAppointments;
         });
       }
- 
-     var jobsResponse = await APIHelper.get(
+
+      var jobsResponse = await APIHelper.get(
           'projects?customerId=${widget.customerId}&includeJobStateName=true',
           context,
           mounted);
@@ -110,17 +108,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         setState(() {
           jobs = newJobs;
         });
-      } 
+      }
 
       var serviceOrdersResponse = await APIHelper.get(
-          'service-orders?customerId=${widget.customerId}',
-          context,
-          mounted);
-          
-      if (serviceOrdersResponse != null && serviceOrdersResponse.statusCode == 200) {
-        var newServiceOrders = (json.decode(serviceOrdersResponse.body)['serviceOrders'] as List)
-            .map((serviceOrder) => ServiceOrder.fromJson(serviceOrder))
-            .toList();
+          'service-orders?customerId=${widget.customerId}', context, mounted);
+
+      if (serviceOrdersResponse != null &&
+          serviceOrdersResponse.statusCode == 200) {
+        var newServiceOrders =
+            (json.decode(serviceOrdersResponse.body)['serviceOrders'] as List)
+                .map((serviceOrder) => ServiceOrder.fromJson(serviceOrder))
+                .toList();
         setState(() {
           serviceOrders = newServiceOrders;
         });
@@ -144,7 +142,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         title: Text("${customer?.lname1} - ${customer?.city}"),
         centerTitle: true,
       ),
-      body: (customer == null) 
+      body: (customer == null)
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -167,14 +165,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               Row(
                                 children: [
                                   CallButton(phoneNumbers: [
-                                      customer?.cellPhone1 ?? '',
-                                      customer?.homePhone1 ?? '',
-                                      customer?.workPhone1 ?? ''
+                                    customer?.cellPhone1 ?? '',
+                                    customer?.homePhone1 ?? '',
+                                    customer?.workPhone1 ?? ''
                                   ]),
                                   SendMessageButton(phoneNumbers: [
-                                      customer?.cellPhone1 ?? '',
-                                      customer?.homePhone1 ?? '',
-                                      customer?.workPhone1 ?? ''
+                                    customer?.cellPhone1 ?? '',
+                                    customer?.homePhone1 ?? '',
+                                    customer?.workPhone1 ?? ''
                                   ]),
                                   EmailButton(email: customer?.email ?? ''),
                                 ],
@@ -192,14 +190,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               Row(
                                 children: [
                                   CallButton(phoneNumbers: [
-                                      customer?.cellPhone2 ?? '',
-                                      customer?.homePhone2 ?? '',
-                                      customer?.workPhone2 ?? ''
+                                    customer?.cellPhone2 ?? '',
+                                    customer?.homePhone2 ?? '',
+                                    customer?.workPhone2 ?? ''
                                   ], email: customer?.email2),
                                   SendMessageButton(phoneNumbers: [
-                                      customer?.cellPhone2 ?? '',
-                                      customer?.homePhone2 ?? '',
-                                      customer?.workPhone2 ?? ''
+                                    customer?.cellPhone2 ?? '',
+                                    customer?.homePhone2 ?? '',
+                                    customer?.workPhone2 ?? ''
                                   ], email: customer?.email2),
                                   EmailButton(email: customer?.email2 ?? ''),
                                 ],
@@ -210,9 +208,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                       ),
                     ),
                     SendMultipleEmailsButton(
-                      email1: customer?.email ?? '', 
-                      email2: customer?.email2 ?? ''
-                    ),
+                        email1: customer?.email ?? '',
+                        email2: customer?.email2 ?? ''),
                   ]),
                   SizedBox(height: 5),
                   if (customerContact != null) ...[
@@ -224,16 +221,15 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               customer?.lastSoldJobDesignerName ??
                               'N/A',
                           style: TextStyle(fontSize: 16),
-                        ), 
+                        ),
                         Row(
                           children: [
                             CallButton(
-                              phoneNumbers: [], 
-                              email: customerContact!.email),
+                                phoneNumbers: [],
+                                email: customerContact!.email),
                             SendMessageButton(
-                              phoneNumbers: [], 
-                              email: customerContact!.email
-                            ),
+                                phoneNumbers: [],
+                                email: customerContact!.email),
                             EmailButton(email: customerContact!.email),
                             SizedBox(width: 45)
                           ],
@@ -258,9 +254,18 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
-                  AddShortcutToOneDrive(text: "Add Shortcut to OneDrive", customer: customer, mounted: mounted, icon: Icons.cloud),
+                  AddShortcutToOneDrive(
+                      text: "Add Shortcut to OneDrive",
+                      customer: customer,
+                      mounted: mounted,
+                      icon: Icons.cloud),
                   SizedBox(height: 5),
-                  LinkButton(text: "Open Client Active Folders", url: customer!.spUrl, icon: Icons.folder, openInApp: true, overrideColor: Colors.grey),
+                  LinkButton(
+                      text: "Open Client Active Folders",
+                      url: customer!.spUrl,
+                      icon: Icons.folder,
+                      openInApp: true,
+                      overrideColor: Colors.grey),
                   SizedBox(height: 20),
                   if (notes.isNotEmpty) ...[
                     Text(
@@ -279,95 +284,91 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     "Appointments",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 5), 
+                  SizedBox(height: 5),
                   ...appointments.map((appointment) => GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AppointmentView(
-                              appointment: appointment,
-                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
+                      onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AppointmentView(
+                                  appointment: appointment,
+                                  nameAndCity:
+                                      "${customer?.lname1} - ${customer?.city}"),
                             ),
                           ),
+                      child: ListTile(
+                        title: Text(
+                          "${appointment.lname} - ${appointment.city}\nStarted ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
+                          style: TextStyle(fontSize: 16),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            "${appointment.lname} - ${appointment.city}\nStarted ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                        )
-                    )
-                  ),
+                        trailing: Icon(Icons.chevron_right),
+                      ))),
                   Text(appointments.isEmpty == true ? "No appointments" : ""),
                   SizedBox(height: 5),
                   Text(
                     "Jobs",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 5), 
+                  SizedBox(height: 5),
                   ...jobs.map((job) => GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => JobView(
-                              job: job,
-                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
+                      onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => JobView(
+                                  job: job,
+                                  nameAndCity:
+                                      "${customer?.lname1} - ${customer?.city}"),
                             ),
                           ),
+                      child: ListTile(
+                        title: Text(
+                          '${job.lname} - ${job.jobCity}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
+                          style: TextStyle(fontSize: 16),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            '${job.lname} - ${job.jobCity}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                        )
-                    )
-                  ),
+                        trailing: Icon(Icons.chevron_right),
+                      ))),
                   Text(jobs.isEmpty == true ? "No jobs" : ""),
                   SizedBox(height: 5),
                   Row(
                     children: [
                       Text(
                         "Service Orders",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      Spacer(), 
+                      Spacer(),
                       GestureDetector(
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreateSOForm(customer: customer)
-                          ),
+                              builder: (context) =>
+                                  CreateSOForm(customer: customer)),
                         ),
                         child: Icon(Icons.add),
                       )
                     ],
                   ),
-                  SizedBox(height: 5),  
+                  SizedBox(height: 5),
                   ...serviceOrders.map((serviceOrder) => GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditSOForm(
-                              customer: customer,
-                              serviceOrderId: serviceOrder.id,
-                              projectId: serviceOrder.projectId,
-                              nameAndCity: "${customer?.lname1} - ${customer?.city}"
+                      onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditSOForm(
+                                  customer: customer,
+                                  serviceOrderId: serviceOrder.id,
+                                  projectId: serviceOrder.projectId,
+                                  nameAndCity:
+                                      "${customer?.lname1} - ${customer?.city}"),
                             ),
                           ),
+                      child: ListTile(
+                        title: Text(
+                          "${serviceOrder.name ?? customer?.lname1} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
+                          style: TextStyle(fontSize: 16),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            "${serviceOrder.name ?? customer?.lname1} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                        )
-                    )
-                  ),
-                  Text(serviceOrders.isEmpty == true ? "No service orders" : ""),
+                        trailing: Icon(Icons.chevron_right),
+                      ))),
+                  Text(
+                      serviceOrders.isEmpty == true ? "No service orders" : ""),
                   // SizedBox(height: 20),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
