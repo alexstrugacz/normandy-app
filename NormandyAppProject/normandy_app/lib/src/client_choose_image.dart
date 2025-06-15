@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:gal/gal.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -55,6 +56,14 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     }
   }
 
+  Future<void> _clearImages() async {
+    await Future.wait(_selectedImages.map((f) => f.delete()));
+    setState(() {
+      _selectedImages = [];
+      uploadProgress = null;
+    });
+  }
+
   Future<void> _uploadToOneDrive() async {
     setState(() {
       uploadProgress = (0, _selectedImages.length);
@@ -63,6 +72,9 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
     if (accessToken == null) {
       if (kDebugMode) print('Failed to get access token');
+      await _showUploadFailureDialog(
+          List.generate(_selectedImages.length, (i) => i));
+      await _clearImages();
       return;
     }
     await _selectClientFolder(accessToken);
@@ -77,7 +89,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       return;
     }
 
-    var failures = [];
+    List<int> failures = [];
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
       final String date =
@@ -107,6 +119,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         }
       } catch (e) {
         if (kDebugMode) print('Error uploading file: $e');
+        failures.add(i);
       }
       setState(() {
         uploadProgress = (i + 1, _selectedImages.length);
@@ -114,22 +127,10 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     }
     if (failures.isEmpty) {
       await _showUploadSuccessDialog();
-      setState(() {
-        _selectedImages = [];
-      });
     } else {
-      await _showUploadFailureDialog();
-      List<File> newSelected = [];
-      for (final i in failures) {
-        newSelected.add(_selectedImages[i]);
-      }
-      setState(() {
-        _selectedImages = newSelected;
-      });
+      await _showUploadFailureDialog(failures);
     }
-    setState(() {
-      uploadProgress = null;
-    });
+    await _clearImages();
   }
 
   Future<String?> _getAccessToken() async {
@@ -238,18 +239,29 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     );
   }
 
-  Future<void> _showUploadFailureDialog() async {
+  Future<void> _showUploadFailureDialog(List<int> failed) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Some Uploads Failed'),
-          content: Text('The failed images are the ones still remaining.'),
+          content: Text('Would you like to save failed uploads to gallery?'),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                final nav = Navigator.of(context);
+                await Future.wait(failed.map((i) {
+                  return Gal.putImage(_selectedImages[i].path,
+                      album: 'Normandy App - $name');
+                }));
+                if (mounted) nav.pop();
               },
             ),
           ],
@@ -260,9 +272,11 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) print("client choose image");
-    if (kDebugMode) print(_selectedImages.length);
-    if (kDebugMode) print(_selectedClientFolderId);
+    if (kDebugMode) {
+      print("client choose image");
+      print(_selectedImages.length);
+      print(_selectedClientFolderId);
+    }
     final canUpload = _selectedImages.isNotEmpty &&
         _selectedUploadType != null &&
         uploadProgress == null;
