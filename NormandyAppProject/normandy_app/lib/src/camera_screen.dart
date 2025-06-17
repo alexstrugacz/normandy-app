@@ -16,6 +16,12 @@ class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
+  late double _minZoom;
+  late double _maxZoom;
+  double _currentZoom = 1.0;
+  double _lastZoom = 1.0;
+  double _baseZoom = 1.0;
+
   List<File> files = [];
   double _overlayOpacity = 0.0;
   bool _isCapturing = false;
@@ -28,7 +34,7 @@ class _CameraScreenState extends State<CameraScreen> {
       ResolutionPreset.max,
       enableAudio: false,
     );
-    _initializeControllerFuture = _controller.initialize();
+    _initializeControllerFuture = initialize();
   }
 
   @override
@@ -37,21 +43,24 @@ class _CameraScreenState extends State<CameraScreen> {
     super.dispose();
   }
 
+  Future<void> initialize() async {
+    await _controller.initialize();
+    _minZoom = await _controller.getMinZoomLevel();
+    //print("minZoom: $_minZoom");
+    _maxZoom = await _controller.getMaxZoomLevel();
+  }
+
   Future<void> _takePicture() async {
     try {
-      await _initializeControllerFuture;
       final image = await _controller.takePicture();
-      setState(() {
-        _overlayOpacity =
-            0.5; // Start the shutter effect (semi-transparent black)
-      });
+      // Start the shutter effect (semi-transparent black)k
+      setState(() => _overlayOpacity = 0.5);
 
       // Wait a short duration for the shutter effect
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
-      setState(() {
-        _overlayOpacity = 0.0; // Fade it back out
-      });
+      // Fade it back out
+      setState(() => _overlayOpacity = 0.0);
 
       // TODO photos taken in landscape are sideways
       files.add(File(image.path));
@@ -85,6 +94,8 @@ class _CameraScreenState extends State<CameraScreen> {
                   maxWidth: size.width,
                   // only preview is cropped, NOT actual image
                   // maybe an issue
+                  // look at ResolutionPreset's and also manual image transformation
+                  // or hopefully there will be a better way
                   child: Transform.scale(
                     scale: scale,
                     child: CameraPreview(_controller),
@@ -92,9 +103,25 @@ class _CameraScreenState extends State<CameraScreen> {
                 ),
                 AnimatedOpacity(
                   opacity: _overlayOpacity,
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   child: Container(
                     color: Colors.black,
+                  ),
+                ),
+                GestureDetector(
+                  onScaleStart: (_) => _baseZoom = _currentZoom,
+                  onScaleUpdate: (details) async {
+                    _currentZoom =
+                        (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
+                    if ((_currentZoom - _lastZoom).abs() > 0.05) {
+                      _lastZoom = _currentZoom;
+                      _controller.setZoomLevel(_currentZoom);
+                    }
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    width: double.infinity,
+                    height: double.infinity,
                   ),
                 ),
                 if (!_isCapturing)
@@ -105,16 +132,13 @@ class _CameraScreenState extends State<CameraScreen> {
                     right: isLandscape ? 30 : 0,
                     child: Center(
                       child: FloatingActionButton(
+                        heroTag: null,
                         onPressed: () async {
-                          setState(() {
-                            _isCapturing = true;
-                          });
+                          setState(() => _isCapturing = true);
                           await _takePicture();
-                          setState(() {
-                            _isCapturing = false;
-                          });
+                          setState(() => _isCapturing = false);
                         },
-                        child: Icon(Icons.camera_alt),
+                        child: const Icon(Icons.camera_alt),
                       ),
                     ),
                   ),
@@ -124,19 +148,20 @@ class _CameraScreenState extends State<CameraScreen> {
                   right: isLandscape ? 30 : null,
                   child: Center(
                     child: FloatingActionButton(
+                      heroTag: null,
                       mini: true,
                       backgroundColor: Colors.black.withValues(alpha: 0.5),
                       onPressed: () {
                         Navigator.pop(context, files);
                       },
-                      child: Icon(Icons.arrow_back, color: Colors.white),
+                      child: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                   ),
                 ),
               ],
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),

@@ -4,7 +4,6 @@ import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
 import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
-import 'package:normandy_app/src/direct_phone_numbers/inactive_employees.dart';
 import 'package:normandy_app/src/projectupload.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
@@ -42,7 +41,8 @@ class MyApp extends StatelessWidget {
           "/business-contacts-list": (context) => const BusinessContactsList(),
           "/contacts": (context) => const Contacts(),
           "/user-settings": (context) => const Settings(),
-          "/normandy-app-contributors": (context) =>  NormandyAppContributors(),
+          "/normandy-app-contributors": (context) =>
+              const NormandyAppContributors(),
           "/quick-links": (context) => const QuickLinksScreen(),
           "/select-category-page": (context) => const SelectCategoryPage(),
           "/employee-list": (context) =>
@@ -69,13 +69,13 @@ class MyApp extends StatelessWidget {
           '/upload-image': (context) => const UploadImage(),
           //'/project-upload': (context) => const ProjectUpload(),
           '/project-upload/page': (context) => const ProjectUploadPage(),
-          '/project-upload/photo': (context) => ProjectUploadPhoto(),
-          '/project-upload/gallery': (context) => ProjectUploadGallery(),
+          '/project-upload/photo': (context) => const ProjectUploadPhoto(),
+          '/project-upload/gallery': (context) => const ProjectUploadGallery(),
           '/coming-soon': (context) => ComingSoon(),
           // '/client-choose-image-page': (context) => ClientChooseImagePage(
           //       header: 'Client Image Upload',
           //     ),
-          '/customers': (context) => CustomerSearchPage(),
+          '/customers': (context) => const CustomerSearchPage(),
         });
   }
 }
