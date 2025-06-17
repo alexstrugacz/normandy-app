@@ -64,7 +64,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
       clientSCRT = CLIENT_SCRT;
       tenantId = TENANT_ID;
     } catch (e) {
-      if(kDebugMode) print('Error accessing environment variables: $e');
+      if (kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
@@ -77,7 +77,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
     if (status.isGranted) {
       _initializeCamera();
     } else {
-      if(kDebugMode) print('Camera permission not granted');
+      if (kDebugMode) print('Camera permission not granted');
     }
   }
 
@@ -95,10 +95,10 @@ class TakeAPhotoState extends State<TakeAPhoto> {
           _isCameraInitialized = true;
         });
       } else {
-        if(kDebugMode) print('No cameras available');
+        if (kDebugMode) print('No cameras available');
       }
     } catch (e) {
-      if(kDebugMode) print('Error initializing camera: $e');
+      if (kDebugMode) print('Error initializing camera: $e');
     }
   }
 
@@ -118,7 +118,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
         _capturedImage = File(imageFile.path);
       });
     } catch (e) {
-      if(kDebugMode) print('Error taking picture: $e');
+      if (kDebugMode) print('Error taking picture: $e');
     }
   }
 
@@ -126,14 +126,14 @@ class TakeAPhotoState extends State<TakeAPhoto> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      if(kDebugMode) print('Failed to get access token');
+      if (kDebugMode) print('Failed to get access token');
       return;
     }
 
     await getAllDrives(accessToken);
 
     if (_operationsDriveId == null) {
-      if(kDebugMode) print('Drive named "Operations" not found');
+      if (kDebugMode) print('Drive named "Operations" not found');
       return;
     }
 
@@ -141,7 +141,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
     final String? email = prefs.getString("email");
 
     if (email == null) {
-      if(kDebugMode) print('No email found in SharedPreferences');
+      if (kDebugMode) print('No email found in SharedPreferences');
       return;
     }
 
@@ -168,13 +168,13 @@ class TakeAPhotoState extends State<TakeAPhoto> {
         );
 
         if (response.statusCode == 201) {
-          if(kDebugMode) print('File uploaded successfully: $fileName');
+          if (kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          if(kDebugMode) print('File upload failed: ${response.body}');
+          if (kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        if(kDebugMode) print('Error uploading file: $e');
+        if (kDebugMode) print('Error uploading file: $e');
       }
     }
   }
@@ -200,15 +200,15 @@ class TakeAPhotoState extends State<TakeAPhoto> {
       );
 
       if (response.statusCode == 200) {
-        if(kDebugMode) print('Access token: ${response.body}');
+        if (kDebugMode) print('Access token: ${response.body}');
         final Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['access_token'];
       } else {
-        if(kDebugMode) print('Failed to get access token: ${response.body}');
+        if (kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting access token: $e');
+      if (kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
@@ -229,7 +229,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
         final List<dynamic> sites = sitesData['value'];
 
         if (sites.isEmpty) {
-          if(kDebugMode) print('No sites found.');
+          if (kDebugMode) print('No sites found.');
           return;
         }
 
@@ -240,7 +240,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
 
         if (site != null) {
           final String operationsSiteId = site['id'];
-          if(kDebugMode) print('Found Operations Site ID: $operationsSiteId');
+          if (kDebugMode) print('Found Operations Site ID: $operationsSiteId');
 
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
@@ -257,7 +257,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
             final List<dynamic> drives = drivesData['value'];
 
             if (drives.isEmpty) {
-              if(kDebugMode) print('No drives found for Operations site.');
+              if (kDebugMode) print('No drives found for Operations site.');
               return;
             }
 
@@ -270,21 +270,25 @@ class TakeAPhotoState extends State<TakeAPhoto> {
               setState(() {
                 _operationsDriveId = drive['id'] as String?;
               });
-              if(kDebugMode) print('Found Documents Drive ID: $_operationsDriveId');
+              if (kDebugMode) {
+                print('Found Documents Drive ID: $_operationsDriveId');
+              }
             } else {
-              if(kDebugMode) print('Drive named "Documents" not found.');
+              if (kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
+            if (kDebugMode) {
+              print('Failed to get drives: ${drivesResponse.body}');
+            }
           }
         } else {
-          if(kDebugMode) print('Site named "Operations" not found.');
+          if (kDebugMode) print('Site named "Operations" not found.');
         }
       } else {
-        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
+        if (kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting sites or drives: $e');
+      if (kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 
@@ -293,11 +297,11 @@ class TakeAPhotoState extends State<TakeAPhoto> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Upload Successful'),
-          content: Text('All images have been uploaded successfully.'),
+          title: const Text('Upload Successful'),
+          content: const Text('All images have been uploaded successfully.'),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -339,7 +343,7 @@ class TakeAPhotoState extends State<TakeAPhoto> {
         actions: [
           if (_capturedImages.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.done),
+              icon: const Icon(Icons.done),
               onPressed: _navigateToShowcase,
             ),
         ],
@@ -396,12 +400,12 @@ class TakeAPhotoState extends State<TakeAPhoto> {
                     ),
                   ],
                 )
-          : Center(child: CircularProgressIndicator()),
+          : const Center(child: CircularProgressIndicator()),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _takePicture,
         tooltip: 'Take a Photo',
-        label: Text('Capture Receipt'),
-        icon: Icon(Icons.camera_alt),
+        label: const Text('Capture Receipt'),
+        icon: const Icon(Icons.camera_alt),
       ),
     );
   }
@@ -411,7 +415,8 @@ class PhotoShowcase extends StatefulWidget {
   final List<File> images;
   final Future<void> Function(String folderName) onUpload;
 
-  const PhotoShowcase({super.key, required this.images, required this.onUpload});
+  const PhotoShowcase(
+      {super.key, required this.images, required this.onUpload});
 
   @override
   PhotoShowcaseState createState() => PhotoShowcaseState();
@@ -456,22 +461,22 @@ class PhotoShowcaseState extends State<PhotoShowcase> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Upload to OneDrive'),
+          title: const Text('Upload to OneDrive'),
           content: TextField(
             onChanged: (value) {
               folderName = value;
             },
-            decoration: InputDecoration(hintText: "Enter folder name"),
+            decoration: const InputDecoration(hintText: "Enter folder name"),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(folderName);
               },
@@ -490,14 +495,14 @@ class PhotoShowcaseState extends State<PhotoShowcase> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Photo Showcase'),
+        title: const Text('Photo Showcase'),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: _deleteSelectedImages,
           ),
           IconButton(
-            icon: Icon(Icons.done),
+            icon: const Icon(Icons.done),
             onPressed: () {
               Navigator.of(context).pop(_currentImages);
             },
@@ -505,7 +510,7 @@ class PhotoShowcaseState extends State<PhotoShowcase> {
         ],
       ),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
         ),
         itemCount: _currentImages.length,
@@ -520,7 +525,7 @@ class PhotoShowcaseState extends State<PhotoShowcase> {
                   if (_selectedImages[index])
                     Container(
                       color: Colors.black54,
-                      child: Icon(Icons.check, color: Colors.white),
+                      child: const Icon(Icons.check, color: Colors.white),
                     ),
                 ],
               ),
@@ -531,8 +536,8 @@ class PhotoShowcaseState extends State<PhotoShowcase> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showUploadDialog,
         tooltip: 'Upload to OneDrive',
-        label: Text('Upload to OneDrive'),
-        icon: Icon(Icons.cloud_upload),
+        label: const Text('Upload to OneDrive'),
+        icon: const Icon(Icons.cloud_upload),
       ),
     );
   }

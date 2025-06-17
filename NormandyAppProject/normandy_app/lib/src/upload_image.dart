@@ -47,7 +47,7 @@ class UploadImageState extends State<UploadImage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Upload Images'), actions: [
+        appBar: AppBar(title: const Text('Upload Images'), actions: [
           IconButton(
               onPressed: () async {
                 await showSearch(
@@ -65,7 +65,7 @@ class UploadImageState extends State<UploadImage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   if (selectedCustomer == null)
-                    ListTile(title: Text('Start typing to search'))
+                    const ListTile(title: Text('Start typing to search'))
                   else
                     Expanded(
                         child: Container(

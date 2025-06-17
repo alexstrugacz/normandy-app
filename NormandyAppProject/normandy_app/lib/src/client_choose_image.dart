@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:gal/gal.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +21,6 @@ class ClientChooseImagePage extends StatefulWidget {
 }
 
 class ClientChooseImagePageState extends State<ClientChooseImagePage> {
-  late String name;
   List<File> _selectedImages = [];
   final String _clientProjectsDriveId =
       "b!jAiYPxrRjUCBK5ovip7ZEQNDPo7LyL1OgeHRWtDKCLbYuzyahUg6R4iIfPdyhxQk";
@@ -28,7 +28,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
   String? _selectedClientFolderId;
   (int, int)? uploadProgress;
 
-  final List<String> folderPaths = [
+  static const List<String> folderPaths = [
     '10. Photos',
     '10. Photos/After Photos',
     '10. Photos/Site Visits',
@@ -36,12 +36,6 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     '45. Job Ready Documents',
     '08. Sal...ents/Misc/Client File Share',
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    name = widget.name;
-  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -90,6 +84,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
     }
 
     List<int> failures = [];
+    // TODO allow to cancel uploads
     for (int i = 0; i < _selectedImages.length; i++) {
       final File image = _selectedImages[i];
       final String date =
@@ -114,6 +109,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         if (response.statusCode == 201) {
           if (kDebugMode) print('File uploaded successfully: $fileName');
         } else {
+          // TODO show toast or some other notif on failure
           if (kDebugMode) print('File upload failed: ${response.body}');
           failures.add(i);
         }
@@ -172,7 +168,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
   Future<void> _selectClientFolder(String accessToken) async {
     if (kDebugMode) print("selecting client folder id");
     final String url =
-        'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/root:/$name';
+        'https://graph.microsoft.com/v1.0/drives/$_clientProjectsDriveId/root:/${widget.name}';
 
     try {
       http.Response response = await http.get(
@@ -197,7 +193,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
             'Content-Type': 'application/json',
           },
           body: jsonEncode({
-            "name": name,
+            "name": widget.name,
             "folder": {},
             "@microsoft.graph.conflictBehavior": "fail"
           }),
@@ -224,11 +220,11 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Upload Successful'),
-          content: Text('All images have been uploaded successfully.'),
+          title: const Text('Upload Successful'),
+          content: const Text('All images have been uploaded successfully.'),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -244,22 +240,26 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Some Uploads Failed'),
-          content: Text('Would you like to save failed uploads to gallery?'),
+          title: const Text('Some Uploads Failed'),
+          content:
+              const Text('Would you like to save failed uploads to gallery?'),
           actions: [
             TextButton(
-              child: Text('No'),
+              child: const Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Yes'),
+              child: const Text('Yes'),
               onPressed: () async {
+                // TODO only save images from camera capture
                 final nav = Navigator.of(context);
+                final now = DateTime.now();
+                final formattedDate = DateFormat('yyyy-MM-dd').format(now);
                 await Future.wait(failed.map((i) {
                   return Gal.putImage(_selectedImages[i].path,
-                      album: 'Normandy App - $name');
+                      album: 'Normandy App - ${widget.name} - $formattedDate');
                 }));
                 if (mounted) nav.pop();
               },
@@ -285,7 +285,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
       children: [
         DropdownButton<int>(
           value: _selectedUploadType,
-          hint: Text('Select Upload Folder'),
+          hint: const Text('Select Upload Folder'),
           items: List.generate(folderPaths.length, (index) {
             return DropdownMenuItem<int>(
               value: index,
@@ -301,9 +301,9 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
         ),
         Expanded(
           child: _selectedImages.isEmpty
-              ? Center(child: Text('No images selected'))
+              ? const Center(child: Text('No images selected'))
               : GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                   ),
                   itemCount: _selectedImages.length,
@@ -315,7 +315,7 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
                         if (wasSynchronouslyLoaded || frame != null) {
                           return child;
                         } else {
-                          return Center(
+                          return const Center(
                             child: Icon(Icons.image, color: Colors.grey),
                           );
                         }
@@ -328,44 +328,101 @@ class ClientChooseImagePageState extends State<ClientChooseImagePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             FloatingActionButton.extended(
+              heroTag: null,
               onPressed: _pickImage,
-              label: Text('Gallery'),
-              icon: Icon(Icons.photo_library),
+              label: const Text('Gallery'),
+              icon: const Icon(Icons.photo_library),
             ),
             FloatingActionButton.extended(
+              heroTag: null,
               onPressed: () async {
-                final newFiles = await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CameraScreen()));
+                final newFiles = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CameraScreen()));
                 setState(() {
                   _selectedImages += newFiles;
                 });
               },
-              label: Text('Camera'),
-              icon: Icon(Icons.camera_alt),
+              label: const Text('Camera'),
+              icon: const Icon(Icons.camera_alt),
             ),
           ],
         ),
         FloatingActionButton.extended(
+          heroTag: null,
           onPressed: canUpload ? _uploadToOneDrive : null,
           backgroundColor: canUpload ? null : Colors.grey.shade400,
           foregroundColor: canUpload ? null : Colors.grey.shade800,
           label: (uploadProgress == null)
-              ? Text('Upload')
+              ? const Text('Upload')
               : Row(spacing: 10, children: [
-                  CircularProgressIndicator(
-                      color: Colors.grey.shade600,
-                      value: uploadProgress!.$1 / uploadProgress!.$2),
+                  if (uploadProgress!.$1 != uploadProgress!.$2)
+                    SpinningProgressIndicator(progress: uploadProgress!),
                   Text('Uploading ${uploadProgress!.$1}/${uploadProgress!.$2}'),
                 ]),
-          icon: Icon(Icons.cloud_upload),
+          icon: const Icon(Icons.cloud_upload),
         ),
         if (_selectedImages.isEmpty)
-          Text('No images to upload',
+          const Text('No images to upload',
               style: TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0))),
         if (_selectedUploadType == null)
-          Text('No folder is selected',
+          const Text('No folder is selected',
               style: TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0))),
       ],
     );
+  }
+}
+
+class SpinningProgressIndicator extends StatefulWidget {
+  final (int, int) progress;
+  const SpinningProgressIndicator({super.key, required this.progress});
+
+  @override
+  State<StatefulWidget> createState() => _SpinningProgressIndicator();
+}
+
+class _SpinningProgressIndicator extends State<SpinningProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _spinController;
+
+  @override
+  void initState() {
+    super.initState();
+    _spinController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _spinController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = widget.progress;
+    final targetValue = max(0.1, progress.$1 / progress.$2);
+    // return RotationTransition(
+    //   turns: _spinController,
+    //   // turns: AlwaysStoppedAnimation(0.25), // static rotation for demo
+    //   child: TweenAnimationBuilder<double>(
+    //       tween: Tween<double>(end: targetValue),
+    //       duration: const Duration(milliseconds: 500),
+    //       builder: (context, value, _) => CircularProgressIndicator(
+    //           color: Colors.grey.shade600, value: value)),
+    // );
+    return TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: targetValue),
+        duration: const Duration(milliseconds: 500),
+        builder: (context, value, _) {
+          return RotationTransition(
+              turns: _spinController,
+              // turns: AlwaysStoppedAnimation(0.25), // static rotation for demo
+              child: CircularProgressIndicator(
+                  color: Colors.grey.shade600, value: value));
+        });
   }
 }

@@ -38,7 +38,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
       clientSCRT = CLIENT_SCRT;
       tenantId = TENANT_ID;
     } catch (e) {
-      if(kDebugMode) print('Error accessing environment variables: $e');
+      if (kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
@@ -57,14 +57,14 @@ class ChooseImagePageState extends State<ChooseImagePage> {
     final String? accessToken = await _getAccessToken();
 
     if (accessToken == null) {
-      if(kDebugMode) print('Failed to get access token');
+      if (kDebugMode) print('Failed to get access token');
       return;
     }
 
     await getAllDrives(accessToken);
 
     if (_operationsDriveId == null) {
-      if(kDebugMode) print('Drive named "Operations" not found');
+      if (kDebugMode) print('Drive named "Operations" not found');
       return;
     }
 
@@ -72,7 +72,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
     final String? email = prefs.getString("email");
 
     if (email == null) {
-      if(kDebugMode) print('No email found in SharedPreferences');
+      if (kDebugMode) print('No email found in SharedPreferences');
       return;
     }
 
@@ -99,13 +99,13 @@ class ChooseImagePageState extends State<ChooseImagePage> {
         );
 
         if (response.statusCode == 201) {
-          if(kDebugMode) print('File uploaded successfully: $fileName');
+          if (kDebugMode) print('File uploaded successfully: $fileName');
           _showUploadSuccessDialog();
         } else {
-          if(kDebugMode) print('File upload failed: ${response.body}');
+          if (kDebugMode) print('File upload failed: ${response.body}');
         }
       } catch (e) {
-        if(kDebugMode) print('Error uploading file: $e');
+        if (kDebugMode) print('Error uploading file: $e');
       }
     }
   }
@@ -122,7 +122,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
     };
 
     try {
-      if(kDebugMode) print('choosing $url');
+      if (kDebugMode) print('choosing $url');
       final http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -132,15 +132,15 @@ class ChooseImagePageState extends State<ChooseImagePage> {
       );
 
       if (response.statusCode == 200) {
-        if(kDebugMode) print('Access token: ${response.body}');
+        if (kDebugMode) print('Access token: ${response.body}');
         final Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['access_token'];
       } else {
-        if(kDebugMode) print('Failed to get access token: ${response.body}');
+        if (kDebugMode) print('Failed to get access token: ${response.body}');
         return null;
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting access token: $e');
+      if (kDebugMode) print('Error getting access token: $e');
       return null;
     }
   }
@@ -161,7 +161,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
         final List<dynamic> sites = sitesData['value'];
 
         if (sites.isEmpty) {
-          if(kDebugMode) print('No sites found.');
+          if (kDebugMode) print('No sites found.');
           return;
         }
 
@@ -172,7 +172,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
 
         if (site != null) {
           final String operationsSiteId = site['id'];
-          if(kDebugMode) print('Found Operations Site ID: $operationsSiteId');
+          if (kDebugMode) print('Found Operations Site ID: $operationsSiteId');
 
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
@@ -189,7 +189,7 @@ class ChooseImagePageState extends State<ChooseImagePage> {
             final List<dynamic> drives = drivesData['value'];
 
             if (drives.isEmpty) {
-              if(kDebugMode) print('No drives found for Operations site.');
+              if (kDebugMode) print('No drives found for Operations site.');
               return;
             }
 
@@ -202,21 +202,25 @@ class ChooseImagePageState extends State<ChooseImagePage> {
               setState(() {
                 _operationsDriveId = drive['id'] as String?;
               });
-              if(kDebugMode) print('Found Documents Drive ID: $_operationsDriveId');
+              if (kDebugMode) {
+                print('Found Documents Drive ID: $_operationsDriveId');
+              }
             } else {
-              if(kDebugMode) print('Drive named "Documents" not found.');
+              if (kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
+            if (kDebugMode) {
+              print('Failed to get drives: ${drivesResponse.body}');
+            }
           }
         } else {
-          if(kDebugMode) print('Site named "Operations" not found.');
+          if (kDebugMode) print('Site named "Operations" not found.');
         }
       } else {
-        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
+        if (kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting sites or drives: $e');
+      if (kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 
@@ -225,11 +229,11 @@ class ChooseImagePageState extends State<ChooseImagePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Upload Successful'),
-          content: Text('All images have been uploaded successfully.'),
+          title: const Text('Upload Successful'),
+          content: const Text('All images have been uploaded successfully.'),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -265,15 +269,15 @@ class ChooseImagePageState extends State<ChooseImagePage> {
         actions: [
           if (_selectedImages.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.done),
+              icon: const Icon(Icons.done),
               onPressed: _navigateToShowcase,
             ),
         ],
       ),
       body: _selectedImages.isEmpty
-          ? Center(child: Text('No images selected'))
+          ? const Center(child: Text('No images selected'))
           : GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
               ),
               itemCount: _selectedImages.length,
@@ -283,8 +287,8 @@ class ChooseImagePageState extends State<ChooseImagePage> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _pickImage,
-        label: Text('Pick More Images'),
-        icon: Icon(Icons.photo_library),
+        label: const Text('Pick More Images'),
+        icon: const Icon(Icons.photo_library),
       ),
     );
   }
