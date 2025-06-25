@@ -1,20 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ExpenseCodePage(),
-    );
-  }
-}
-
 class ExpenseCodePage extends StatefulWidget {
-  const ExpenseCodePage({super.key});
+  final File image;
+  final String imagePath;
+  const ExpenseCodePage({
+    super.key,
+    required this.image,
+    required this.imagePath,
+  });
 
   @override
   ExpenseCodePageState createState() => ExpenseCodePageState();
@@ -22,8 +17,8 @@ class ExpenseCodePage extends StatefulWidget {
 
 class ExpenseCodePageState extends State<ExpenseCodePage> {
   String jobNonJobValue = 'Non-Job';
-  late String clientValue;
-  late String accountingCodeValue;
+  String? clientValue;
+  String? accountingCodeValue;
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
 
@@ -48,12 +43,15 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expense Entry'),
+        title: const Text('Expense Entry'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Image(
+              image: FileImage(widget.image),
+            ),
             DropdownButtonFormField<String>(
               value: jobNonJobValue,
               onChanged: (value) {
@@ -70,7 +68,7 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
                   child: Text(value),
                 );
               }).toList(),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Job/Non-Job',
               ),
             ),
@@ -88,7 +86,7 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
                     child: Text(client),
                   );
                 }).toList(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Client',
                 ),
               ),
@@ -105,30 +103,31 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
                   child: Text('${code.keys.first} (${code.values.first})'),
                 );
               }).toList(),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Accounting Code',
               ),
             ),
             TextFormField(
               controller: descriptionController,
               maxLength: 50,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Description',
               ),
             ),
             TextFormField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Amount',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Send data to normandy backend
+                Navigator.pop(context);
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),

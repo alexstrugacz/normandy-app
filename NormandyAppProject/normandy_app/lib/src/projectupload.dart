@@ -15,7 +15,7 @@ Future<void> _uploadToOneDrive(List<File> images, String folderId) async {
   final String? accessToken = await _getAccessToken();
 
   if (accessToken == null) {
-    if(kDebugMode) print('Failed to get access token');
+    if (kDebugMode) print('Failed to get access token');
     return;
   }
 
@@ -23,7 +23,7 @@ Future<void> _uploadToOneDrive(List<File> images, String folderId) async {
   final String? email = prefs.getString("email");
 
   if (email == null) {
-    if(kDebugMode) print('No email found in SharedPreferences');
+    if (kDebugMode) print('No email found in SharedPreferences');
     return;
   }
 
@@ -51,7 +51,7 @@ Future<void> _uploadToOneDrive(List<File> images, String folderId) async {
     );
 
     if (response.statusCode == 201) {
-      if(kDebugMode) print('File uploaded successfully: $fileName');
+      if (kDebugMode) print('File uploaded successfully: $fileName');
     } else {
       throw Exception("file not uploaded");
       // if(kDebugMode) print('File upload failed: ${response.body}');
@@ -80,36 +80,20 @@ Future<String?> _getAccessToken() async {
     );
 
     if (response.statusCode == 200) {
-      if(kDebugMode) print('Access token: ${response.body}');
+      if (kDebugMode) print('Access token: ${response.body}');
       final Map<String, dynamic> responseData = json.decode(response.body);
       return responseData['access_token'];
     } else {
-      if(kDebugMode) print('Failed to get access token: ${response.body}');
+      if (kDebugMode) print('Failed to get access token: ${response.body}');
       return null;
     }
   } catch (e) {
-    if(kDebugMode) print('Error getting access token: $e');
+    if (kDebugMode) print('Error getting access token: $e');
     return null;
   }
 }
 
 class ProjectUpload extends StatefulWidget {
-  // TODO
-  // [x] 1 - Get project list
-  // [x] Display project list
-  // [x] 2 - User tap on project
-  // [x] Go to Upload/Capture image prompt
-  // [x] 3a - Capture image
-  // [x] User can click a button to capture an image
-  // [x] User can click a button to finish (go to 4)
-  // [x] User can click a button to cancel (go to 2 / images cleared)
-  // [ ] 3b - Upload image
-  // [ ] User will see their image gallery
-  // [ ] User will be able to select images
-  // [ ] User will be able to hit a button to finish (go to 4)
-  // [x] 4 - Upload to OneDrive
-  // [x] The images are uploaded to OneDrive
-
   const ProjectUpload({super.key});
 
   @override
@@ -121,7 +105,7 @@ class _ProjectUploadState extends State<ProjectUpload> {
   bool loadingProjects = true;
 
   void initialize() async {
-    if(kDebugMode) print('initializing');
+    if (kDebugMode) print('initializing');
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString("email");
     final token = await _getAccessToken();
@@ -137,7 +121,7 @@ class _ProjectUploadState extends State<ProjectUpload> {
         'https://graph.microsoft.com/v1.0/users/$email/drive/root:/Shortcuts:/search(q=\'\')?\$select=name,remoteItem';
     int length = 0;
     while (url != null) {
-      if(kDebugMode) print('URL ::: $url');
+      if (kDebugMode) print('URL ::: $url');
       try {
         final response = await http.get(Uri.parse(url), headers: {
           'Authorization': 'Bearer $token',
@@ -148,7 +132,7 @@ class _ProjectUploadState extends State<ProjectUpload> {
         final decoded = json.decode(response.body);
         length += decoded["value"].length as int;
         for (final element in decoded["value"]) {
-          if(kDebugMode) print(element["name"]);
+          if (kDebugMode) print(element["name"]);
           if (element["remoteItem"] == null) continue;
           setState(() {
             projects.add((element["name"], element["remoteItem"]["id"]));
@@ -156,12 +140,12 @@ class _ProjectUploadState extends State<ProjectUpload> {
         }
         url = decoded["@odata.nextLink"];
       } catch (e) {
-        if(kDebugMode) print(e.toString());
+        if (kDebugMode) print(e.toString());
         break;
       }
       // break;
     }
-    if(kDebugMode) print('DONE: $length');
+    if (kDebugMode) print('DONE: $length');
     setState(() {
       loadingProjects = false;
     });
@@ -226,7 +210,7 @@ class ProjectUploadPage extends StatelessWidget {
                   children: buttons.map((button) {
                     return ElevatedButton(
                       onPressed: () {
-                        if(kDebugMode) print('Pressed ${button.name}');
+                        if (kDebugMode) print('Pressed ${button.name}');
                         Navigator.pushNamed(context, button.route,
                             arguments: args);
                       },
@@ -283,7 +267,7 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
       clientSCRT = CLIENT_SCRT;
       tenantId = TENANT_ID;
     } catch (e) {
-      if(kDebugMode) print('Error accessing environment variables: $e');
+      if (kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
@@ -296,7 +280,7 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
     if (status.isGranted) {
       _initializeCamera();
     } else {
-      if(kDebugMode) print('Camera permission not granted');
+      if (kDebugMode) print('Camera permission not granted');
     }
   }
 
@@ -314,10 +298,10 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
           _isCameraInitialized = true;
         });
       } else {
-        if(kDebugMode) print('No cameras available');
+        if (kDebugMode) print('No cameras available');
       }
     } catch (e) {
-      if(kDebugMode) print('Error initializing camera: $e');
+      if (kDebugMode) print('Error initializing camera: $e');
     }
   }
 
@@ -333,7 +317,7 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
         _capturedImages.add(File(imageFile.path));
       });
     } catch (e) {
-      if(kDebugMode) print('Error taking picture: $e');
+      if (kDebugMode) print('Error taking picture: $e');
     }
   }
 
@@ -367,7 +351,7 @@ class _ProjectUploadPhotoState extends State<ProjectUploadPhoto> {
               await _uploadToOneDrive(_capturedImages, args.$2);
               _showUploadSuccessDialog();
             } catch (e) {
-              if(kDebugMode) print(e.toString());
+              if (kDebugMode) print(e.toString());
             }
           },
         ),
@@ -542,7 +526,7 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
       clientSCRT = CLIENT_SCRT;
       tenantId = TENANT_ID;
     } catch (e) {
-      if(kDebugMode) print('Error accessing environment variables: $e');
+      if (kDebugMode) print('Error accessing environment variables: $e');
     }
   }
 
@@ -573,7 +557,7 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
         final List<dynamic> sites = sitesData['value'];
 
         if (sites.isEmpty) {
-          if(kDebugMode) print('No sites found.');
+          if (kDebugMode) print('No sites found.');
           return;
         }
 
@@ -584,7 +568,7 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
 
         if (site != null) {
           final String operationsSiteId = site['id'];
-          if(kDebugMode) print('Found Operations Site ID: $operationsSiteId');
+          if (kDebugMode) print('Found Operations Site ID: $operationsSiteId');
 
           final String drivesUrl =
               'https://graph.microsoft.com/v1.0/sites/$operationsSiteId/drives';
@@ -601,7 +585,7 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
             final List<dynamic> drives = drivesData['value'];
 
             if (drives.isEmpty) {
-              if(kDebugMode) print('No drives found for Operations site.');
+              if (kDebugMode) print('No drives found for Operations site.');
               return;
             }
 
@@ -614,26 +598,28 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
               setState(() {
                 _operationsDriveId = drive['id'] as String?;
               });
-              if(kDebugMode) print('Found Documents Drive ID: $_operationsDriveId');
+              if (kDebugMode)
+                print('Found Documents Drive ID: $_operationsDriveId');
             } else {
-              if(kDebugMode) print('Drive named "Documents" not found.');
+              if (kDebugMode) print('Drive named "Documents" not found.');
             }
           } else {
-            if(kDebugMode) print('Failed to get drives: ${drivesResponse.body}');
+            if (kDebugMode)
+              print('Failed to get drives: ${drivesResponse.body}');
           }
         } else {
-          if(kDebugMode) print('Site named "Operations" not found.');
+          if (kDebugMode) print('Site named "Operations" not found.');
         }
       } else {
-        if(kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
+        if (kDebugMode) print('Failed to get sites: ${sitesResponse.body}');
       }
     } catch (e) {
-      if(kDebugMode) print('Error getting sites or drives: $e');
+      if (kDebugMode) print('Error getting sites or drives: $e');
     }
   }
 
   void _showUploadSuccessDialog() {
-    if(kDebugMode) print("showing dialog");
+    if (kDebugMode) print("showing dialog");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -664,7 +650,7 @@ class _ProjectUploadGalleryState extends State<ProjectUploadGallery> {
                     List<File>.from(_selectedImages), args.$2);
                 _showUploadSuccessDialog();
               } catch (e) {
-                if(kDebugMode) print(e.toString());
+                if (kDebugMode) print(e.toString());
               }
             }),
       ),
