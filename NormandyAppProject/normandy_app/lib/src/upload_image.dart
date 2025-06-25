@@ -18,11 +18,6 @@ class UploadImageState extends State<UploadImage> {
 
   // String _errorMessage = '';
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void handleSelectCustomer(Customer customer) {
     if (kDebugMode) {
       print(customer.folderName);

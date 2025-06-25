@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:normandy_app/src/choose_image_page.dart';
 import 'package:normandy_app/src/active_trades/active_trades_categories.dart';
 import 'package:normandy_app/src/business_contacts/business_contacts_list.dart';
 import 'package:normandy_app/src/coming_soon.dart';
 import 'package:normandy_app/src/direct_phone_numbers/direct_phone_list.dart';
-import 'package:normandy_app/src/projectupload.dart';
 import 'package:normandy_app/src/home_page.dart';
 import 'package:normandy_app/src/login_page.dart';
 import 'package:normandy_app/src/contacts.dart';
@@ -15,7 +13,6 @@ import 'package:normandy_app/src/so_forms/create_so.dart';
 import 'package:normandy_app/src/so_forms/edit_so.dart';
 import 'package:normandy_app/src/so_forms/so_form_options.dart';
 import 'package:normandy_app/src/superintendents/superintendents_list.dart';
-import 'package:normandy_app/src/take_a_photo.dart';
 import 'package:normandy_app/src/upload_image.dart';
 import 'package:normandy_app/src/settings.dart';
 import 'package:normandy_app/src/quick_link_screen.dart';
@@ -50,12 +47,7 @@ class MyApp extends StatelessWidget {
           "/favorites": (context) =>
               const BusinessContactsList(isFavorite: true),
           "/projects-dashboard": (context) => const Text("Coming soon..."),
-          '/expense-report-selection': (context) =>
-              ExpenseReports(header: 'Expense Reports'),
-          '/expense-report-take-a-photo': (context) =>
-              const TakeAPhoto(header: 'Take a Photo'),
-          '/expense-report-choose-image': (context) =>
-              const ChooseImagePage(header: 'Choose Image'),
+          '/expense-report-selection': (context) => const ExpenseReports(),
           "/onedrive-shortcuts": (context) => const OnedriveShortcutActions(),
           "/add-onedrive-shortcut": (context) => OneDriveShortcut(mode: "add"),
           "/remove-onedrive-shortcut": (context) =>
@@ -68,13 +60,10 @@ class MyApp extends StatelessWidget {
           "/edit-so-form": (context) => const EditSOForm(),
           '/upload-image': (context) => const UploadImage(),
           //'/project-upload': (context) => const ProjectUpload(),
-          '/project-upload/page': (context) => const ProjectUploadPage(),
-          '/project-upload/photo': (context) => const ProjectUploadPhoto(),
-          '/project-upload/gallery': (context) => const ProjectUploadGallery(),
+          // '/project-upload/page': (context) => const ProjectUploadPage(),
+          // '/project-upload/photo': (context) => const ProjectUploadPhoto(),
+          // '/project-upload/gallery': (context) => const ProjectUploadGallery(),
           '/coming-soon': (context) => ComingSoon(),
-          // '/client-choose-image-page': (context) => ClientChooseImagePage(
-          //       header: 'Client Image Upload',
-          //     ),
           '/customers': (context) => const CustomerSearchPage(),
         });
   }

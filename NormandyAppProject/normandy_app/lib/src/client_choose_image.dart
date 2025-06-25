@@ -32,7 +32,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
     '10. Photos/Site Visits',
     '70. Service',
     '45. Job Ready Documents',
-    '08. Sal...ents/Misc/Client File Share',
+    '08. Salesperson Documents/Misc/Client File Share',
   ];
 
   Future<void> _uploadToOneDrive() async {
@@ -262,7 +262,10 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
           items: List.generate(folderPaths.length, (index) {
             return DropdownMenuItem<int>(
               value: index,
-              child: Text(folderPaths[index]),
+              child: Text(
+                folderPaths[index],
+                overflow: TextOverflow.ellipsis,
+              ),
             );
           }),
           onChanged: (value) {
@@ -276,7 +279,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
           child: ImageChooser(
               key: imageChooser,
               canUpload: canUpload,
-              upload: _uploadToOneDrive,
+              onUpload: _uploadToOneDrive,
               refresh: () {
                 setState(() {});
               }),

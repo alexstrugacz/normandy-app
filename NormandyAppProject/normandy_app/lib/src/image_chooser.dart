@@ -7,13 +7,13 @@ import 'package:normandy_app/src/camera_screen.dart';
 
 class ImageChooser extends StatefulWidget {
   final bool canUpload;
-  final Future<void> Function() upload;
+  final Future<void> Function() onUpload;
   final void Function() refresh;
 
   const ImageChooser({
     super.key,
     required this.canUpload,
-    required this.upload,
+    required this.onUpload,
     required this.refresh,
   });
 
@@ -22,6 +22,7 @@ class ImageChooser extends StatefulWidget {
 }
 
 class ImageChooserState extends State<ImageChooser> {
+  // TODO select and delete unwanted photos
   final List<File> _images = [];
   (int, int)? _progress;
   List<File> get images => List.unmodifiable(_images);
@@ -123,7 +124,7 @@ class ImageChooserState extends State<ImageChooser> {
         ),
         FloatingActionButton.extended(
           heroTag: null,
-          onPressed: canUpload ? widget.upload : null,
+          onPressed: canUpload ? widget.onUpload : null,
           backgroundColor: canUpload ? null : Colors.grey.shade400,
           foregroundColor: canUpload ? null : Colors.grey.shade800,
           label: (progress == null)
