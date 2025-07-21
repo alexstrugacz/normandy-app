@@ -47,7 +47,8 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           children: [
             Image(
               image: FileImage(widget.image),
@@ -131,6 +132,7 @@ class ExpenseCodePageState extends State<ExpenseCodePage> {
             ),
           ],
         ),
+        )
       ),
     );
   }

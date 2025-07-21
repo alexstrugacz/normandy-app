@@ -16,6 +16,21 @@ class UploadImageState extends State<UploadImage> {
   Customer? selectedCustomer;
   String? selectedProject;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSearch(
+        context: context,
+        delegate: CustomSearchDelegate(
+          context: context,
+          mounted: mounted,
+          onSelectCustomer: handleSelectCustomer,
+        ),
+      );
+    });
+  }
+
   // String _errorMessage = '';
 
   void handleSelectCustomer(Customer customer) {
