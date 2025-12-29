@@ -6,25 +6,32 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:normandy_app/src/customers/jobs_type.dart';
+import 'package:normandy_app/src/api/api_helper.dart';
 
 import 'package:normandy_app/src/image_chooser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'env.dart';
 
 class ClientChooseImagePage extends StatefulWidget {
   final String name;
-  const ClientChooseImagePage({super.key, required this.name});
+  final String customerId;
+  const ClientChooseImagePage({super.key, required this.name, required this.customerId});
 
   @override
   State<ClientChooseImagePage> createState() => _ClientChooseImagePageState();
 }
 
 class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
+  SharedPreferences? prefs;
   final String _clientProjectsDriveId =
       "b!jAiYPxrRjUCBK5ovip7ZEQNDPo7LyL1OgeHRWtDKCLbYuzyahUg6R4iIfPdyhxQk";
   final GlobalKey<ImageChooserState> imageChooser = GlobalKey();
   int? _selectedUploadType;
+  int? _selectedJobType;
   String? _selectedClientFolderId;
+  List<Job> jobs = [];
 
   static const List<String> folderPaths = [
     '10. Photos',
@@ -95,6 +102,19 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
       }
       ic.bumpProgress();
     }
+
+    prefs ??= await SharedPreferences.getInstance();
+
+    try {
+      await APIHelper.post(
+        'site-visits/check-site-visits?jobId=${jobs[_selectedJobType!].id}&userId=${prefs!.getString('userId') ?? ''}&customerId=${widget.customerId}',
+        {},
+        context,
+        mounted);
+    } catch (e) {
+      if (kDebugMode) print('Error during upload process: $e');
+    }
+
     if (failures.isEmpty) {
       await _showUploadSuccessDialog();
     } else {
@@ -245,6 +265,21 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
     );
   }
 
+   Future<List<Job>> _getJobsForCustomer() async {
+    var jobsResponse = await APIHelper.get(
+        'projects?customerId=${widget.customerId}&includeJobStateName=true',
+        context,
+        mounted);
+    if (jobsResponse != null && jobsResponse.statusCode == 200) {
+      var newJobs = (json.decode(jobsResponse.body)['projects'] as List)
+          .map((job) => Job.fromJson(job))
+          .toList();
+      return newJobs;
+    } else {
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
@@ -268,13 +303,40 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
               ),
             );
           }),
-          onChanged: (value) {
+          onChanged: (value) async {
             setState(() {
               _selectedUploadType = value;
             });
             if (kDebugMode) print('Selected upload type: $value');
+            var newJobs = await _getJobsForCustomer();
+            setState(() {
+              jobs = newJobs;
+            });
           },
         ),
+        (_selectedUploadType == 2)
+            ? (
+              DropdownButton<int>(
+                value: _selectedJobType,
+                hint: const Text('Select Job'),
+                items: List.generate(jobs.length, (index) {
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(
+                      '${jobs[index].jobNumber} - ${jobs[index].jobDescription ?? ''}', 
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedJobType = value;
+                  });
+                  if (kDebugMode) print('Selected job type: $value');
+                },
+              )
+              )
+            : (const Text('')),
         Flexible(
           child: ImageChooser(
               key: imageChooser,

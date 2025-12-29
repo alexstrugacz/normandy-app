@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:normandy_app/src/customers/customer_type.dart';
@@ -33,7 +35,7 @@ class UploadImageState extends State<UploadImage> {
 
   // String _errorMessage = '';
 
-  void handleSelectCustomer(Customer customer) {
+  void handleSelectCustomer(Customer customer) async {
     if (kDebugMode) {
       print(customer.folderName);
       print(customer.fname1);
@@ -53,6 +55,8 @@ class UploadImageState extends State<UploadImage> {
       selectedCustomer = customer;
     });
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +99,8 @@ class UploadImageState extends State<UploadImage> {
                                               fontSize: 18))),
                                   Expanded(
                                     child: ClientChooseImagePage(
-                                        name: selectedCustomer!.folderName),
+                                        name: selectedCustomer!.folderName,
+                                        customerId: selectedCustomer!.id),
                                   ),
                                 ])))
                 ])));
