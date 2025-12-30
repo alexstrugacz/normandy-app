@@ -123,10 +123,24 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           serviceOrders = newServiceOrders;
         });
       }
-
-      if (kDebugMode) print(customerContact?.email ?? 'No email found');
     }
     _loading = false;
+  }
+
+  String _getContactStatusText(String? fname, List<String> phoneNumbers, String? email) {
+    // Filter out empty/whitespace phones
+    final validPhones = phoneNumbers.where((phone) => phone.trim().isNotEmpty).toList();
+    final hasPhone = validPhones.isNotEmpty;
+    final hasEmail = email != null && email.trim().isNotEmpty;
+    
+    if (!hasPhone && !hasEmail) {
+      return ' (no phone or email)';
+    } else if (!hasPhone) {
+      return ' (no phone)';
+    } else if (!hasEmail) {
+      return ' (no email)';
+    }
+    return '';
   }
 
   @override
@@ -158,9 +172,29 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                customer?.fname1 ?? '',
-                                style: TextStyle(fontSize: 16),
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: customer?.fname1 ?? '',
+                                        style: TextStyle(fontSize: 16, color: Colors.black),
+                                      ),
+                                      TextSpan(
+                                        text: _getContactStatusText(
+                                          customer?.fname1,
+                                          [
+                                            customer?.cellPhone1 ?? '',
+                                            customer?.homePhone1 ?? '',
+                                            customer?.workPhone1 ?? ''
+                                          ],
+                                          customer?.email,
+                                        ),
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                               Row(
                                 children: [
@@ -183,9 +217,29 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                customer?.fname2 ?? '',
-                                style: TextStyle(fontSize: 16),
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: customer?.fname2 ?? '',
+                                        style: TextStyle(fontSize: 16, color: Colors.black),
+                                      ),
+                                      TextSpan(
+                                        text: _getContactStatusText(
+                                          customer?.fname2,
+                                          [
+                                            customer?.cellPhone2 ?? '',
+                                            customer?.homePhone2 ?? '',
+                                            customer?.workPhone2 ?? ''
+                                          ],
+                                          customer?.email2,
+                                        ),
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                               Row(
                                 children: [
@@ -216,11 +270,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          customerContact?.displayName ??
-                              customer?.lastSoldJobDesignerName ??
-                              'N/A',
-                          style: TextStyle(fontSize: 16),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: customerContact?.displayName ?? customer?.lastSoldJobDesignerName ?? 'N/A',
+                                  style: TextStyle(fontSize: 16, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         Row(
                           children: [

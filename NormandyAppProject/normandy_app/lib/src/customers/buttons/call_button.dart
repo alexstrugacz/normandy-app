@@ -16,7 +16,7 @@ class CallButton extends StatelessWidget {
       return email!;
     }
     for (var number in phoneNumbers) {
-      if (number.isNotEmpty && RegExp(r'^\+?[0-9\s]+$').hasMatch(number)) {
+      if (number.isNotEmpty && RegExp(r'^[\+\-\.\(\)\s0-9]+$').hasMatch(number)) {
         return number;
       }
     }

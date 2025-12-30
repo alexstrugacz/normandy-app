@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'appointments_type.dart';
@@ -9,8 +10,7 @@ class AppointmentView extends StatefulWidget {
   final Appointment appointment;
   final String nameAndCity;
 
-  const AppointmentView({Key? key, required this.appointment, required this.nameAndCity}) 
-      : super(key: key);
+  const AppointmentView({super.key, required this.appointment, required this.nameAndCity});
   
   @override 
   _AppointmentViewState createState() => _AppointmentViewState();
@@ -27,11 +27,14 @@ class _AppointmentViewState extends State<AppointmentView> {
   // String appointmentId = widget.appointment.id ?? "";
 
   void fetchAppointmentDetails() async {
+    if (kDebugMode) {
+      print("Fetching details for appointment ID: ${widget.appointment.id}");
+    }
     var appointmentsResponse = await APIHelper.get(
           'appointments/${widget.appointment.id}/format',
           context,
           mounted);
-      if (appointmentsResponse != null && appointmentsResponse.statusCode == 200) {
+      if (appointmentsResponse != null) {
         var newAppointment = (jsonDecode(appointmentsResponse.body)['appointment']);
         setState(() {
           appointmentDetails = newAppointment;
@@ -58,7 +61,7 @@ class _AppointmentViewState extends State<AppointmentView> {
             _buildDetailRow("Designer 2", appointmentDetails['Designer2'] ?? "N/A"),
             _buildDetailRow("Designer in Training", appointmentDetails['DesignerInTraining'] ?? "N/A"),
             _buildDetailRow("Type of Work", widget.appointment.projectDescription ?? "N/A"),
-            _buildDetailRow("Year Built", appointmentDetails['YearBuilt'] != null ? DateFormat.yMd().format(appointmentDetails['YearBuilt'] as DateTime) : "N/A"),
+            _buildDetailRow("Year Built", appointmentDetails['YearBuilt'] != null ? appointmentDetails['YearBuilt'].toString() : "N/A"),
             _buildDetailRow("Confirmation Sent", widget.appointment.confirmationLetterSent == true ? "Yes" : "No"),
             _buildDetailRow("Taken By", appointmentDetails['TakenBy'] ?? "N/A"),
             _buildDetailRow("Time Set", widget.appointment.timeSet ?? "N/A"),

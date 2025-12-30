@@ -75,6 +75,14 @@ class SelectedSOFormState extends State<SelectedSOForm> {
 
   }
 
+  String? _convertToString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    if (value is List && value.isNotEmpty) return value.first.toString();
+    if (value is List) return null;
+    return value.toString();
+  }
+
   Future<void> loadData() async {
     http.Response? response = await APIHelper.get(
       'service-orders/${widget.serviceOrderId}?isMobile=true',
@@ -96,11 +104,11 @@ class SelectedSOFormState extends State<SelectedSOForm> {
       if(kDebugMode) print("Solution: ${data['solution']}");
 
       setState(() {
-        dateOfRequest = data['dateOfRequest'];
-        dateClosed = data['dateClosed'];
+        dateOfRequest = _convertToString(data['dateOfRequest']);
+        dateClosed = _convertToString(data['dateClosed']);
         // dateAssigned = data['dateAssigned']; // Retrieve
-        tookCall = data['tookCall'];
-        selectedServiceProvider = data['serviceHandler'];
+        tookCall = _convertToString(data['tookCall']);
+        selectedServiceProvider = _convertToString(data['serviceHandler']);
         // description = data['description'];
         // solution = data['solution'];
       });
