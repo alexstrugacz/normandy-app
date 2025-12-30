@@ -323,7 +323,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
                   return DropdownMenuItem<int>(
                     value: index,
                     child: Text(
-                      '${jobs[index].jobNumber} - ${jobs[index].jobDescription ?? ''}', 
+                      '${jobs[index].jobNumber} - ${DateFormat('MM/dd/yyyy').format(jobs[index].dateSold ?? DateTime.now())} - ${jobs[index].jobDescription ?? ''}', 
                       overflow: TextOverflow.ellipsis,
                     ),
                   );

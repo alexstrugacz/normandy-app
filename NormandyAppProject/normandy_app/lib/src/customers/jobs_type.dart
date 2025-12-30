@@ -15,7 +15,8 @@ class Job {
   String? finalPrice;
   int? jobCost;
   String? jobNumber;
-
+  String? designerId;
+  String? superintendentId;
   Job({
     this.id,
     this.lname,
@@ -33,32 +34,40 @@ class Job {
     this.finalPrice,
     this.jobCost,
     this.jobNumber,
-  });    
+    this.designerId,
+    this.superintendentId,
+  });
 
   factory Job.fromJson(Map<String, dynamic> json) {
     try {
-      String? asString(dynamic v) => v?.toString(); // Converts Any to String or null
+      String? asString(dynamic v) =>
+          v?.toString(); // Converts Any to String or null
       // as String? throws an error if the conversion fails
       return Job(
         id: asString(json['_id']),
         lname: asString(json['lname']),
         jobCity: asString(json['jobCity']),
-        jobCompletionDate: json['jobCompletionDate'] != null && json['jobCompletionDate'] is String
+        jobCompletionDate: json['jobCompletionDate'] != null &&
+                json['jobCompletionDate'] is String
             ? DateTime.tryParse(json['jobCompletionDate'])
             : null,
         dateSold: json['dateSold'] != null && json['dateSold'] is String
             ? DateTime.tryParse(json['dateSold'])
             : null,
-        realityLetterSent: json['realityLetterSent'] != null && json['realityLetterSent'] is String
+        realityLetterSent: json['realityLetterSent'] != null &&
+                json['realityLetterSent'] is String
             ? DateTime.tryParse(json['realityLetterSent'])
             : null,
-        jobStateDate: json['jobStateDate'] != null && json['jobStateDate'] is String
-            ? DateTime.tryParse(json['jobStateDate'])
-            : null,
-        finalInspection: json['finalInspection'] != null && json['finalInspection'] is String
-            ? DateTime.tryParse(json['finalInspection'])
-            : null,
-        substantialCompleted: json['substantialCompleted'] != null && json['substantialCompleted'] is String
+        jobStateDate:
+            json['jobStateDate'] != null && json['jobStateDate'] is String
+                ? DateTime.tryParse(json['jobStateDate'])
+                : null,
+        finalInspection:
+            json['finalInspection'] != null && json['finalInspection'] is String
+                ? DateTime.tryParse(json['finalInspection'])
+                : null,
+        substantialCompleted: json['substantialCompleted'] != null &&
+                json['substantialCompleted'] is String
             ? DateTime.tryParse(json['substantialCompleted'])
             : null,
         jobId: asString(json['jobId']),
@@ -68,6 +77,8 @@ class Job {
         finalPrice: asString(json['finalPrice']),
         jobCost: json['jobCost'] as int?,
         jobNumber: asString(json['jobNumber']),
+        designerId: asString(json['designerId']),
+        superintendentId: asString(json['superId']),
       );
     } catch (e) {
       throw FormatException('Error parsing Job: $e');
@@ -92,7 +103,9 @@ class Job {
         'substantialCompleted': substantialCompleted,
         'finalPrice': finalPrice,
         'jobCost': jobCost,
-        'jobNumber': jobNumber
+        'jobNumber': jobNumber,
+        'designerId': designerId,
+        'superintendentId': superintendentId
       };
     } catch (e) {
       throw FormatException('Error serializing Job: $e');

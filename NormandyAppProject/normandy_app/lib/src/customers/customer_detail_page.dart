@@ -38,6 +38,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   bool _loading = false;
   List<Job> jobs = [];
   List<ServiceOrder> serviceOrders = [];
+  Map<String, String> designerNames = {};
+  Map<String, String> superintendentNames = {};
   // String userId = '';
 
   @override
@@ -108,6 +110,36 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         setState(() {
           jobs = newJobs;
         });
+
+        // Fetch designer and superintendent names for each job
+        for (var job in newJobs) {
+          if (job.designerId != null && job.designerId!.isNotEmpty) {
+            var designerResponse = await APIHelper.get(
+                'users/${job.designerId}', context, mounted);
+            if (designerResponse != null &&
+                designerResponse.statusCode == 200) {
+              var designer =
+                  User.fromJson(json.decode(designerResponse.body)['user']);
+              setState(() {
+                designerNames[job.designerId!] = designer.displayName ?? 'N/A';
+              });
+            }
+          }
+          if (job.superintendentId != null &&
+              job.superintendentId!.isNotEmpty) {
+            var superintendentResponse = await APIHelper.get(
+                'users/${job.superintendentId}', context, mounted);
+            if (superintendentResponse != null &&
+                superintendentResponse.statusCode == 200) {
+              var superintendent = User.fromJson(
+                  json.decode(superintendentResponse.body)['user']);
+              setState(() {
+                superintendentNames[job.superintendentId!] =
+                    superintendent.displayName ?? 'N/A';
+              });
+            }
+          }
+        }
       }
 
       var serviceOrdersResponse = await APIHelper.get(
@@ -127,12 +159,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     _loading = false;
   }
 
-  String _getContactStatusText(String? fname, List<String> phoneNumbers, String? email) {
+  String _getContactStatusText(
+      String? fname, List<String> phoneNumbers, String? email) {
     // Filter out empty/whitespace phones
-    final validPhones = phoneNumbers.where((phone) => phone.trim().isNotEmpty).toList();
+    final validPhones =
+        phoneNumbers.where((phone) => phone.trim().isNotEmpty).toList();
     final hasPhone = validPhones.isNotEmpty;
     final hasEmail = email != null && email.trim().isNotEmpty;
-    
+
     if (!hasPhone && !hasEmail) {
       return ' (no phone or email)';
     } else if (!hasPhone) {
@@ -178,7 +212,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                     children: [
                                       TextSpan(
                                         text: customer?.fname1 ?? '',
-                                        style: TextStyle(fontSize: 16, color: Colors.black),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black),
                                       ),
                                       TextSpan(
                                         text: _getContactStatusText(
@@ -190,7 +225,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                           ],
                                           customer?.email,
                                         ),
-                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.grey),
                                       ),
                                     ],
                                   ),
@@ -223,7 +259,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                     children: [
                                       TextSpan(
                                         text: customer?.fname2 ?? '',
-                                        style: TextStyle(fontSize: 16, color: Colors.black),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black),
                                       ),
                                       TextSpan(
                                         text: _getContactStatusText(
@@ -235,7 +272,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                           ],
                                           customer?.email2,
                                         ),
-                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.grey),
                                       ),
                                     ],
                                   ),
@@ -275,8 +313,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: customerContact?.displayName ?? customer?.lastSoldJobDesignerName ?? 'N/A',
-                                  style: TextStyle(fontSize: 16, color: Colors.black),
+                                  text: customerContact?.displayName ??
+                                      customer?.lastSoldJobDesignerName ??
+                                      'N/A',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -357,7 +398,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           ),
                       child: ListTile(
                         title: Text(
-                          "${appointment.lname} - ${appointment.city}\nStarted ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
+                          "${appointment.projectDescription}\nStarted ${DateFormat.yMd().format(appointment.dateOfRequest ?? DateTime.now())}",
                           style: TextStyle(fontSize: 16),
                         ),
                         trailing: Icon(Icons.chevron_right),
@@ -376,12 +417,17 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                               builder: (context) => JobView(
                                   job: job,
                                   nameAndCity:
-                                      "${customer?.lname1} - ${customer?.city}"),
+                                      "${customer?.lname1} - ${customer?.city}",
+                                  jobDesigner:
+                                      designerNames[job.designerId] ?? 'N/A',
+                                  jobSuperintendent: superintendentNames[
+                                          job.superintendentId] ??
+                                      'N/A'),
                             ),
                           ),
                       child: ListTile(
                         title: Text(
-                          '${job.lname} - ${job.jobCity}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
+                          '${job.jobDescription}\nCompleted ${DateFormat.yMd().format(job.jobCompletionDate ?? DateTime.now())}',
                           style: TextStyle(fontSize: 16),
                         ),
                         trailing: Icon(Icons.chevron_right),
@@ -422,7 +468,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           ),
                       child: ListTile(
                         title: Text(
-                          "${serviceOrder.name ?? customer?.lname1} - ${serviceOrder.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
+                          "${customer?.lname1} - ${customer?.city}\nRequest Date ${DateFormat.yMd().format(serviceOrder.dateOfRequest ?? DateTime.now())}",
                           style: TextStyle(fontSize: 16),
                         ),
                         trailing: Icon(Icons.chevron_right),

@@ -8,8 +8,10 @@ import 'package:normandy_app/src/api/api_helper.dart';
 class JobView extends StatefulWidget {
   final Job job;
   final String nameAndCity;
+  final String jobDesigner;
+  final String jobSuperintendent;
 
-  const JobView({Key? key, required this.job, required this.nameAndCity}) 
+  const JobView({Key? key, required this.job, required this.nameAndCity, required this.jobDesigner, required this.jobSuperintendent}) 
       : super(key: key);
   
   @override 
@@ -56,7 +58,8 @@ class _JobViewState extends State<JobView> {
             _buildDetailRow('Job Number', widget.job.jobId),
             _buildDetailRow('Job Description', widget.job.jobDescription),
             // _buildDetailRow('Job Type', ""),
-            // _buildDetailRow('Designer 1', ""),
+            _buildDetailRow('Designer', widget.jobDesigner),
+            _buildDetailRow('Superintendent', widget.jobSuperintendent),
             // _buildDetailRow('Share #1', ""), 
             // _buildDetailRow('Designer 2', ""), 
             // _buildDetailRow('Share #2', ""),
