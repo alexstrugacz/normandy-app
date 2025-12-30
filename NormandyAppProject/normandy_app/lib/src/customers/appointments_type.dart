@@ -69,7 +69,7 @@ class Appointment {
     try {
       String? asString(dynamic v) => v?.toString();
       return Appointment(
-        id: asString(json['id']),
+        id: asString(json['_id']),
         leadIdOld: json['leadIdOld'] as int?,
         customerId: asString(json['customerId']),
         leadSourceId: asString(json['leadSourceId']),

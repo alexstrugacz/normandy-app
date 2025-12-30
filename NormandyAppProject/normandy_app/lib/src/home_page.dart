@@ -16,10 +16,10 @@ class HomePage extends StatelessWidget {
   // ignore: library_private_types_in_public_api
   final List<_Button> buttons = [
     _Button('Contacts', '/contacts', FontAwesomeIcons.addressBook, true),
-    _Button('Upload Image', '/upload-image', FontAwesomeIcons.upload, false),
+    _Button('Upload Image', '/upload-image', FontAwesomeIcons.upload, true),
     _Button('Quick Links', '/quick-links', FontAwesomeIcons.link, true),
-    _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar,
-        true),
+    // _Button('Service Orders', '/so-forms', FontAwesomeIcons.fileInvoiceDollar,
+    //     true),
     _Button('User Settings', '/user-settings', FontAwesomeIcons.gear, true),
     _Button('Customers', '/customers', FontAwesomeIcons.users, true),
     _Button('Coming Soon', '/coming-soon', FontAwesomeIcons.clock, true),
