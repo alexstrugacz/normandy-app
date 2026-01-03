@@ -67,6 +67,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
     }
 
     List<File> failures = [];
+    List<String> uploadedImageNames = [];
     // TODO allow to cancel uploads
     for (int i = 0; i < ic.images.length; i++) {
       final File image = ic.images[i];
@@ -91,6 +92,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
 
         if (response.statusCode == 201) {
           if (kDebugMode) print('File uploaded successfully: $fileName');
+          uploadedImageNames.add(fileName);
         } else {
           // TODO show toast or some other notif on failure
           if (kDebugMode) print('File upload failed: ${response.body}');
@@ -108,7 +110,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
     try {
       await APIHelper.post(
         'site-visits/check-site-visits?jobId=${jobs[_selectedJobType!].id}&userId=${prefs!.getString('userId') ?? ''}&customerId=${widget.customerId}',
-        {},
+        {'imageIdentifiers': uploadedImageNames},
         context,
         mounted);
     } catch (e) {
