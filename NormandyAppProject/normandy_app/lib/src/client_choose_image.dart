@@ -32,7 +32,6 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
   int? _selectedJobType;
   String? _selectedClientFolderId;
   List<Job> jobs = [];
-  String? responseMessageOnUpload = "";
 
   static const List<String> folderPaths = [
     '10. Photos',
@@ -113,9 +112,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         'site-visits/check-site-visits?jobId=${jobs[_selectedJobType!].id}&userId=${prefs!.getString('userId') ?? ''}&customerId=${widget.customerId}',
         {'imageIdentifiers': uploadedImageNames},
         context,
-        mounted).then((response) {
-          responseMessageOnUpload = response?.body;
-        });
+        mounted);
     } catch (e) {
       if (kDebugMode) print('Error during upload process: $e');
     }
@@ -220,7 +217,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Upload Successful'),
-          content: Text(responseMessageOnUpload ?? "All images uploaded successfully."),
+          content: const Text("All images uploaded successfully."),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -241,7 +238,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         return AlertDialog(
           title: const Text('Some Uploads Failed'),
           content:
-               Text("$responseMessageOnUpload Retry?"),
+               const Text("Retry?"),
           actions: [
             TextButton(
               child: const Text('No'),
