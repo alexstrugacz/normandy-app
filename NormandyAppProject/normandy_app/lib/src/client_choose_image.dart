@@ -32,6 +32,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
   int? _selectedJobType;
   String? _selectedClientFolderId;
   List<Job> jobs = [];
+  String? _uploadMessage;
 
   static const List<String> folderPaths = [
     '10. Photos',
@@ -112,7 +113,16 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
         'site-visits/check-site-visits?jobId=${jobs[_selectedJobType!].id}&userId=${prefs!.getString('userId') ?? ''}&customerId=${widget.customerId}',
         {'imageIdentifiers': uploadedImageNames},
         context,
-        mounted);
+        mounted).then((response) {
+          if(response != null) {
+            final responseData = json.decode(response.body);
+            if(responseData['message'] != null) {
+              setState(() {
+                _uploadMessage = responseData['message'];
+              });
+            }
+          }
+        });
     } catch (e) {
       if (kDebugMode) print('Error during upload process: $e');
     }
@@ -217,7 +227,7 @@ class _ClientChooseImagePageState extends State<ClientChooseImagePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Upload Successful'),
-          content: const Text("All images uploaded successfully."),
+          content: Text(_uploadMessage ?? "All images uploaded successfully."),
           actions: [
             TextButton(
               child: const Text('OK'),
